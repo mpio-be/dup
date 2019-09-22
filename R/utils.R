@@ -1,65 +1,58 @@
-# ==========================================================================
-# DATA SENT BY DIFFERENT PROVIDERS THROUGH EMAIL
-# 1. extract_email_attachements() calls offlineimap() and extracts data from 
-#    new emails '/home/mihai/incoming_data/email_attachments/'; it runs on CRON
-# 2. read_email_attachements() it is used for DB update; it runs on CRON
-#    and updates files not yet on DB
-# ==========================================================================
 
-#' offlineimap
-#' @param  accounts      accounts       
-#' @param  localfolders  localfolders   
-#' @param  remotehost    remotehost     
-#' @param  remoteuser    remoteuser     
-#' @param  maildir       maildir     
-#' @param  pwd           pwd            
- 
-#' @return NULL
+
 #' @export
-#' @examples
-#' pwd = sdb::getCredentials('gitlab',host = 'gwdg')$pwd
-#' offlineimap(pwd = pwd, maildir = 'ARGOS')
-#' offlineimap(pwd = pwd, maildir = 'GSM_MTI')
+installCrontab <- function() {
+  newtab = system.file('sysSet', 'crontab', package = 'dup')
+  call = paste('cat ',newtab,' | crontab -')
+  system(call, intern = TRUE)
+
+  message('New crontab installed with\n', call)
+
+  }
 
 
-offlineimap <- function(accounts = 'gitlab', localfolders = '/ds/raw_data_kemp/FIELD/ARGOS/incoming_data/email/',
-remotehost="email.gwdg.de",remoteuser = "gitlab-grpkempenaers@orn.mpg.de",pwd, maildir) {
 
-    tf = tempfile(); on.exit( file.remove(tf) )
-    Cat = function(...) { cat(..., file = tf, sep = '', append = TRUE, fill = TRUE)}
+#' @export
+owncloud <- function(dir = "path_relative_to_ownCloud",pass = pwd(), exclude = c("*.sublime-workspace") , dryrun = FALSE, reset = FALSE) {
 
-    # TEMP CONFIG FILE 
-    localrepository = paste0(accounts, 'loc')
-    remoterepository = paste0(accounts, 'rem')
 
-    Cat('[general]' )
-      Cat('accounts=', accounts)
 
-    Cat('[Account ', accounts, ']')
-      Cat('localrepository=', localrepository)
-      Cat('remoterepository=', remoterepository)
+  locDir = str_glue('~/ownCloud/{dir}')
+  system(str_glue('mkdir -p {locDir}'))
+  
 
-    Cat('[retriever]' )
-      Cat('type=SimpleIMAPSSLRetriever' )
+  user = 'valcu@orn.mpg.de'
 
-    Cat('[Repository ', localrepository, ']')
-      Cat('type=Maildir' )
-      Cat('localfolders=', localfolders )
+  # make exclude file
+  exf = '~/.owncloud_exclude.lst'
+  writeLines(exclude, exf)
+  
 
-    Cat('[Repository ', remoterepository, ']' )
-      Cat('type=IMAP' )
-      Cat('remotehost=', remotehost )
-      Cat('remoteuser=', remoteuser )
-      Cat('remotepass=', pwd )
-      Cat('ssl=yes')
-      Cat('sslcacertfile=/etc/ssl/certs/ca-certificates.crt')
+  # cmd
+  if(reset) rm(.__owncloudcmd__, envir = .GlobalEnv)
 
-     
-     # file.edit(tf)
+  cmd = get0('.__owncloudcmd__', envir = .GlobalEnv)
 
-    call = paste('offlineimap -f', shQuote(paste0('INBOX/', maildir)), '-c', tf)  
-    system(call)
+  if(is.null(cmd) ) {
+    cmd = str_glue(
+      "owncloudcmd  --nonshib --user {user} --password {shQuote(pass)} --exclude {exf} {locDir} https://owncloud.gwdg.de/remote.php/nonshib-webdav/{dir}")
+
+    assign('.__owncloudcmd__', cmd, envir = .GlobalEnv)
+    
+
     }
 
+  cmd = get('.__owncloudcmd__', envir = .GlobalEnv)
+
+
+
+  if(!dryrun)
+    system(cmd)
+
+  if(dryrun)
+    cat(cmd)
+
+
+}
 
 

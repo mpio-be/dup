@@ -1,25 +1,30 @@
 Package: dup
 Version: 0.0-1
-Authors@R: c(
+Authors@R: 
     person("Mihai", "Valcu", ,"valcu@orn.mpg.de", c("aut", "cre"))
-    )
 Title: Database Unattended Pipelines 
 Depends:
     R (>= 3.6.0),
 Imports:
     methods,
+    config,
+    RMariaDB,
     magrittr,
+    stringr,
+    glue,
     data.table,
     foreach,
     future,
-    doFuture  
-Remotes:
-    mpio-be/sdb,    
-    mpio-be/SNB2       
+    doFuture,
+    pushoverr
 Suggests:
     crayon
-Description: Scidb.mpio.orn.mpg.de Database Unattended Pipelines 
+SystemRequirements:
+    munpack, offlineimap, owncloudcmd
+Description: scidb.mpio.orn.mpg.de Database Unattended Pipelines 
 License: GPL(>= 2)
 URL: https://github.com/mpio-be/dup
 RoxygenNote: 6.1.1
 Encoding: UTF-8
+
+

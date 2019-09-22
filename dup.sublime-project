@@ -1,7 +1,17 @@
 {
-    "folders":[{
-        "name": "package: dup",
-        "path": "./",
-        "folder_exclude_patterns": ["*_cache", "cache", "figure", "*_files", ".Rproj.user"]
-        }]
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				"*_cache",
+				"cache",
+				"figure",
+				"*_files",
+				".Rproj.user"
+			],
+			"name": "package: dup",
+			"path": "."
+		}
+	]
 }

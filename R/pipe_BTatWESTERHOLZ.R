@@ -4,7 +4,7 @@
 # ==========================================================================
 
 #' uses ID_changes table
-#' Run this function after each update in ID_changes (run once on cron!)
+#' Run this function after each update in ID_changes (run on cron!)
 #' 
 #' @export
 BT_at_WESTERHOLZ_change_ID <- function( h = getOption('host') ) {
@@ -41,52 +41,7 @@ BT_at_WESTERHOLZ_change_ID <- function( h = getOption('host') ) {
 
 
 
-####### OBSOLETE FUNCTIONS BELOW : ?
 
-#' @export
-FIELD_BTatWESTERHOLZ_freeze <- function(YEAR = year(Sys.Date()), dryrun = TRUE) {
-
-  newdb = paste0('FIELD_', YEAR , '_BTatWESTERHOLZ')
-
-  fp = mysqldump('FIELD_BTatWESTERHOLZ',  
-      user = 'mihai', 
-      host = getOption('host') , dir = tempdir(), '--no-create-db', dryrun = FALSE) # dryrun = FALSE because no change to db is done
-
-
-  mysqlrestore(fp, newdb, 
-    user = 'mihai',
-    host = getOption('host') , dryrun = dryrun)
-
-  # refresh FIELD_DB
-  if(!dryrun) {
-    x = dbq(q= "select TABLE_NAME from information_schema.TABLES  WHERE TABLE_SCHEMA ='FIELD_BTatWESTERHOLZ' AND TABLE_TYPE = 'BASE TABLE'",user = 'mihai', host = getOption('host')   )
-    x[, DDL := paste0('TRUNCATE TABLE FIELD_BTatWESTERHOLZ.', TABLE_NAME)]
-    x[, dbq(q = DDL, user = 'mihai', host = getOption('host') ), by = 1:nrow(x)]
-   }
-
-
- 
- }
-
- #' @export
-
-#' @export
-#' @note IN WORK!!!
-FIELD_BTatWESTERHOLZ_CHICKS_TEMPLATE <- function(con ) {
-
-  # con = dbcon('mihai', host = "scidb.mpio.orn.mpg.de", db = "FIELD_2018_BTatWESTERHOLZ")
-  
-  x = dbq(con, 'select box, date_time, nest_stage, eggs,chicks, guessed, collect_eggs, dead_eggs dead_chicks,nest_failed
-                  from NESTS where nest_stage in ("Y", "E") ')
-
-
-
-  
-
-
-
- 
- }
 
  
 
