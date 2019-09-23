@@ -11,22 +11,7 @@ offlineimap(cnf = config::get(), maildir)
 default to config::get().}
 
 \item{maildir}{maildir}
-
-\item{accounts}{accounts}
-
-\item{localfolders}{localfolders}
-
-\item{remotehost}{remotehost}
-
-\item{remoteuser}{remoteuser}
-
-\item{pwd}{pwd}
 }
 \description{
 offlineimap
-}
-\examples{
-pwd = sdb::getCredentials('gitlab',host = 'gwdg')$pwd
-offlineimap(pwd = pwd, maildir = 'ARGOS')
-offlineimap(pwd = pwd, maildir = 'GSM_MTI')
 }

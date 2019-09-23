@@ -20,10 +20,14 @@ default to config::get().}
 \description{
 extract_email_attachements to their dirs AFTER calling offlineimap
 }
+\note{
+When offlineimap() is called independently then, call extract_email_attachements(onlynew = FALSE) once so that
+         no new emails are disregarded.
+}
 \examples{
 \dontrun{
- extract_email_attachements(maildir = 'ARGOS', onlynew = TRUE)
- extract_email_attachements(maildir = 'GSM_MTI', onlynew = TRUE)
+ dup::extract_email_attachements(maildir = 'ARGOS', onlynew = FALSE)
+ extract_email_attachements(maildir = 'GSM_MTI', onlynew = FALSE)
  
 }
 }

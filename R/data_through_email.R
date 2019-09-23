@@ -2,21 +2,9 @@
 #' offlineimap
 #' @param  cnf  configuration variables are obtained from an external file config file. 
 #'         default to config::get().
-
-#' @param  accounts      accounts       
-#' @param  localfolders  localfolders   
-#' @param  remotehost    remotehost     
-#' @param  remoteuser    remoteuser     
 #' @param  maildir       maildir     
-#' @param  pwd           pwd            
- 
 #' @return NULL
 #' @export
-#' @examples
-#' pwd = sdb::getCredentials('gitlab',host = 'gwdg')$pwd
-#' offlineimap(pwd = pwd, maildir = 'ARGOS')
-#' offlineimap(pwd = pwd, maildir = 'GSM_MTI')
-
 
 offlineimap <- function(cnf =  config::get(), maildir) {
 
@@ -70,18 +58,20 @@ offlineimap <- function(cnf =  config::get(), maildir) {
 #' @param  cnf  configuration variables are obtained from an external file config file. 
 #'         default to config::get().
 #' @return NULL
+#' @note   When offlineimap() is called independently then, call extract_email_attachements(onlynew = FALSE) once so that
+#'          no new emails are disregarded. 
 #' @export
 #' @examples
 #' \dontrun{
-#'  extract_email_attachements(maildir = 'ARGOS', onlynew = TRUE)
-#'  extract_email_attachements(maildir = 'GSM_MTI', onlynew = TRUE)
+#'  dup::extract_email_attachements(maildir = 'ARGOS', onlynew = FALSE)
+#'  extract_email_attachements(maildir = 'GSM_MTI', onlynew = FALSE)
 #'  
 #' }
 
 extract_email_attachements <- function(maildir, onlynew = TRUE, keep =  ".*\\.(TXT|txt|csv|CSV)", cnf =  config::get() ) {
 
   sourcedir = glue('{cnf$dir$base}{cnf$dir$email}INBOX.{maildir}')
-  targetdir = glue('{cnf$dir$base}{cnf$dir$email}{maildir}')
+  targetdir = glue('{cnf$dir$base}{cnf$dir$emailAtt}{maildir}')
 
   dir.create(targetdir ,recursive = TRUE, showWarnings = FALSE )
 
@@ -92,6 +82,7 @@ extract_email_attachements <- function(maildir, onlynew = TRUE, keep =  ".*\\.(T
     offlineimap(maildir = maildir)
 
     t1 = data.table( path = list.files(path = sourcedir, full.names = TRUE, recursive = TRUE)  )
+
 
     o = merge(t0, t1, by = 'path', all.y = TRUE)
     if(onlynew)  
@@ -138,7 +129,7 @@ extract_email_attachements <- function(maildir, onlynew = TRUE, keep =  ".*\\.(T
 #' x = read_email_attachements(maildir='GSM_MTI', pattern = "g_")
 #' x = read_email_attachements(maildir='GSM_MTI', pattern = "e_")
 
-read_email_attachements <- function(maildir, exclude, pattern,lastdate,sepDate = "", ...) {
+read_email_attachements <- function(maildir, exclude, pattern,lastdate,sepDate = "",cnf =  config::get(), ...) {
 
    dirloc = glue('{cnf$dir$base}{cnf$dir$emailAtt}{maildir}')
 

@@ -2,21 +2,29 @@
 # mti_gps
 # ==========================================================================
 #' @title   mti_gps.BUTEOatEUROPE
-#' @name   mti_gps.BUTEOatEUROPE
+#' @param  cnf  configuration variables are obtained from an external file config file. 
+#'         default to config::get().
 #' @export
 #' @examples
 #' scidbupdate_mti_gps.BUTEOatEUROPE()
-scidbupdate_mti_gps.BUTEOatEUROPE <- function(host = getOption('host'), user = 'mihai') {
+scidbupdate_mti_gps.BUTEOatEUROPE <- function(cnf = config::get()) {
   
-    con = sdb::dbcon(user = user, host = host, db = 'BUTEOatEUROPE'); on.exit(dbDisconnect(con))
+    host = cnf$host$name
+    db   = cnf$db$gps
+    user = cnf$host$dbadmin
+    pwd  = cnf$host$dbpwd
 
+    con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = db)
+    on.exit(dbDisconnect(con))
+
+ 
     # already uploaded
-    flist = sdb::dbq(con, 'SELECT DISTINCT filenam from mti_gps')[[1]]
+    flist = dbGetQuery(con, 'SELECT DISTINCT filenam from mti_gps')$filenam
     # last uploaded date
     lud  = anytime(str_split(flist, "_", simplify = TRUE)[, 2]) %>% max
 
     # new data
-    x = read_email_attachements(maildir='GSM_MTI', pattern = "g_", exclude = flist, lastdate = lud, , sepDate = "-")
+    x = read_email_attachements(maildir='GSM_MTI', pattern = "g_", exclude = flist, lastdate = lud , sepDate = "-")
 
 
     if(nrow(x) > 0) { # then prepare data & write to DB
@@ -30,6 +38,8 @@ scidbupdate_mti_gps.BUTEOatEUROPE <- function(host = getOption('host'), user = '
          x = x[, .(tagID, DateTime, Latitude_N, Longitude_E, Altitude_m, HDOP ,VDOP, SatelliteCount, low_voltagge, filenam)]
         setnames(x, c('tagID','DateTime','latitude','longitude','altitude','HDOP','VDOP','SatelliteCount','low_voltagge', 'filenam') )
 
+        x[, altitude := as.numeric(altitude)]
+
         return(dbWriteTable(con, 'mti_gps', x, row.names = FALSE, append = TRUE))
 
         } else FALSE
@@ -38,13 +48,20 @@ scidbupdate_mti_gps.BUTEOatEUROPE <- function(host = getOption('host'), user = '
 
 
 #' @title mti_sensors.BUTEOatEUROPE
-#' @name  mti_sensors.BUTEOatEUROPE
+#' @param  cnf  configuration variables are obtained from an external file config file. 
+#'         default to config::get().
 #' @export
 #' @examples
 #' scidbupdate_mti_sensors.BUTEOatEUROPE()
-scidbupdate_mti_sensors.BUTEOatEUROPE <- function(host = getOption('host'), user = 'mihai') {
+scidbupdate_mti_sensors.BUTEOatEUROPE <- function(cnf = config::get()) {
   
-    con = sdb::dbcon(user = user, host = host, db = 'BUTEOatEUROPE'); on.exit(dbDisconnect(con))
+    host = cnf$host$name
+    db   = cnf$db$gps
+    user = cnf$host$dbadmin
+    pwd  = cnf$host$dbpwd
+
+    con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = db)
+    on.exit(dbDisconnect(con))
 
     # already uploaded
     flist = sdb::dbq(con, 'SELECT DISTINCT filenam from mti_sensors')[[1]]
@@ -73,13 +90,12 @@ scidbupdate_mti_sensors.BUTEOatEUROPE <- function(host = getOption('host'), user
 
 #' @title Argos pipeline
 #' @export
-#' @import crayon
 #' @examples
 #' scidbupdate_BUTEOatEUROPE.pipeline()
 scidbupdate_BUTEOatEUROPE.pipeline <- function() {
 
     cat( red$bold('\n ----> Get new emails and extract attachments ......\n') )
-   extract_email_attachements(maildir="GSM_MTI",pwd=getCredentials("gitlab",host="gwdg")$pwd)
+   extract_email_attachements(maildir="GSM_MTI")
     
     cat( blue$bold('\n ----> Update gps table.....\n') )
     scidbupdate_mti_gps.BUTEOatEUROPE()

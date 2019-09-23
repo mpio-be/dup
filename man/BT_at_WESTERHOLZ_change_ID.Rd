@@ -2,12 +2,14 @@
 % Please edit documentation in R/pipe_BTatWESTERHOLZ.R
 \name{BT_at_WESTERHOLZ_change_ID}
 \alias{BT_at_WESTERHOLZ_change_ID}
-\title{uses ID_changes table
-Run this function after each update in ID_changes (run on cron!)}
+\title{uses ID_changes table}
 \usage{
-BT_at_WESTERHOLZ_change_ID(h = getOption("host"))
+BT_at_WESTERHOLZ_change_ID(cnf = config::get())
+}
+\arguments{
+\item{cnf}{configuration variables are obtained from an external file config file. 
+default to config::get().}
 }
 \description{
 uses ID_changes table
-Run this function after each update in ID_changes (run on cron!)
 }

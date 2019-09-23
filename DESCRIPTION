@@ -1,23 +1,24 @@
 Package: dup
-Version: 0.0-1
+Version: 0.0-2
 Authors@R: 
     person("Mihai", "Valcu", ,"valcu@orn.mpg.de", c("aut", "cre"))
 Title: Database Unattended Pipelines 
 Depends:
-    R (>= 3.6.0),
+    R (>= 3.6.0)
 Imports:
     methods,
-    config,
+    utils,
     RMariaDB,
     magrittr,
     stringr,
     glue,
-    data.table,
     foreach,
     future,
     doFuture,
-    pushoverr
-Suggests:
+    pushoverr,
+    config,
+    data.table,
+    anytime,
     crayon
 SystemRequirements:
     munpack, offlineimap, owncloudcmd

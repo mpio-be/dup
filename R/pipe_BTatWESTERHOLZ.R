@@ -1,17 +1,21 @@
-# ==========================================================================
-# Specialized functions on BTatWESTERHOLZ & FIELD_BTatWESTERHOLZ
-# ?? keep here or move to bib ?
-# ==========================================================================
+
 
 #' uses ID_changes table
-#' Run this function after each update in ID_changes (run on cron!)
-#' 
+#' @param  cnf  configuration variables are obtained from an external file config file. 
+#'         default to config::get().
 #' @export
-BT_at_WESTERHOLZ_change_ID <- function( h = getOption('host') ) {
+BT_at_WESTERHOLZ_change_ID <- function( cnf = config::get() ) {
    
-    con = dbcon('mihai', host = h , db = 'BTatWESTERHOLZ'); on.exit(dbDisconnect(con))
+    host = cnf$host$name
+    db   = cnf$db$argos
+    user = cnf$host$dbadmin
+    pwd  = cnf$host$dbpwd
 
-    d = dbq(con, 'select * from ID_changes')
+    con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = 'BTatWESTERHOLZ')
+    on.exit(dbDisconnect(con))
+
+
+    d = dbGetQuery(con, 'select * from ID_changes') %>% data.table
 
     d = d[, .(sql = c(
        paste('UPDATE ADULTS    SET ID       =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,

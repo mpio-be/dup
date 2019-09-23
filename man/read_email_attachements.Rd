@@ -5,7 +5,7 @@
 \title{read_attachements}
 \usage{
 read_email_attachements(maildir, exclude, pattern, lastdate,
-  sepDate = "", ...)
+  sepDate = "", cnf = config::get(), ...)
 }
 \arguments{
 \item{maildir}{maildir}
@@ -16,10 +16,10 @@ read_email_attachements(maildir, exclude, pattern, lastdate,
 
 \item{lastdate}{date of the last included file (date is embedded in the filename)}
 
-\item{...}{passed to fread}
-
 \item{cnf}{configuration variables are obtained from an external file config file. 
 default to config::get().}
+
+\item{...}{passed to fread}
 }
 \value{
 DT
