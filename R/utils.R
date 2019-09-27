@@ -1,55 +1,54 @@
+#' @export
+mins_taken <- function(x) {
+  assert_that( is.time(x) )
+  o = difftime(Sys.time(), x, units = 'mins') %>% round(digits = 1)
+  glue('{o} minutes taken.')
+}
 
 
 #' @export
-installCrontab <- function() {
-  newtab = system.file('sysSet', 'crontab', package = 'dup')
-  call = paste('cat ',newtab,' | crontab -')
-  system(call, intern = TRUE)
-
-  message('New crontab installed with\n', call)
-
+push_msg <- function(x, title, cnf = config::get('pushover') ) {
+   x = paste(x, collapse = ' ')
+   pushoverr::pushover(message = x, title = title, user = cnf$user, app = cnf$app)
+  
   }
 
 
 
 #' @export
-owncloud <- function(dir = "path_relative_to_ownCloud",pass = pwd(), exclude = c("*.sublime-workspace") , dryrun = FALSE, reset = FALSE) {
+owncloud <- function(dir = "path_relative_to_ownCloud",user, pass, exclude = c("*.sublime-workspace") , dryrun = FALSE, reset = FALSE) {
+
+    locDir = str_glue('~/ownCloud/{dir}')
+    system(str_glue('mkdir -p {locDir}'))
 
 
+    # make exclude file
+    exf = '~/.owncloud_exclude.lst'
+    writeLines(exclude, exf)
 
-  locDir = str_glue('~/ownCloud/{dir}')
-  system(str_glue('mkdir -p {locDir}'))
-  
 
-  user = 'valcu@orn.mpg.de'
+    # cmd
+    if(reset) rm(.__owncloudcmd__, envir = .GlobalEnv)
 
-  # make exclude file
-  exf = '~/.owncloud_exclude.lst'
-  writeLines(exclude, exf)
-  
+    cmd = get0('.__owncloudcmd__', envir = .GlobalEnv)
 
-  # cmd
-  if(reset) rm(.__owncloudcmd__, envir = .GlobalEnv)
-
-  cmd = get0('.__owncloudcmd__', envir = .GlobalEnv)
-
-  if(is.null(cmd) ) {
+    if(is.null(cmd) ) {
     cmd = str_glue(
       "owncloudcmd  --nonshib --user {user} --password {shQuote(pass)} --exclude {exf} {locDir} https://owncloud.gwdg.de/remote.php/nonshib-webdav/{dir}")
 
     assign('.__owncloudcmd__', cmd, envir = .GlobalEnv)
-    
+
 
     }
 
-  cmd = get('.__owncloudcmd__', envir = .GlobalEnv)
+    cmd = base::get('.__owncloudcmd__', envir = .GlobalEnv)
 
 
 
-  if(!dryrun)
+    if(!dryrun)
     system(cmd)
 
-  if(dryrun)
+    if(dryrun)
     cat(cmd)
 
 
@@ -101,6 +100,12 @@ basename2int <- function(ff) {
 
 
 #' @export
-int2b <- function (x) {
+int2b <- function(x) {
     paste0("b", str_pad(x, 3, "left", pad = "0"))
     }
+
+#' @export
+b2int <- function(x) {
+  str_remove(x, 'b') %>%
+  as.integer
+  }

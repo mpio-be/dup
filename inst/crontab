@@ -1,8 +1,4 @@
 
-# ==========================================================================
-# replace crontab on scidbadmin server with:
-# scidbadmin::installCrontab()
-# ==========================================================================
 
 
 SHELL=/bin/sh
@@ -10,28 +6,19 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 
 # ARGOS
-* 0,6,12,18  * * * * Rscript --default-packages=methods,utils,stats,sdb,scidbadmin -e 'scidbupdate_ARGOS.pipeline()'
+* 0,6,12,18  * * * * Rscript --default-packages=dup -e 'ARGOS.pipeline()' &> ARGOS.pipeline.txt
 
 # BUTEOatEUROPE
-* 3  * * * *  Rscript --default-packages=methods,utils,stats,sdb,scidbadmin -e 'scidbupdate_BUTEOatEUROPE.pipeline()'
+* 1  * * * *         Rscript --default-packages=dup -e 'scidbupdate_BUTEOatEUROPE.pipeline()' &> SNBatWESTERHOLZ2_pipeline.txt
 
 # SNB
-0 17,18,4 * * *     Rscript --default-packages=methods,utils,SNB2 -e 'scidb_snbUpdater()'
+0 17,18,4 * * *      Rscript --default-packages=dup -e 'SNBatWESTERHOLZ2_pipeline()' &> SNBatWESTERHOLZ2_pipeline.txt
 
+# BUTEOatEUROPE
+* 0,6  * * * *       Rscript --default-packages=dup -e 'backup.pipeline()' &> backup.pipeline.txt
 
-
-
-## OBSOLETE: 
-
-
-#  # run snippet checks (every day at midnight)
-#  0 0 * * * Rscript --default-packages=methods,utils,snippets -e 'run_snippets()'
-
-
-# # sync to gwdg databases (does not work anymore !!! )
-# */120  * * * * Rscript --default-packages=methods,utils,stats,sdb -e 'my_remote2local("ARGOS","2018_REPH 2018_PESA 2018_GRSN # GRSN", remoteUser = "mihai", localUser = "mihai", localHost = "behavioural-ecology.orn.mpg.de" )' 
-# */120  * * * * Rscript --default-packages=methods,utils,stats,sdb -e 'my_remote2local("GRSNatPOLAND",  remoteUser = "mihai", # localUser = "mihai", localHost = "behavioural-ecology.orn.mpg.de" )'
-# 
+# BUTEOatEUROPE
+* 1  * * * *         Rscript --default-packages=dup -e 'DB_internal_updates.pipeline()'
 
 
 

@@ -88,27 +88,3 @@ scidbupdate_mti_sensors.BUTEOatEUROPE <- function(cnf = config::get()) {
 
 
 
-#' @title Argos pipeline
-#' @export
-#' @examples
-#' scidbupdate_BUTEOatEUROPE.pipeline()
-scidbupdate_BUTEOatEUROPE.pipeline <- function() {
-
-    cat( red$bold('\n ----> Get new emails and extract attachments ......\n') )
-   extract_email_attachements(maildir="GSM_MTI")
-    
-    cat( blue$bold('\n ----> Update gps table.....\n') )
-    scidbupdate_mti_gps.BUTEOatEUROPE()
-
-    cat( green$bold('\n ----> Update sensors table....\n') )
-    scidbupdate_mti_sensors.BUTEOatEUROPE()
-
-
-    
-
-
-
-
-
-
-    }

@@ -55,13 +55,11 @@ read_boxtxt <- function(f) {
 #'  scidb_snbUpdater.b000 ()
 #' }
 #' 
-scidb_snbUpdater.b000 <- function(cnf = config::get(), file = '~/scidb_snbUpdater.log') {
+scidb_snbUpdater.b000 <- function(cnf = config::get()) {
     
-    if(interactive() ) OF = '' else OF = file
 
-    Start = proc.time()
+    Start = Sys.time()
     
-    cat(' ------> Getting settings ...', append=TRUE, file=OF) 
         u    = cnf$host$dbadmin
         h    = cnf$host$name
         p    = paste0(cnf$dir$base, cnf$dir$snb)
@@ -74,44 +72,44 @@ scidb_snbUpdater.b000 <- function(cnf = config::get(), file = '~/scidb_snbUpdate
         on.exit(dbDisconnect(con))
 
 
-    cat('db set to', dQuote(db) , '...OK\n', append=TRUE, file=OF)
+    cat('db set to', dQuote(db) , '...OK\n' )
 
-    cat(' ------> Searching for proper directory formats ...', append=TRUE, file=OF)
+    cat(' ------> Searching for proper directory formats ...' )
         x = data.table( dirs = list.files( paste0(p, y), full.name = TRUE) )
         x[, dirnam := basename(dirs) ]
         if(nrow(x) == 0) {
             stop(p, 'does not have any files')
-            cat(p, 'does not have any files', append=TRUE, file=OF)
+            cat(p, 'does not have any files' )
         }
         isNotDate = x[ ! grepl('^[0-9]{4}\\.[0-9]{1,2}\\.[0-9]{1,2}$', dirnam )   ]
         if( nrow(isNotDate) > 0) {
-            cat('Invalid directories\n', append=TRUE, file=OF)
+            cat('Invalid directories\n' )
             stop('Invalid directories')
             }
 
-    cat(' ------> Getting the file listing on ', p , '...', append=TRUE, file=OF)
+    cat(' ------> Getting the file listing on ', p , '...' )
         rawf = data.table( path = list.files(p, full.name = TRUE, recursive = TRUE) )
         rawf[, box := basename2int(path)]
         rawf = rawf[ box %in%  bb ]
     
-        cat('got', nrow(rawf), 'raw files.\n', append=TRUE, file=OF)
+        cat('got', nrow(rawf), 'raw files.\n' )
 
-    cat(' ------> Getting files already on ', db , '.b000 ... ' , append=TRUE, file=OF)
+    cat(' ------> Getting files already on ', db , '.b000 ... '  )
         dbf = data.table(box = paste0("b", str_pad(bb, 3, "left", pad = "0")) )
         dbf[, sql :=  paste0('select distinct path FROM ', db, '.', box ) ]
         dbf = dbf[, dbGetQuery(con, sql) , by = box]
 
-        cat('got', nrow(dbf), ' files listed in DB.\n', append=TRUE, file=OF)
+        cat('got', nrow(dbf), ' files listed in DB.\n' )
         
-    cat(' ------> Getting black listed files ' , append=TRUE, file=OF)
+    cat(' ------> Getting black listed files '  )
         blf = dbGetQuery(con, paste0('select distinct path from ',db, '.black_list')  )
-        cat('got', nrow(blf), 'black list files.\n', append=TRUE, file=OF)
+        cat('got', nrow(blf), 'black list files.\n' )
 
         alldbf = rbind(dbf[, .(path)], blf)
         alldbf[, indb := TRUE]
         alldbf[, path := paste0(p, path)]
    
-    cat(' ------> Identifying new files ...', append=TRUE, file=OF)
+    cat(' ------> Identifying new files ...' )
         if(nrow(alldbf) == 0) newf = copy(rawf) else {
 
         newf = merge(rawf, alldbf, by = 'path', all.x = TRUE)
@@ -119,33 +117,33 @@ scidb_snbUpdater.b000 <- function(cnf = config::get(), file = '~/scidb_snbUpdate
         }
 
         if( nrow(newf) == 0 ) {
-            cat('None found. Will stop now.\n', append=TRUE, file=OF)
+            cat('None found. Will stop now.\n' )
             return(0)
             stop ('-------- NO NEW FILES FOUND -------- ')
 
         } 
 
-        cat('got', nrow(newf), 'new files. OK\n', append=TRUE, file=OF)
+        cat('got', nrow(newf), 'new files. OK\n' )
 
-    cat(' ------> Parsing new txt files ....', append=TRUE, file=OF )
+    cat(' ------> Parsing new txt files ....'  )
 
         O = foreach(i = 1: nrow(newf)  )  %do% {
             read_boxtxt(newf[i,path])      
-          } ; cat('OK\n', append=TRUE, file=OF)
+          } ; cat('OK\n' )
 
-    cat(' ------> Find if there are black listed files ....', append=TRUE, file=OF)
+    cat(' ------> Find if there are black listed files ....' )
         B = lapply(O, function(x) attributes(x)$SNB2 )
         B = rbindlist(B)
         B = B[garbage > 0.5, .(path)]
 
         if(nrow(B) > 0) {
-            cat('got', nrow(B), 'bad files. will write to black_list ... \n', append=TRUE, file=OF)
+            cat('got', nrow(B), 'bad files. will write to black_list ... \n' )
 
         DBI::dbWriteTable(con, 'black_list' , B , row.names = FALSE, append = TRUE)
 
-        } else cat('All files are OK... \n', append=TRUE, file=OF)
+        } else cat('All files are OK... \n' )
         
-    cat(' ------> Updating b000 tables on', dQuote(db),'.... ', append=TRUE, file=OF)
+    cat(' ------> Updating b000 tables on', dQuote(db),'.... ' )
         pb = txtProgressBar(max = length(O), style = 3 )
     
         out = foreach(i = 1: length(O), .combine = c, .final=sum)  %do% {
@@ -159,12 +157,15 @@ scidb_snbUpdater.b000 <- function(cnf = config::get(), file = '~/scidb_snbUpdate
             res
         } 
         
-        cat('\n      Uploaded', out , 'new files.\n', append=TRUE, file=OF)
+        cat('\n      Uploaded', out , 'new files.\n' )
 
-    cat(' ------> Done in', timetaken(Start), append=TRUE, file=OF)
+    cat(' ------> Done in', timetaken(Start) )
 
-    out
+    tt = difftime(Sys.time, Start, units = 'mins') %>% round %>% as.character
 
+    o = c(tt, out)
+    names(o) = c('Mins_taken', paste('N_files_uploaded to', db)  )
+    o
 
  }
 
@@ -183,12 +184,11 @@ scidb_snbUpdater.b000 <- function(cnf = config::get(), file = '~/scidb_snbUpdate
 #' }
 #' 
 
-scidb_snbUpdater.transponders <- function(cnf = config::get(), file = '~/scidb_snbUpdater.log') {
+scidb_snbUpdater.transponders <- function(cnf = config::get() ) {
 
- if(interactive() ) OF = '' else OF = file
 
-    Start = proc.time() 
-    cat(' ------> Getting settings ...', file = OF, append = TRUE) 
+    Start = Sys.time() 
+    cat(' ------> Getting settings ...\n') 
         u    = cnf$host$dbadmin
         h    = cnf$host$name
         p    = paste0(cnf$dir$base, cnf$dir$snb)
@@ -196,35 +196,36 @@ scidb_snbUpdater.transponders <- function(cnf = config::get(), file = '~/scidb_s
         db   = cnf$db$snb
         pwd  = cnf$host$dbpwd
         bb   = cnf$db$snb_boxes
-        tdb   = cnf$db$transponders
+        tdb  = cnf$db$transponders
 
         con = dbConnect(RMariaDB::MariaDB(), user = u, password = pwd, host = h, dbname = db)
         on.exit(dbDisconnect(con))
 
 
-        cat('db set to', dQuote(db), 'transponders db set to', dQuote(tdb) , '...OK\n', file = OF, append = TRUE)
+        cat('db set to', dQuote(db), 'transponders db set to', dQuote(tdb) , '...OK\n')
 
-    cat(' ------> Getting the file list on ', db , '.b000 ... ' , file = OF, append = TRUE)
+    cat(' ------> Getting the file list on ', db , '.b000 ... ' )
 
         box000f = data.table(box = int2b(bb) )
         box000f[, sql :=  paste('select distinct path FROM', db, '.', box ) ]
         box000f = box000f[, dbGetQuery(con, sql), by = box]
 
-        cat('got', nrow(box000f), ' files listed in DB.\n', file = OF, append = TRUE)
+        cat('got', nrow(box000f), ' files listed in DB.\n')
 
 
-    cat(' ------> Getting the file list on ', tdb , '.transponders ... ', sep = '' , file = OF, append = TRUE)
+    cat(' ------> Getting the file list on ', tdb , '.transponders ... ', sep = '' )
 
-        transpf = dbGetQuery(con, paste0('select distinct path from ', tdb, '.transponders') )
+        transpf = dbGetQuery(con, paste0('select distinct path from ', tdb, '.transponders') ) 
+        setDT(transpf)
         transpf[, done := 1]
 
-        cat('got', nrow(transpf) , ' files listed in transponders and', file = OF, append = TRUE)
+        cat('got', nrow(transpf) , ' files listed in transponders and ')
 
         newf = merge(box000f, transpf, by = 'path', all.x = TRUE)
         newf = newf[is.na(done)]
-        cat(nrow(newf) , ' files to append to transponders ... \n', file = OF, append = TRUE)
+        cat(nrow(newf) , ' files to append to transponders ... \n')
 
-    cat(' ------> Running INSERT INTO STATEMENTS for each b000 table ...', file = OF, append = TRUE)
+    cat(' ------> Running INSERT INTO STATEMENTS for each b000 table ...')
         newf = newf[, .(path = paste( shQuote(path), collapse = ',') ), by = box]
         newf[, path := paste('(', path, ')')]
         newf[, boxno := b2int(box)]
@@ -238,10 +239,17 @@ scidb_snbUpdater.transponders <- function(cnf = config::get(), file = '~/scidb_s
         if( nrow(newf) > 0 )
         newf[, o := dbExecute(con, sql), by = box]
 
-        cat(sum(newf$o) , 'lines inserted into transponders ... \n', file = OF, append = TRUE)
+        cat(sum(newf$o) , 'rows inserted into transponders ... \n')
 
 
-    cat(' ------> Done in', timetaken(Start), file = OF, append = TRUE)
+
+    tt = mins_taken(Start)
+
+    o = c(tt, sum(newf$o) )
+    names(o) = c('Mins_taken', paste0('N_rows_uploaded to ', tdb, '.', db)  )
+    o
+
+
 
 
     }
@@ -249,37 +257,6 @@ scidb_snbUpdater.transponders <- function(cnf = config::get(), file = '~/scidb_s
 
 
 
-
-
-#' @title         Unattended pipelines
-#' @return        NULL
-#' @author        MV
-#' @export
-#' @examples
-#' \dontrun{
-#'  require(SNB2)
-#'  
-#'  demo_setup(install.test.db = TRUE, admin.user = 'mihai')
-#'  scidb_snbUpdater()
-#' }
-#' 
-#' 
-scidb_snbUpdater <- function(file = '~/scidb_snbUpdater.log') {
-
-    if(file.exists(file)) file.remove(file)
-
-    cat(' ------> Started at:', format(Sys.time(), "%a %b %d %X %Y %Z") , '\n', append=TRUE, file= file)     
-        
-
-    o = scidb_snbUpdater.b000()
-    
-    Sys.sleep(5)
-
-    scidb_snbUpdater.transponders()
-
-
-
-}
 
 
 

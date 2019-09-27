@@ -38,8 +38,10 @@ BT_at_WESTERHOLZ_change_ID <- function( cnf = config::get() ) {
     dbExecute(con, paste('UPDATE ID_changes set datetime_db = NOW() where pk in (', pk_timestamp_update , ')') )
 
     o = d[run == 1]
-    if(nrow(o) == 0) message('All ID-s are changed, nothing to do.')
-    o  
+    
+    o = nrow(o) 
+    names(o) = 'N ID-s changed'
+    o
 
     }
 

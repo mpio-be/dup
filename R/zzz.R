@@ -1,6 +1,6 @@
 
 
-#' @import methods utils RMariaDB magrittr stringr glue foreach future doFuture pushoverr data.table anytime crayon
+#' @import methods utils stats RMariaDB magrittr stringr assertthat glue foreach future doFuture pushoverr data.table anytime crayon
 #' @importFrom config get 
 
 NULL

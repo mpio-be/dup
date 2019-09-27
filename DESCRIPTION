@@ -8,6 +8,7 @@ Depends:
 Imports:
     methods,
     utils,
+    stats,
     RMariaDB,
     magrittr,
     stringr,
@@ -19,7 +20,8 @@ Imports:
     config,
     data.table,
     anytime,
-    crayon
+    crayon,
+    assertthat
 SystemRequirements:
     munpack, offlineimap, owncloudcmd
 Description: scidb.mpio.orn.mpg.de Database Unattended Pipelines 

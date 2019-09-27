@@ -127,26 +127,6 @@ scidbupdate_ARGOS.flush_incoming <- function(cnf = config::get() ) {
 
 
 
-#' @title Argos pipeline
-#' @export
-#' @import crayon
-#' @examples
-#' scidbupdate_ARGOS.pipeline()
-scidbupdate_ARGOS.pipeline <- function() {
-
-	cat( red$bold('\n ----> Get new emails and extract attachments ......\n') )
-	extract_email_attachements(maildir="ARGOS")
-	
-	cat( blue$bold('\n ----> Read email attachments and update incoming table.....\n') )
-	scidbupdate_ARGOS.incoming()
-
-	cat( green$bold('\n ----> Distribute data from incoming table to YYYY_SPECIES table.\n') )
-	o = scidbupdate_ARGOS.flush_incoming()
-
-	o
-
-
-	}
 
 
 
