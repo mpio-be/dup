@@ -23,7 +23,7 @@ Imports:
     crayon,
     assertthat
 SystemRequirements:
-    munpack, offlineimap, owncloudcmd
+    mpack, offlineimap, owncloud-client-cmd
 Description: scidb.mpio.orn.mpg.de Database Unattended Pipelines 
 License: GPL(>= 2)
 URL: https://github.com/mpio-be/dup
