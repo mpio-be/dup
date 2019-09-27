@@ -4,7 +4,7 @@
 \alias{mysqlrestore_host}
 \title{mysqlrestore_host}
 \usage{
-mysqlrestore_host(cnf = config::get(), host, backup, wipe = FALSE,
+mysqlrestore_host(cnf = config::get(), backup, wipe = FALSE,
   restore_users = FALSE, parallel = TRUE, exclude)
 }
 \arguments{
@@ -28,11 +28,10 @@ restore an entire db system or several db-s
 }
 \examples{
 \dontrun{
- fp = sdb::mysqldump_host('127.0.0.1',  'mihai', dir = '/home/mihai/Desktop')
- x = c('temp22')
 
+	require(dup)
  Sys.setenv(R_CONFIG_ACTIVE = "localhost")
- dup::mysqlrestore_host( wipe = TRUE, restore_users = TRUE)
+ mysqlrestore_host( wipe = FALSE, restore_users = FALSE)
 }
 
 

@@ -214,15 +214,14 @@ mysqlrestore <- function(file, db, user, pwd , host =  '127.0.0.1', dryrun = FAL
 #' 
 #' @examples
 #' \dontrun{
-#'  fp = sdb::mysqldump_host('127.0.0.1',  'mihai', dir = '/home/mihai/Desktop')
-#'  x = c('temp22')
 #' 
+#' 	require(dup)
 #'  Sys.setenv(R_CONFIG_ACTIVE = "localhost")
-#'  dup::mysqlrestore_host( wipe = TRUE, restore_users = TRUE)
+#'  mysqlrestore_host()
 #' }
 #'
 #'
-mysqlrestore_host <- function(cnf = config::get(), host,backup,wipe = FALSE, restore_users = FALSE, parallel = TRUE, exclude) {
+mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE, restore_users = FALSE, parallel = TRUE, exclude) {
 
 	# INI
 		started.at=Sys.time()
@@ -235,7 +234,7 @@ mysqlrestore_host <- function(cnf = config::get(), host,backup,wipe = FALSE, res
 		if(missing(backup)) {
 			x = data.table( p = list.dirs(bkdir, recursive = FALSE) )
 			x[, dt := basename(p) %>% str_extract('\\d{1,2}-\\b[a-zA-Z]{3}\\b-\\d{4}-\\d{2}H') %>% anytime   ]
-			backup = x[dt == max(dt), p]
+			backup = x[dt == max(dt, na.rm = TRUE), p]
 		}
 
 
