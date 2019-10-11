@@ -12,7 +12,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 0 4,17      * * *  Rscript --default-packages=dup -e 'SNBatWESTERHOLZ2_pipeline()' &> pipe_snb.txt
 
 # backup
-0 3         * * *  Rscript --default-packages=dup -e 'backup.pipeline()' &> pipe_backup.txt
+0 3,22      * * *  Rscript --default-packages=dup -e 'backup.pipeline()' &> pipe_backup.txt
 
 # BUTEOatEUROPE
 0 1         * * *  Rscript --default-packages=dup -e 'scidbupdate_BUTEOatEUROPE.pipeline()' &> pipe_buteo.txt
