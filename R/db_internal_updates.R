@@ -39,9 +39,8 @@ BT_at_WESTERHOLZ_change_ID <- function( cnf = config::get() ) {
 
     o = d[run == 1]
     
-    o = nrow(o) 
-    names(o) = 'N ID-s changed'
-    o
+    glue( '{nrow(o)} ID-s updated.')
+   
 
     }
 

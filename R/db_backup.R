@@ -141,14 +141,30 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
 	# FEEDBACK
 
 		tt = difftime(Sys.time(), started.at, units = 'mins') %>% round %>% as.character
-		du = system(paste('du -h --max-depth=0', maindir), intern = TRUE) %>% 
+		
+		du = system(paste('du --max-depth=0 -B 1M', maindir), intern = TRUE) %>% 
 				str_split('\\t', simplify = TRUE) %>%
-				extract(1)
+				extract(1) %>% 
+				as.numeric 
+		du = round(du/1000,  3)
+
+
 		nfiles = system(paste('find',  maindir , '-type f | wc -l') , intern = TRUE)
-				
-		o = c(tt, du, nfiles)
-		names(o) = c("minutes_taken", "size", 'N_files')
-		o
+
+		smallestFile = system( glue("find {maindir}/DATA -type f| grep sql.gz | awk 'NR==1'"), intern = TRUE)
+		size_smallestFile = file.size(smallestFile)*1e-6
+		size_smallestFile = round(size_smallestFile, 1) %>% paste(., 'MB')    
+		smallestFile = paste( basename(smallestFile), size_smallestFile )
+		
+		msg = paste(
+			glue('🕘  {tt}  mins'), 
+			glue('📁  {nfiles} files'),
+			glue('∑   {du} GB'),
+			glue(' •  {smallestFile}'),
+			sep = '\n')
+
+
+		msg
 
 	}
 
@@ -333,12 +349,14 @@ rm_old_backups <- function(path = config::get('dir')$backupdir , keep = 10) {
 
     x = x[i> keep]
 
-    x[, del := unlink(p, recursive = TRUE)==0, by = i]
+    if(nrow(x) > 0) {
+    	x[, del := unlink(p, recursive = TRUE)==0, by = i]
+    	o = paste(basename(x$p), collapse = ',') 
+    	} else o = 'none removed.'
 
-    if(nrow(x) > 0)
-    	o = paste(basename(x$p), collapse = ',') else o = 'none removed.'
 
 
+    o
 
 	}
 

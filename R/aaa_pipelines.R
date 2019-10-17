@@ -52,16 +52,14 @@ SNBatWESTERHOLZ2_pipeline <- function() {
 
 
     a = scidb_snbUpdater.b000()
+    push_msg(a, 'SNBatWESTERHOLZ2_pipeline: b000')
     
     Sys.sleep(5)
 
     b = scidb_snbUpdater.transponders()
 
 
-    msg = glue("scidb_snbUpdater.b000 returns: {a}\nscidb_snbUpdater.transponders: {paste(b, collapse = ';')}")
-
-
-    push_msg(msg, 'SNBatWESTERHOLZ2_pipeline')
+    push_msg(b, 'SNBatWESTERHOLZ2_pipeline: transponders')
 
 
 
@@ -95,7 +93,7 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     a = mysqldump_host(exclude = exclude, parallel = TRUE )
 
     # remove old backups
-    b = rm_old_backups(keep = 5)
+    b = rm_old_backups(keep = 10)
 
 
     msg = glue("mysqldump_host returns:\n {paste(paste(names(a), a, sep = '='), collapse = ' \n ')}\nrm_old_backups returns: {b}")

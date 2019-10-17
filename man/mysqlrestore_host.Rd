@@ -31,7 +31,7 @@ restore an entire db system or several db-s
 
 	require(dup)
  Sys.setenv(R_CONFIG_ACTIVE = "localhost")
- mysqlrestore_host( wipe = FALSE, restore_users = FALSE)
+ mysqlrestore_host()
 }
 
 

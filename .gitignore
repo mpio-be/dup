@@ -13,3 +13,4 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 rsconnect/
+*.sublime-workspace

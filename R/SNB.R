@@ -167,6 +167,14 @@ scidb_snbUpdater.b000 <- function(cnf = config::get()) {
     names(o) = c('Mins_taken', paste('N_files_uploaded to', db)  )
     o
 
+    msg = paste(
+        glue('🕘  {tt} mins'), 
+        glue('📁  {db} got {out} new files'), 
+        sep = '\n'
+        )
+
+    msg
+
  }
 
 
@@ -243,12 +251,13 @@ scidb_snbUpdater.transponders <- function(cnf = config::get() ) {
 
 
 
-    tt = mins_taken(Start)
+    msg = paste(
+    glue('🕘  {mins_taken(Start)} mins'), 
+    glue('📁  {tdb}.{db} got {newf$o} new files'), 
+    sep = '\n'
+    )
 
-    o = c(tt, sum(newf$o) )
-    names(o) = c('Mins_taken', paste0('N_rows_uploaded to ', tdb, '.', db)  )
-    o
-
+    msg
 
 
 
