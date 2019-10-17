@@ -159,13 +159,11 @@ scidb_snbUpdater.b000 <- function(cnf = config::get()) {
         
         cat('\n      Uploaded', out , 'new files.\n' )
 
-    cat(' ------> Done in', timetaken(Start) )
 
-    tt = difftime(Sys.time, Start, units = 'mins') %>% round %>% as.character
+    tt = difftime(Sys.time(), Start, units = 'mins') 
+    tt = round(tt, 2) %>% as.numeric
 
-    o = c(tt, out)
-    names(o) = c('Mins_taken', paste('N_files_uploaded to', db)  )
-    o
+ 
 
     msg = paste(
         glue('🕘  {tt} mins'), 
@@ -250,9 +248,10 @@ scidb_snbUpdater.transponders <- function(cnf = config::get() ) {
         cat(sum(newf$o) , 'rows inserted into transponders ... \n')
 
 
-
+    tt = difftime(Sys.time(), Start, units = 'mins') %>% round %>% as.character
+        
     msg = paste(
-    glue('🕘  {mins_taken(Start)} mins'), 
+    glue('🕘  {tt} mins'), 
     glue('📁  {tdb}.{db} got {newf$o} new files'), 
     sep = '\n'
     )

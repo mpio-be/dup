@@ -3,22 +3,19 @@
 #' @title Argos pipeline
 #' @export
 ARGOS.pipeline <- function() {
-    Start = Sys.time()
     
     cat( red$bold('\n ----> Get new emails and extract attachments ......\n') )
     extract_email_attachements(maildir="ARGOS")
     
     cat( blue$bold('\n ----> Read email attachments and update incoming table.....\n') )
-    scidbupdate_ARGOS.incoming()
+    a = scidbupdate_ARGOS.incoming()
 
     cat( green$bold('\n ----> Distribute data from incoming table to YYYY_SPECIES table.\n') )
-    o = scidbupdate_ARGOS.flush_incoming()
-
-    msg = glue("{mins_taken(Start)}\n 
-                flush_incoming returns: {o}")
+    b = scidbupdate_ARGOS.flush_incoming()
 
 
-    push_msg(msg, 'ARGOS.pipeline')
+    push_msg(a, 'ARGOS.incoming')
+    push_msg(b, 'ARGOS.flush_incoming')
 
 
     }
@@ -26,22 +23,18 @@ ARGOS.pipeline <- function() {
 #' @title GPS data pipeline
 #' @export
 BUTEOatEUROPE.pipeline <- function() {
-    Start = Sys.time()
+
     cat( red$bold('\n ----> Get new emails and extract attachments ......\n') )
     extract_email_attachements(maildir="GSM_MTI")
 
     cat( blue$bold('\n ----> Update gps table.....\n') )
     a = scidbupdate_mti_gps.BUTEOatEUROPE()
+    push_msg(a, 'BUTEOatEUROPE.mti_gps')
+
 
     cat( green$bold('\n ----> Update sensors table....\n') )
     b = scidbupdate_mti_sensors.BUTEOatEUROPE()
-
-
-    msg = glue("{mins_taken(Start)}\n  scidbupdate_mti_gps.BUTEOatEUROPE returns: {a}\n scidbupdate_mti_sensors.BUTEOatEUROPE: {b}\n")
-
-
-    push_msg(msg, 'BUTEOatEUROPE.pipeline')
-
+    push_msg(b, 'BUTEOatEUROPE.mti_sensors')
 
 
     }
@@ -88,18 +81,17 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     exclude = c('mysql', 'information_schema', 'performance_schema', x$db)
 
 
-
     # backup
     a = mysqldump_host(exclude = exclude, parallel = TRUE )
+    push_msg(a, 'SCIDB BACKUP')
 
     # remove old backups
     b = rm_old_backups(keep = 10)
 
 
-    msg = glue("mysqldump_host returns:\n {paste(paste(names(a), a, sep = '='), collapse = ' \n ')}\nrm_old_backups returns: {b}")
+    msg = paste(a, glue('🐪 {b} old backups trashed.') , sep = '\n')
 
-
-    push_msg(msg, 'backup.pipeline')
+    push_msg(msg, '🌠 SCIDB BACKUP')
 
 
     }

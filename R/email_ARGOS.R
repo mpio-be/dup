@@ -11,6 +11,8 @@
 #' scidbupdate_ARGOS.incoming()
 scidbupdate_ARGOS.incoming <- function(cnf = config::get(), daysBefore = 365 ) {
 
+		Start=Sys.time()
+
 		host = cnf$host$name
 		db   = cnf$db$argos
 		user = cnf$host$dbadmin
@@ -57,10 +59,22 @@ scidbupdate_ARGOS.incoming <- function(cnf = config::get(), daysBefore = 365 ) {
 			lpk = dbGetQuery(con, 'select max(pk) pk from incoming')$pk
 			message(paste('----------> last pk in incoming = ', lpk))
 
-			return(dbWriteTable(con, 'incoming', x, row.names = FALSE, append = TRUE))
+			n_rows = dbWriteTable(con, 'incoming', x, row.names = FALSE, append = TRUE)
 
-			} else FALSE
+			} else n_rows = 0
 	
+
+	    tt = difftime(Sys.time(), Start, units = 'mins') %>% round %>% as.character
+	        
+	    msg = paste(
+	    glue('🕘  {tt} mins'), 
+	    glue('🔄  ARGOS.incoming got {n_rows} rows.'), 
+	    sep = '\n'
+	    )
+
+	    msg
+
+
 }
 
 
@@ -73,7 +87,8 @@ scidbupdate_ARGOS.incoming <- function(cnf = config::get(), daysBefore = 365 ) {
 #' @examples
 #' scidbupdate_ARGOS.flush_incoming()
 scidbupdate_ARGOS.flush_incoming <- function(cnf = config::get() ) {
-	
+	Start=Sys.time()
+
 	host = cnf$host$name
 	user = cnf$host$dbadmin
 	db   = cnf$db$argos
@@ -115,12 +130,25 @@ scidbupdate_ARGOS.flush_incoming <- function(cnf = config::get() ) {
 		
 		if(nrow(z) > 0) {
 			z[, run := dbExecute(con, q) , by = tableName]
-			out = z[, .(run, tableName)]
-		} else out = FALSE
+			out = paste(z$tableName, collapse = ',')
+		} else out = NA
 
-		} else out = FALSE
+		} else out = NA
 
-	out		
+	out	
+
+
+	    tt = difftime(Sys.time(), Start, units = 'mins') %>% round %>% as.character
+	        
+	    msg = paste(
+	    glue('🕘  {tt} mins'), 
+	    glue('🔴  ARGOS.incoming flushed to {out}'), 
+	    sep = '\n'
+	    )
+
+	    msg
+
+
 
 	}
 

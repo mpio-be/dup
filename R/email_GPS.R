@@ -8,7 +8,9 @@
 #' @examples
 #' scidbupdate_mti_gps.BUTEOatEUROPE()
 scidbupdate_mti_gps.BUTEOatEUROPE <- function(cnf = config::get()) {
-  
+    
+    Start=Sys.time()    
+
     host = cnf$host$name
     db   = cnf$db$gps
     user = cnf$host$dbadmin
@@ -40,9 +42,23 @@ scidbupdate_mti_gps.BUTEOatEUROPE <- function(cnf = config::get()) {
 
         x[, altitude := as.numeric(altitude)]
 
-        return(dbWriteTable(con, 'mti_gps', x, row.names = FALSE, append = TRUE))
+       n_rows = dbWriteTable(con, 'mti_gps', x, row.names = FALSE, append = TRUE)
 
-        } else FALSE
+        } else n_rows = 0
+
+
+    tt = difftime(Sys.time(), Start, units = 'mins') %>% round %>% as.character
+        
+    msg = paste(
+    glue('🕘  {tt} mins'), 
+    glue('🔄  mti_gps got {n_rows} rows '), 
+    sep = '\n'
+    )
+
+    msg
+
+
+
 
  }
 
@@ -54,7 +70,9 @@ scidbupdate_mti_gps.BUTEOatEUROPE <- function(cnf = config::get()) {
 #' @examples
 #' scidbupdate_mti_sensors.BUTEOatEUROPE()
 scidbupdate_mti_sensors.BUTEOatEUROPE <- function(cnf = config::get()) {
-  
+    
+    Start=Sys.time() 
+
     host = cnf$host$name
     db   = cnf$db$gps
     user = cnf$host$dbadmin
@@ -79,9 +97,20 @@ scidbupdate_mti_sensors.BUTEOatEUROPE <- function(cnf = config::get()) {
         setcolorder(x, c(6, 1:5))
         setnames(x, c('tagID' ,'DateTime' ,'temperature', 'BatteryVoltage', 'ActivityCount', 'filenam'))
 
-        return(dbWriteTable(con, 'mti_sensors', x, row.names = FALSE, append = TRUE))
+        n_rows = dbWriteTable(con, 'mti_sensors', x, row.names = FALSE, append = TRUE)
 
-        } else FALSE
+        } else n_rows = 0
+
+    tt = difftime(Sys.time(), Start, units = 'mins') %>% round %>% as.character
+        
+    msg = paste(
+    glue('🕘  {tt} mins'), 
+    glue('🔄  mti_sensors got {n_rows} rows '), 
+    sep = '\n'
+    )
+
+    msg
+
 
  }
 

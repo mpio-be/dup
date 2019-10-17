@@ -91,7 +91,6 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
 	# INI
 		started.at=Sys.time()
 
-
 		host  = cnf$host$name
 		user  = cnf$host$dbadmin
 		pwd   = cnf$host$dbpwd
