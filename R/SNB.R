@@ -36,7 +36,7 @@ read_boxtxt <- function(f) {
   if(nrow(o) == 0) pg = 1
 
   # set attributes (set file_path too because of empty files)
-  setattr(o, 'SNB2', data.frame(box= basename2box(f), path = file_path, garbage = pg) )
+  setattr(o, 'SNB2', data.frame(box= basename2int(f), path = file_path, garbage = pg) )
 
   o
 

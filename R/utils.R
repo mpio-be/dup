@@ -15,48 +15,6 @@ push_msg <- function(x, title, cnf = config::get('pushover') ) {
 
 
 
-#' @export
-owncloud <- function(dir = "path_relative_to_ownCloud",user, pass, exclude = c("*.sublime-workspace") , dryrun = FALSE, reset = FALSE) {
-
-    locDir = str_glue('~/ownCloud/{dir}')
-    system(str_glue('mkdir -p {locDir}'))
-
-
-    # make exclude file
-    exf = '~/.owncloud_exclude.lst'
-    writeLines(exclude, exf)
-
-
-    # cmd
-    if(reset) rm(.__owncloudcmd__, envir = .GlobalEnv)
-
-    cmd = get0('.__owncloudcmd__', envir = .GlobalEnv)
-
-    if(is.null(cmd) ) {
-    cmd = str_glue(
-      "owncloudcmd  --nonshib --user {user} --password {shQuote(pass)} --exclude {exf} {locDir} https://owncloud.gwdg.de/remote.php/nonshib-webdav/{dir}")
-
-    assign('.__owncloudcmd__', cmd, envir = .GlobalEnv)
-
-
-    }
-
-    cmd = base::get('.__owncloudcmd__', envir = .GlobalEnv)
-
-
-
-    if(!dryrun)
-    system(cmd)
-
-    if(dryrun)
-    cat(cmd)
-
-
-}
-
-
-
-
 #' argosfilenam2date
 #' @export
 argosfilenam2date <- function(x, sepDate = "") {
@@ -99,6 +57,7 @@ basename2int <- function(ff) {
   }
 
 
+
 #' @export
 int2b <- function(x) {
     paste0("b", str_pad(x, 3, "left", pad = "0"))
@@ -108,4 +67,12 @@ int2b <- function(x) {
 b2int <- function(x) {
   str_remove(x, 'b') %>%
   as.integer
+  }
+
+#' @export
+snbstring2date_v2 <- function (x) {
+    o = str_extract(x, "(^20\\d{2})(\\d{2})(\\d{2})-(\\d{6})\\.(\\d{3})")
+    if (any(is.na(o))) 
+        o = str_extract(x, "(^20\\d{2})(\\d{2})(\\d{2})-(\\d{6})")
+    strptime(o, "%Y%m%d-%H%M%OS") %>% as.POSIXct
   }
