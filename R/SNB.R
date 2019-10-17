@@ -8,8 +8,9 @@
 #' x = read_boxtxt(system.file('test_files_SNB', '80', 'BOX0080.TXT', package = 'SNB2'))
 
 read_boxtxt <- function(f) {
-  d = readRaw_v2(f = f)
-  file_path = str_remove(f, getOption('path.to.raw_v2')) 
+  cnf = config::get('dir')  
+  d = data.table(V = readLines(con = f, skipNul = TRUE)) 
+  file_path = str_remove(f, paste0(cnf$base, cnf$snb)   ) 
 
   d[, V := str_to_upper(V)]
   d = d[ str_detect(V, 'TRANSPONDER:|LBO:|LBI:')  ]
