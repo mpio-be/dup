@@ -83,12 +83,12 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 
     # backup
     a = mysqldump_host(exclude = exclude, parallel = TRUE )
-    push_msg(glue('🌠 {a} scidb backup') )
+    push_msg(glue('🌠 {a} scidb backup'), 'DB backup' )
 
 
     # remove old backups
     b = rm_old_backups(keep = 10)
-    push_msg(glue('🐪 {b} old backups trashed.') )
+    push_msg(glue('🐪 {b} old backups trashed.'), 'rm old backups' )
 
 
     
@@ -112,7 +112,7 @@ pipelines <- function() {
 
     msg = glue('🕘  {tt}  mins')
 
-    push_msg(glue('☃ {msg} hours to complete all pipelines!') )
+    push_msg(glue('☃ {msg} hours to complete all pipelines!'), 'ALL PIPELINES')
 
 
     }
