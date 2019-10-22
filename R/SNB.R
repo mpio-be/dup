@@ -252,10 +252,10 @@ scidb_snbUpdater.transponders <- function(cnf = config::get() ) {
     tt = difftime(Sys.time(), Start, units = 'mins') %>% round %>% as.character
         
     msg = paste(
-    glue('🕘  {tt} mins'), 
-    glue('📁  {tdb}.{db} got {newf$o} new files'), 
-    sep = '\n'
-    )
+        glue('🕘  {tt} mins'), 
+        glue('📁  {tdb}.{db} got { nrow(newf) } new files and {sum(newf$o)} rows.'), 
+        sep = '\n'
+        )
 
     msg
 

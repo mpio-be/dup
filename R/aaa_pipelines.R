@@ -72,7 +72,7 @@ DB_internal_updates.pipeline <- function() {
 #' @title   backup pipeline
 #' @export
 backup.pipeline <- function(cnf = config::get('host') ) {
-     Start = Sys.time()
+    Start = Sys.time()
     # ini
     con = dbConnect(RMariaDB::MariaDB(), user = cnf$dbadmin, password = cnf$dbpwd, host = cnf$name)
     on.exit(dbDisconnect(con))
@@ -83,17 +83,37 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 
     # backup
     a = mysqldump_host(exclude = exclude, parallel = TRUE )
-    push_msg(a, 'SCIDB BACKUP')
+    push_msg(glue('🌠 {a} scidb backup') )
+
 
     # remove old backups
     b = rm_old_backups(keep = 10)
+    push_msg(glue('🐪 {b} old backups trashed.') )
 
 
-    msg = paste(a, glue('🐪 {b} old backups trashed.') , sep = '\n')
-
-    push_msg(msg, '🌠 SCIDB BACKUP')
+    
 
 
     }
 
+
+#' @title   all pipelines
+#' @export
+pipelines <- function() {
+    started.at=Sys.time()    
+
+    ARGOS.pipeline()
+    BUTEOatEUROPE.pipeline()
+    SNBatWESTERHOLZ2_pipeline()
+    DB_internal_updates.pipeline()
+    backup.pipeline()
+
+    tt = difftime(Sys.time(), started.at, units = 'hour') %>% round(digits = 2) %>% as.character
+
+    msg = glue('🕘  {tt}  mins')
+
+    push_msg(glue('☃ {msg} hours to complete all pipelines!') )
+
+
+    }
 

@@ -350,12 +350,10 @@ rm_old_backups <- function(path = config::get('dir')$backupdir , keep = 10) {
 
     if(nrow(x) > 0) {
     	x[, del := unlink(p, recursive = TRUE)==0, by = i]
-    	o = paste(basename(x$p), collapse = ',') 
-    	} else o = 'none removed.'
+    	o = sum(x$del) 
+    	} else o = 0
 
-
-
-    o
+    o	
 
 	}
 
