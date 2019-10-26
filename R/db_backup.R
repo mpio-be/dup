@@ -54,12 +54,16 @@ mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = ge
 				if(!missing(tables))   paste(' --tables ', paste(tables, collapse = " ") ) else NULL ,
 				' --routines ',
 				if(!compress) paste0(' --result-file=', filepath) else NULL,
-				' --default-character-set=utf8mb4 --max-allowed-packet 2GB --verbose --skip-comments', ...)
+				' --default-character-set=utf8mb4 --max-allowed-packet=1073741824 --verbose --skip-comments', ...)
 
 	if(compress)
 		syscall = paste0(syscall, " | gzip >", filepath)
 
-	if(dryrun)  cat(syscall, '\n-------')
+	if(dryrun)  { 
+		cat(syscall, '\n-------')
+		makedbcall = glue('echo "SET GLOBAL max_allowed_packet=1073741824" | mysql -h{host} -u{user} -p{pwd}')
+		system(makedbcall)		
+		}
 
 	if(!dryrun)	system(syscall, wait = TRUE)
 
@@ -189,9 +193,11 @@ mysqlrestore <- function(file, db, user, pwd , host =  '127.0.0.1', dryrun = FAL
 		makedbcall = glue('echo "CREATE DATABASE IF NOT EXISTS {db}" | mysql -h{host} -u{user} -p{pwd}')
 		system(makedbcall)
 		}
+	
+	makedbcall = glue('echo "SET GLOBAL max_allowed_packet=1073741824" | mysql -h{host} -u{user} -p{pwd}')
+	system(makedbcall)		
 
-
-	mysqlCall = 	glue('mysql  --max-allowed-packet 2GB --net_buffer_length=1000000 -h{host} -u{user} -p{pwd} {db}')
+	mysqlCall = 	glue('mysql  --max-allowed-packet=1073741824 --net_buffer_length=1000000 -h{host} -u{user} -p{pwd} {db}')
 
 
 	if(tools::file_ext(file) == 'sql')
