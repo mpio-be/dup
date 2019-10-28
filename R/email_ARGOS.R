@@ -59,8 +59,8 @@ scidbupdate_ARGOS.incoming <- function(cnf = config::get(), daysBefore = 365 ) {
 			lpk = dbGetQuery(con, 'select max(pk) pk from incoming')$pk
 			message(paste('----------> last pk in incoming = ', lpk))
 
-			n_rows = dbWriteTable(con, 'incoming', x, row.names = FALSE, append = TRUE)
-
+			dbWriteTable(con, 'incoming', x, row.names = FALSE, append = TRUE)
+			n_rows = nrows(x)
 			} else n_rows = 0
 	
 

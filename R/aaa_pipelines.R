@@ -110,9 +110,9 @@ pipelines <- function() {
 
     tt = difftime(Sys.time(), started.at, units = 'hour') %>% round(digits = 2) %>% as.character
 
-    msg = glue('🕘  {tt}  mins')
+    msg = glue('🕘  {tt}  hours')
 
-    push_msg(glue('☃ {msg} hours to complete all pipelines!'), 'ALL PIPELINES')
+    push_msg(glue('☃ {msg}  to complete all pipelines!'), 'ALL PIPELINES')
 
 
     }
