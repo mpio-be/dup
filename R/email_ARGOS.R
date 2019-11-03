@@ -60,7 +60,7 @@ scidbupdate_ARGOS.incoming <- function(cnf = config::get(), daysBefore = 365 ) {
 			message(paste('----------> last pk in incoming = ', lpk))
 
 			dbWriteTable(con, 'incoming', x, row.names = FALSE, append = TRUE)
-			n_rows = nrows(x)
+			n_rows = nrow(x)
 			} else n_rows = 0
 	
 
