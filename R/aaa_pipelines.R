@@ -91,9 +91,6 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     push_msg(glue('🐪 {b} old backups trashed.'), 'rm old backups' )
 
 
-    
-
-
     }
 
 
@@ -102,11 +99,22 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 pipelines <- function() {
     started.at=Sys.time()    
 
-    ARGOS.pipeline()
-    BUTEOatEUROPE.pipeline()
-    SNBatWESTERHOLZ2_pipeline()
-    DB_internal_updates.pipeline()
-    backup.pipeline()
+
+    x = try(ARGOS.pipeline(), silent = TRUE)
+    if(inherits(x, "try-error"), push_msg(glue('🚫 ARGOS.pipeline'), 'ERROR') )
+    
+    x = try(BUTEOatEUROPE.pipeline(), silent = TRUE)
+    if(inherits(x, "try-error"), push_msg(glue('🚫 BUTEOatEUROPE.pipeline'), 'ERROR') )
+
+    x = try(SNBatWESTERHOLZ2_pipeline(), silent = TRUE)
+    if(inherits(x, "try-error"), push_msg(glue('🚫 SNBatWESTERHOLZ2_pipeline'), 'ERROR') )
+
+    x = try(DB_internal_updates.pipeline(), silent = TRUE)
+    if(inherits(x, "try-error"), push_msg(glue('🚫 DB_internal_updates.pipeline'), 'ERROR') )
+
+    x = try(backup.pipeline(), silent = TRUE)
+    if(inherits(x, "try-error"), push_msg(glue('🚫 backup.pipeline'), 'ERROR') )
+
 
     tt = difftime(Sys.time(), started.at, units = 'hour') %>% round(digits = 2) %>% as.character
 
