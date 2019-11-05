@@ -101,19 +101,19 @@ pipelines <- function() {
 
 
     x = try(ARGOS.pipeline(), silent = TRUE)
-    if(inherits(x, "try-error"), push_msg(glue('🚫 ARGOS.pipeline'), 'ERROR') )
+    if(inherits(x, "try-error") ) push_msg('🚫 ARGOS.pipeline', 'ERROR')
     
     x = try(BUTEOatEUROPE.pipeline(), silent = TRUE)
-    if(inherits(x, "try-error"), push_msg(glue('🚫 BUTEOatEUROPE.pipeline'), 'ERROR') )
+    if(inherits(x, "try-error") ) push_msg('🚫 BUTEOatEUROPE.pipeline', 'ERROR')
 
     x = try(SNBatWESTERHOLZ2_pipeline(), silent = TRUE)
-    if(inherits(x, "try-error"), push_msg(glue('🚫 SNBatWESTERHOLZ2_pipeline'), 'ERROR') )
+    if(inherits(x, "try-error") ) push_msg('🚫 SNBatWESTERHOLZ2_pipeline', 'ERROR')
 
     x = try(DB_internal_updates.pipeline(), silent = TRUE)
-    if(inherits(x, "try-error"), push_msg(glue('🚫 DB_internal_updates.pipeline'), 'ERROR') )
+    if(inherits(x, "try-error") ) push_msg('🚫 DB_internal_updates.pipeline', 'ERROR')
 
     x = try(backup.pipeline(), silent = TRUE)
-    if(inherits(x, "try-error"), push_msg(glue('🚫 backup.pipeline'), 'ERROR') )
+    if(inherits(x, "try-error") ) push_msg('🚫 backup.pipeline', 'ERROR')
 
 
     tt = difftime(Sys.time(), started.at, units = 'hour') %>% round(digits = 2) %>% as.character
