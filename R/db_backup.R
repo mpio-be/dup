@@ -90,7 +90,7 @@ mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = ge
 #' 
 #' }
 
-mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'information_schema', 'performance_schema'), parallel = TRUE ) {
+mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'information_schema', 'performance_schema', 'phpmyadmin'), parallel = TRUE ) {
 	
 	# INI
 		started.at=Sys.time()
