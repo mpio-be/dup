@@ -4,19 +4,19 @@
 \alias{txtdump}
 \title{txtdump}
 \usage{
-txtdump(db, table, dir = "~", remote_host, cnf = config::get())
+txtdump(db, table, remote = TRUE, dir = "~", cnf = config::get())
 }
 \arguments{
 \item{db}{db name}
 
 \item{table}{table name}
 
+\item{remote}{when TRUE the file is uploaded to a remote host defined in cnf}
+
 \item{dir}{directory path}
 
-\item{remote_host}{when given will ssh table to dir on remote_host}
-
-\item{cnf}{configuration variables are obtained from an external file config file. 
-default to config::get().}
+\item{cnf}{configuration variables (host, user, pwd, remotehost) are obtained 
+from an external file config file. default to config::get().}
 }
 \value{
 TRUE on success FALSE on failure
