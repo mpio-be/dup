@@ -41,11 +41,13 @@ txtdump <- function(db, table, remote = TRUE, dir = '~', cnf = config::get() ) {
 
 		if(remote) {
 			path = glue('{tempdir()}/{table}.csv')
+			fwrite(x, path , yaml = TRUE )
 			ss = ssh_connect( glue('{remoteuser}@{remotehost}'), passwd =  remotepwd)
 			scp_upload(ss, path, to = dir, verbose = TRUE)
 			ssh_disconnect(ss)
 		}
 
+	glue('{dir}/{table}.csv')	
 
  	}
 
