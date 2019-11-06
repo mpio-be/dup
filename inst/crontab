@@ -1,25 +1,27 @@
 
-# runs on scicomp [Fr 27 Sep 2019 16:33:51 CEST]
 
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
+ 0 0  * * *  Rscript --default-packages=dup -e 'pipelines()'
 
-# ARGOS
-0 0,6,12,18 * * *  Rscript --default-packages=dup -e 'ARGOS.pipeline()' &> pipe_argos.txt
 
-# SNB
-0 4,17      * * *  Rscript --default-packages=dup -e 'SNBatWESTERHOLZ2_pipeline()' &> pipe_snb.txt
 
-# backup
-0 21        * * *  Rscript --default-packages=dup -e 'backup.pipeline()' &> pipe_backup.txt
-
-# BUTEOatEUROPE
-0 1         * * *  Rscript --default-packages=dup -e 'scidbupdate_BUTEOatEUROPE.pipeline()' &> pipe_buteo.txt
-
-# internal updates
-0 22        * * *  Rscript --default-packages=dup -e 'DB_internal_updates.pipeline()'
-
+# # ARGOS
+# 0 0,6,12,18 * * *  Rscript --default-packages=dup -e 'ARGOS.pipeline()' &> pipe_argos.txt
+# 
+# # SNB
+# 0 4,17      * * *  Rscript --default-packages=dup -e 'SNBatWESTERHOLZ2_pipeline()' &> pipe_snb.txt
+# 
+# # backup
+# 0 21        * * *  Rscript --default-packages=dup -e 'backup.pipeline()' &> pipe_backup.txt
+# 
+# # BUTEOatEUROPE
+# 0 1         * * *  Rscript --default-packages=dup -e 'scidbupdate_BUTEOatEUROPE.pipeline()' &> pipe_buteo.txt
+# 
+# # internal updates
+# 0 22        * * *  Rscript --default-packages=dup -e 'DB_internal_updates.pipeline()'
+# 
 
 
 

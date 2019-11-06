@@ -1,5 +1,5 @@
 Package: dup
-Version: 0.0-3.0
+Version: 0.0-3.1
 Authors@R: 
     person("Mihai", "Valcu", ,"valcu@orn.mpg.de", c("aut", "cre"))
 Title: Database Unattended Pipelines 
@@ -21,9 +21,10 @@ Imports:
     data.table,
     anytime,
     crayon,
-    assertthat
+    assertthat,
+    ssh
 SystemRequirements:
-    mpack, offlineimap, owncloud-client-cmd, mysql, mysqldump
+    mpack, offlineimap, owncloud-client-cmd, libssh-dev, mysql-client
 Description: scidb.mpio.orn.mpg.de Database Unattended Pipelines 
 License: GPL(>= 2)
 URL: https://github.com/mpio-be/dup
