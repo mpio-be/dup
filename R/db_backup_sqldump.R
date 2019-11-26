@@ -256,7 +256,10 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE, restore_
 			x = data.table( p = list.dirs(bkdir, recursive = FALSE) )
 			x[, dt := basename(p) %>% str_extract('\\d{1,2}-\\b[a-zA-Z]{3}\\b-\\d{4}-\\d{2}H') %>% anytime   ]
 			backup = x[dt == max(dt, na.rm = TRUE), p]
-		}
+		} else 
+		backup = paste(bkdir, backup, sep = '/')
+
+		message(paste('backup path is', backup))
 
 
 		con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
