@@ -4,8 +4,15 @@
 \alias{read_email_attachements}
 \title{read_attachements}
 \usage{
-read_email_attachements(maildir, exclude, pattern, lastdate,
-  sepDate = "", cnf = config::get(), ...)
+read_email_attachements(
+  maildir,
+  exclude,
+  pattern,
+  lastdate,
+  sepDate = "",
+  cnf = config::get(),
+  ...
+)
 }
 \arguments{
 \item{maildir}{maildir}

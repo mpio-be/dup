@@ -4,9 +4,11 @@
 \alias{mysqldump_host}
 \title{mysqldump_host}
 \usage{
-mysqldump_host(cnf = config::get(), exclude = c("mysql",
-  "information_schema", "performance_schema", "phpmyadmin"),
-  parallel = TRUE)
+mysqldump_host(
+  cnf = config::get(),
+  exclude = c("mysql", "information_schema", "performance_schema", "phpmyadmin"),
+  parallel = TRUE
+)
 }
 \arguments{
 \item{cnf}{configuration variables are obtained from an external file config file. 

@@ -4,8 +4,14 @@
 \alias{mysqlrestore_host}
 \title{mysqlrestore_host}
 \usage{
-mysqlrestore_host(cnf = config::get(), backup, wipe = FALSE,
-  restore_users = FALSE, parallel = TRUE, exclude)
+mysqlrestore_host(
+  cnf = config::get(),
+  backup,
+  wipe = FALSE,
+  restore_users = FALSE,
+  parallel = TRUE,
+  exclude
+)
 }
 \arguments{
 \item{cnf}{configuration variables are obtained from an external file config file. 

@@ -4,8 +4,18 @@
 \alias{mysqldump}
 \title{mysqldump}
 \usage{
-mysqldump(db, tables, user, pwd, host = "127.0.0.1", filenam,
-  dir = getwd(), dryrun = FALSE, compress = TRUE, ...)
+mysqldump(
+  db,
+  tables,
+  user,
+  pwd,
+  host = "127.0.0.1",
+  filenam,
+  dir = getwd(),
+  dryrun = FALSE,
+  compress = TRUE,
+  ...
+)
 }
 \arguments{
 \item{db}{db}

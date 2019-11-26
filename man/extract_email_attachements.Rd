@@ -4,8 +4,12 @@
 \alias{extract_email_attachements}
 \title{extract_email_attachements to their dirs AFTER calling offlineimap}
 \usage{
-extract_email_attachements(maildir, onlynew = TRUE,
-  keep = ".*\\\\.(TXT|txt|csv|CSV)", cnf = config::get())
+extract_email_attachements(
+  maildir,
+  onlynew = TRUE,
+  keep = ".*\\\\.(TXT|txt|csv|CSV)",
+  cnf = config::get()
+)
 }
 \arguments{
 \item{maildir}{ARGOS or GSM_MTI}

@@ -138,8 +138,18 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
 				}
 
 	# DUMP mysql.global_priv (users and privileges)
+		# users
+		# mysqldump(db = 'mysql', tables = 'global_priv', host = host, user = user, pwd = pwd, dir = paste0(maindir, '/USERS') )
+		# privileges
+		x = dbGetQuery(con, "SELECT distinct User FROM mysql.user where user not in 
+								('debian-sys-maint', 'root', 'phpmyadmin');")
+		setDT(x)
+		x = x[, dbGetQuery(con, glue("SHOW GRANTS FOR '{User}'@'%'") ), by = User]
+		setnames(x, c('user', 'grants'))
+		fwrite(x, paste0(maindir, '/USERS/grants.txt'))
+
 		
-		mysqldump(db = 'mysql', tables = 'global_priv', host = host, user = user, pwd = pwd, dir = paste0(maindir, '/USERS') )
+
 
 	# FEEDBACK
 
@@ -282,15 +292,13 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE, restore_
 
 		if(nrow(d) == 0) stop('Nothing to restore!')
 
-		# restore_users user file listing
-		if(restore_users)
-		myusers = list.files(paste0(backup, '/USERS'), full.names = TRUE, recursive = TRUE)
-
-
-
+	
 
 	# WIPE
 		if(wipe){
+			warning('All db-s are going to be dropped in 10 seconds!')
+			Sys.sleep(10)
+
 			z = dbGetQuery(con, "SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES` 
 								WHERE TABLE_SCHEMA 
 								NOT IN ('mysql', 'information_schema', 'performance_schema')")
@@ -320,10 +328,14 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE, restore_
 
 	# Restore USERS	
 		if(restore_users) {
-		mysqlrestore(file = myusers, db = 'mysql', host = host, user = user, pwd = pwd)
-		DBI::dbExecute(con, 'FLUSH PRIVILEGES')
+			x = fread(paste0(backup, '/USERS/grants.txt'))
+			x[, id := .I]
+			x[, o := try(DBI::dbExecute(con, grants) %>% as.character, silent = TRUE) , by = id]
+			print(x[o != '0'])
+
+			DBI::dbExecute(con, 'FLUSH PRIVILEGES')
 			
-		}	
+			}	
 
 
 	# return time taken
