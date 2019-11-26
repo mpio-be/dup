@@ -24,7 +24,7 @@ txtdump <- function(db, table, remote = TRUE, dir = '~', cnf = config::get() ) {
 		user  = cnf$host$dbadmin
 		pwd   = cnf$host$dbpwd
 		remoteuser  = cnf$remotehost_1$dbadmin
-		remotepwd   = cnf$remotehost_1$dbpwd
+		remotepwd   = cnf$remotehost_1$syspwd
 		remotehost  = cnf$remotehost_1$name
 
 		con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, 
@@ -45,7 +45,7 @@ txtdump <- function(db, table, remote = TRUE, dir = '~', cnf = config::get() ) {
 			ss = ssh_connect( glue('{remoteuser}@{remotehost}'), passwd =  remotepwd)
 			scp_upload(ss, path, to = dir, verbose = TRUE)
 			ssh_disconnect(ss)
-		}
+			}
 
 	glue('{dir}/{table}.csv')	
 

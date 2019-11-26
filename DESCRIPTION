@@ -1,5 +1,5 @@
 Package: dup
-Version: 0.0-3.1
+Version: 0.0-3.2
 Authors@R: 
     person("Mihai", "Valcu", ,"valcu@orn.mpg.de", c("aut", "cre"))
 Title: Database Unattended Pipelines 
