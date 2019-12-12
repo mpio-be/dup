@@ -18,7 +18,7 @@
 #'  txtdump(db = 'ARGOS', table = '2019_LBDO')
 #' }
 #' 
-txtdump <- function(db, table, remote = TRUE, dir = '~', cnf = config::get() ) {
+txtdump <- function(db, table, remote = TRUE, dir = '.', cnf = config::get() ) {
 
 		host  = cnf$host$name
 		user  = cnf$host$dbadmin
