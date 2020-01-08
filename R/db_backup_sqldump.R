@@ -236,6 +236,7 @@ mysqlrestore <- function(file, db, user, pwd , host =  '127.0.0.1', dryrun = FAL
 #' @param  restore_users  restore mysql.user table
 #' @param  parallel       default to TRUE
 #' @param  exclude        db to exclude from restoring
+#' @param  host_is_set    default to FALSE
 #' @param  ...            further options passed to mysqlrestore
 #' @export
 #' 
@@ -252,7 +253,8 @@ mysqlrestore <- function(file, db, user, pwd , host =  '127.0.0.1', dryrun = FAL
 #' }
 #'
 #'
-mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE, restore_users = FALSE, parallel = TRUE, exclude) {
+mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE, 
+	restore_users = FALSE, parallel = TRUE, exclude, host_is_set = FALSE) {
 
 	# INI
 		started.at=Sys.time()
@@ -261,6 +263,14 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE, restore_
 		user  = cnf$host$dbadmin
 		pwd   = cnf$host$dbpwd
 		bkdir = cnf$dir$backupdir
+
+		if(!host_is_set) {
+			message('Are you sure ', host, ' is what you want?')
+			stop('Set `host_is_set` to TRUE and try again')
+			}
+
+
+
 
 		if(missing(backup)) {
 			x = data.table( p = list.dirs(bkdir, recursive = FALSE) )
