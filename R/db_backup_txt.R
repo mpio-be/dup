@@ -7,7 +7,7 @@
 #' @param  cnf  configuration variables (host, user, pwd, remotehost) are obtained 
 #' 				from an external file config file. default to config::get().
 #'
-#' @return TRUE on success FALSE on failure
+#' @return path of the dumped file
 #' @export
 #'
 #' @examples

@@ -10,9 +10,11 @@
 #' @param dir       saving location on disk.
 #' @param dryrun    when TRUE return call only. default to FALSE.
 #' @param compress  when TRUE archive the sql output. default to TRUE.
-#' @param ...       further arguments to mysqldump (e.g. --no-data --no-create-db)
+#' @param ...       further arguments to mysqldump 
+#'                  (e.g. --no-data --no-create-db)
 #'
-#' @return    the file path to the sql file
+#' @return    the file path to the sql file or system call 
+#'            when dryrun = TRUE
 #' @export
 #'
 #' @examples
@@ -24,54 +26,54 @@
 #'
 #'
 mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = getwd(), 
-	dryrun = FALSE, compress=TRUE, ...) {
+    dryrun = FALSE, compress=TRUE, ...) {
 
-	if(missing(filenam) & !missing(tables) ) {
-	ntables = strsplit(tables, ' ')[[1]] %>% length 
-	if(ntables == 1 ) 
-		fname = paste(db, tables, sep = '.')
-	if(ntables > 1 ) 
-		fname = paste(db, paste0(ntables, 'tables'), sep = '_')
-	}
+    if(missing(filenam) & !missing(tables) ) {
+    ntables = strsplit(tables, ' ')[[1]] %>% length 
+    if(ntables == 1 ) 
+        fname = paste(db, tables, sep = '.')
+    if(ntables > 1 ) 
+        fname = paste(db, paste0(ntables, 'tables'), sep = '_')
+    }
 
-	if(missing(filenam) & missing(tables) ) {
-	fname = db
-	}
-
-
-	if(!compress)
-	filenam = paste0(fname, '.sql') else
-	filenam = paste0(fname, '.sql.gz')
-		
-
-	filepath = paste(dir, filenam, sep = .Platform$file.sep)
+    if(missing(filenam) & missing(tables) ) {
+    fname = db
+    }
 
 
-	syscall = paste0('mysqldump  --host=', host,
-				' --user=' ,     user,
-				' --password=' , pwd,
-				' --databases ',  db,
-				if(!missing(tables))   paste(' --tables ', paste(tables, collapse = " ") ) else NULL ,
-				' --routines ',
-				if(!compress) paste0(' --result-file=', filepath) else NULL,
-				' --default-character-set=utf8mb4 --max-allowed-packet=1073741824 --verbose --skip-comments', ...)
+    if(!compress)
+    filenam = paste0(fname, '.sql') else
+    filenam = paste0(fname, '.sql.gz')
+        
 
-	if(compress)
-		syscall = paste0(syscall, " | gzip >", filepath)
+    filepath = paste(dir, filenam, sep = .Platform$file.sep)
 
-	if(dryrun)  { 
-		cat(syscall, '\n-------')
-		makedbcall = glue('echo "SET GLOBAL max_allowed_packet=1073741824" | mysql -h{host} -u{user} -p{pwd}')
-		system(makedbcall)		
-		}
 
-	if(!dryrun)	system(syscall, wait = TRUE)
+    syscall = paste0('mysqldump  --host=', host,
+                ' --user=' ,     user,
+                ' --password=' , pwd,
+                ' --databases ',  db,
+                if(!missing(tables))   paste(' --tables ', paste(tables, collapse = " ") ) else NULL ,
+                ' --routines ',
+                if(!compress) paste0(' --result-file=', filepath) else NULL,
+                ' --default-character-set=utf8mb4 --max-allowed-packet=1073741824 --verbose --skip-comments', ...)
 
-	cat('Output file:', filepath, '\n')
-	cat('File size:', file.size(filepath), '\n')
+    if(compress)
+        syscall = paste0(syscall, " | gzip >", filepath)
 
-	return(filepath)
- 	}
+    if(dryrun)  { 
+        cat(syscall, '\n-------')
+        return(syscall)
+    
+        }
+
+    if(!dryrun) system(syscall, wait = TRUE)
+
+    cat('Output file:', filepath, '\n')
+    cat('File size:', file.size(filepath), '\n')
+
+    return(filepath)
+    }
 
 
 
@@ -91,95 +93,95 @@ mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = ge
 #' }
 
 mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'information_schema', 'performance_schema', 'phpmyadmin'), parallel = TRUE ) {
-	
-	# INI
-		started.at=Sys.time()
+    
+    # INI
+        started.at=Sys.time()
 
-		host  = cnf$host$name
-		user  = cnf$host$dbadmin
-		pwd   = cnf$host$dbpwd
-		bkdir = cnf$dir$backupdir
+        host  = cnf$host$name
+        user  = cnf$host$dbadmin
+        pwd   = cnf$host$dbpwd
+        bkdir = cnf$dir$backupdir
 
-		con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
-   	    on.exit(dbDisconnect(con))
-
-
-		# db listing
-		x = dbGetQuery(con, 'SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES`')
-		setDT(x)
-		x = x[! db %in% exclude]
+        con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
+        on.exit(dbDisconnect(con))
 
 
-		if(parallel && nrow(x) > 2) {
-			DBI::dbExecute(con, "SET GLOBAL max_connections = 300;")
-			doFuture::registerDoFuture()
-			future::plan(future::multiprocess)
-			}
+        # db listing
+        x = dbGetQuery(con, 'SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES`')
+        setDT(x)
+        x = x[! db %in% exclude]
+
+
+        if(parallel && nrow(x) > 2) {
+            DBI::dbExecute(con, "SET GLOBAL max_connections = 300;")
+            doFuture::registerDoFuture()
+            future::plan(future::multiprocess)
+            }
 
 
 
-		# prepare dir locations 
-		maindir = paste0(bkdir, '/backup_', host, '_', format(Sys.time(), "%d-%b-%Y-%HH"))
-		if(dir.exists(maindir)) stop(bkdir, " directory exists!")
+        # prepare dir locations 
+        maindir = paste0(bkdir, '/backup_', host, '_', format(Sys.time(), "%d-%b-%Y-%HH"))
+        if(dir.exists(maindir)) stop(bkdir, " directory exists!")
 
-		dir.create(maindir, recursive = TRUE)
-		dir.create(paste0(maindir, '/DATA'), recursive = TRUE)
-		dir.create(paste0(maindir, '/USERS'), recursive = TRUE)
-
-
-		x[, path := paste0(maindir, '/DATA/', db)]
-		x[, dir.create(path), by = path]
-
-	# DUMP data
-
-		foreach( i = 1:nrow(x) )  %dopar% {
-				
-				x[i, mysqldump(db = db, host = host, user = user, pwd = pwd, dir = path) ]
-				}
-
-	# DUMP mysql.global_priv (users and privileges)
-		# users
-		# mysqldump(db = 'mysql', tables = 'global_priv', host = host, user = user, pwd = pwd, dir = paste0(maindir, '/USERS') )
-		# privileges
-		x = dbGetQuery(con, "SELECT distinct User FROM mysql.user where user not in 
-								('debian-sys-maint', 'root', 'phpmyadmin');")
-		setDT(x)
-		x = x[, dbGetQuery(con, glue("SHOW GRANTS FOR '{User}'@'%'") ), by = User]
-		setnames(x, c('user', 'grants'))
-		fwrite(x, paste0(maindir, '/USERS/grants.txt'))
-
-		
+        dir.create(maindir, recursive = TRUE)
+        dir.create(paste0(maindir, '/DATA'), recursive = TRUE)
+        dir.create(paste0(maindir, '/USERS'), recursive = TRUE)
 
 
-	# FEEDBACK
+        x[, path := paste0(maindir, '/DATA/', db)]
+        x[, dir.create(path), by = path]
 
-		tt = difftime(Sys.time(), started.at, units = 'mins') %>% round %>% as.character
-		
-		du = system(paste('du --max-depth=0 -B 1M', maindir), intern = TRUE) %>% 
-				str_split('\\t', simplify = TRUE) %>%
-				extract(1) %>% 
-				as.numeric 
-		du = round(du/1000,  3)
+    # DUMP data
 
+        foreach( i = 1:nrow(x) )  %dopar% {
+                
+                x[i, mysqldump(db = db, host = host, user = user, pwd = pwd, dir = path) ]
+                }
 
-		nfiles = system(paste('find',  maindir , '-type f | wc -l') , intern = TRUE)
+    # DUMP mysql.global_priv (users and privileges)
+        # users
+        # mysqldump(db = 'mysql', tables = 'global_priv', host = host, user = user, pwd = pwd, dir = paste0(maindir, '/USERS') )
+        # privileges
+        x = dbGetQuery(con, "SELECT distinct User FROM mysql.user where user not in 
+                                ('debian-sys-maint', 'root', 'phpmyadmin');")
+        setDT(x)
+        x = x[, dbGetQuery(con, glue("SHOW GRANTS FOR '{User}'@'%'") ), by = User]
+        setnames(x, c('user', 'grants'))
+        fwrite(x, paste0(maindir, '/USERS/grants.txt'))
 
-		smallestFile = system( glue("find {maindir}/DATA -type f| grep sql.gz | awk 'NR==1'"), intern = TRUE)
-		size_smallestFile = file.size(smallestFile)*1e-6
-		size_smallestFile = round(size_smallestFile, 1) %>% paste(., 'MB')    
-		smallestFile = paste( basename(smallestFile), size_smallestFile )
-		
-		msg = paste(
-			glue('🕘  {tt}  mins'), 
-			glue('📁  {nfiles} files'),
-			glue('∑   {du} GB'),
-			glue(' •  {smallestFile}'),
-			sep = '\n')
+        
 
 
-		msg
+    # FEEDBACK
 
-	}
+        tt = difftime(Sys.time(), started.at, units = 'mins') %>% round %>% as.character
+        
+        du = system(paste('du --max-depth=0 -B 1M', maindir), intern = TRUE) %>% 
+                str_split('\\t', simplify = TRUE) %>%
+                extract(1) %>% 
+                as.numeric 
+        du = round(du/1000,  3)
+
+
+        nfiles = system(paste('find',  maindir , '-type f | wc -l') , intern = TRUE)
+
+        smallestFile = system( glue("find {maindir}/DATA -type f| grep sql.gz | awk 'NR==1'"), intern = TRUE)
+        size_smallestFile = file.size(smallestFile)*1e-6
+        size_smallestFile = round(size_smallestFile, 1) %>% paste(., 'MB')    
+        smallestFile = paste( basename(smallestFile), size_smallestFile )
+        
+        msg = paste(
+            glue('🕘  {tt}  mins'), 
+            glue('📁  {nfiles} files'),
+            glue('∑   {du} GB'),
+            glue(' •  {smallestFile}'),
+            sep = '\n')
+
+
+        msg
+
+    }
 
 
 
@@ -199,30 +201,30 @@ mysqlrestore <- function(file, db, user, pwd , host =  '127.0.0.1', dryrun = FAL
 
 
 
-	if( !missing(db) &  !dryrun) {
-		makedbcall = glue('echo "CREATE DATABASE IF NOT EXISTS {db}" | mysql -h{host} -u{user} -p{pwd}')
-		system(makedbcall)
-		}
-	
-	makedbcall = glue('echo "SET GLOBAL max_allowed_packet=1073741824" | mysql -h{host} -u{user} -p{pwd}')
-	system(makedbcall)		
+    if( !missing(db) &  !dryrun) {
+        makedbcall = glue('echo "CREATE DATABASE IF NOT EXISTS {db}" | mysql -h{host} -u{user} -p{pwd}')
+        system(makedbcall)
+        }
+    
+    makedbcall = glue('echo "SET GLOBAL max_allowed_packet=1073741824" | mysql -h{host} -u{user} -p{pwd}')
+    system(makedbcall)      
 
-	mysqlCall = 	glue('mysql  --max-allowed-packet=1073741824 --net_buffer_length=1000000 -h{host} -u{user} -p{pwd} {db}')
+    mysqlCall =     glue('mysql  --max-allowed-packet=1073741824 --net_buffer_length=1000000 -h{host} -u{user} -p{pwd} {db}')
 
 
-	if(tools::file_ext(file) == 'sql')
-		syscall = paste(mysqlCall, '<', file )
+    if(tools::file_ext(file) == 'sql')
+        syscall = paste(mysqlCall, '<', file )
 
-	if(tools::file_ext(file) == 'gz')
-		syscall = paste('gunzip -c', shQuote(file), "|", mysqlCall)
+    if(tools::file_ext(file) == 'gz')
+        syscall = paste('gunzip -c', shQuote(file), "|", mysqlCall)
 
-	if(dryrun)
-		cat('\n----------\n', syscall, '\n----------\n')
-	
-	if(!dryrun)		
-	system(syscall, wait = TRUE)
+    if(dryrun)
+        cat('\n----------\n', syscall, '\n----------\n')
+    
+    if(!dryrun)     
+    system(syscall, wait = TRUE)
 
-	}
+    }
 
 
 
@@ -247,110 +249,110 @@ mysqlrestore <- function(file, db, user, pwd , host =  '127.0.0.1', dryrun = FAL
 #' @examples
 #' \dontrun{
 #' 
-#' 	require(dup)
+#'  require(dup)
 #'  Sys.setenv(R_CONFIG_ACTIVE = "localhost")
 #'  mysqlrestore_host()
 #' }
 #'
 #'
 mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE, 
-	restore_users = FALSE, parallel = TRUE, exclude, host_is_set = FALSE) {
+    restore_users = FALSE, parallel = TRUE, exclude, host_is_set = FALSE) {
 
-	# INI
-		started.at=Sys.time()
+    # INI
+        started.at=Sys.time()
 
-		host  = cnf$host$name
-		user  = cnf$host$dbadmin
-		pwd   = cnf$host$dbpwd
-		bkdir = cnf$dir$backupdir
+        host  = cnf$host$name
+        user  = cnf$host$dbadmin
+        pwd   = cnf$host$dbpwd
+        bkdir = cnf$dir$backupdir
 
-		if(!host_is_set) {
-			message('Are you sure ', host, ' is what you want?')
-			stop('Set `host_is_set` to TRUE and try again')
-			}
-
-
+        if(!host_is_set) {
+            message('Are you sure ', host, ' is what you want?')
+            stop('Set `host_is_set` to TRUE and try again')
+            }
 
 
-		if(missing(backup)) {
-			x = data.table( p = list.dirs(bkdir, recursive = FALSE) )
-			x[, dt := basename(p) %>% str_extract('\\d{1,2}-\\b[a-zA-Z]{3}\\b-\\d{4}-\\d{2}H') %>% anytime   ]
-			backup = x[dt == max(dt, na.rm = TRUE), p]
-		} else 
-		backup = paste(bkdir, backup, sep = '/')
-
-		message(paste('backup path is', backup))
 
 
-		con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
-   	    on.exit(dbDisconnect(con))
+        if(missing(backup)) {
+            x = data.table( p = list.dirs(bkdir, recursive = FALSE) )
+            x[, dt := basename(p) %>% str_extract('\\d{1,2}-\\b[a-zA-Z]{3}\\b-\\d{4}-\\d{2}H') %>% anytime   ]
+            backup = x[dt == max(dt, na.rm = TRUE), p]
+        } else 
+        backup = paste(bkdir, backup, sep = '/')
 
-	
-
-		# db-s
-		o = data.table(maindirs = list.dirs(backup, full.names = FALSE, recursive = FALSE) )
-		if(!all( o$maindirs == c('DATA',  'USERS') ) ) stop('invalid backup directory.')
-
-
-		# DATA dump file listing
-		d = data.table(db_dumps = list.files(paste0(backup, '/DATA'), full.names = TRUE, recursive = TRUE) )
-		d[, db := dirname(db_dumps) %>% basename]
-	
-		if(!missing(exclude)) {
-			d = d[!db%in%exclude]
-		}
-
-		if(nrow(d) == 0) stop('Nothing to restore!')
-
-	
-
-	# WIPE
-		if(wipe){
-			warning('All db-s are going to be dropped in 10 seconds!')
-			Sys.sleep(10)
-
-			z = dbGetQuery(con, "SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES` 
-								WHERE TABLE_SCHEMA 
-								NOT IN ('mysql', 'information_schema', 'performance_schema')")
-			setDT(z)
-			z[, DBI::dbExecute(con, paste('DROP DATABASE', db) ), by = 1:nrow(z)]
-
-		}
-
-	# RESTORE DATABASES
-		d[, DBI::dbExecute(con, paste('CREATE DATABASE IF NOT EXISTS', db)), by = db]
-		
-
-	# Restore DATA
-		if(parallel) {
-			DBI::dbExecute(con, "SET GLOBAL max_connections = 300;")
-			doFuture::registerDoFuture()
-			future::plan(future::multiprocess)
-			}
+        message(paste('backup path is', backup))
 
 
-		foreach( i = 1:nrow(d) )  %dopar% {
+        con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
+        on.exit(dbDisconnect(con))
 
-			d[i, mysqlrestore(file = db_dumps, db = db, host = host, user = user, pwd = pwd) ]
+    
 
-			}
-
-
-	# Restore USERS	
-		if(restore_users) {
-			x = fread(paste0(backup, '/USERS/grants.txt'))
-			x[, id := .I]
-			x[, o := try(DBI::dbExecute(con, grants) %>% as.character, silent = TRUE) , by = id]
-			print(x[o != '0'])
-
-			DBI::dbExecute(con, 'FLUSH PRIVILEGES')
-			
-			}	
+        # db-s
+        o = data.table(maindirs = list.dirs(backup, full.names = FALSE, recursive = FALSE) )
+        if(!all( o$maindirs == c('DATA',  'USERS') ) ) stop('invalid backup directory.')
 
 
-	# return time taken
+        # DATA dump file listing
+        d = data.table(db_dumps = list.files(paste0(backup, '/DATA'), full.names = TRUE, recursive = TRUE) )
+        d[, db := dirname(db_dumps) %>% basename]
+    
+        if(!missing(exclude)) {
+            d = d[!db%in%exclude]
+        }
 
-		difftime(Sys.time(), started.at, units = 'mins')
+        if(nrow(d) == 0) stop('Nothing to restore!')
+
+    
+
+    # WIPE
+        if(wipe){
+            warning('All db-s are going to be dropped in 10 seconds!')
+            Sys.sleep(10)
+
+            z = dbGetQuery(con, "SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES` 
+                                WHERE TABLE_SCHEMA 
+                                NOT IN ('mysql', 'information_schema', 'performance_schema')")
+            setDT(z)
+            z[, DBI::dbExecute(con, paste('DROP DATABASE', db) ), by = 1:nrow(z)]
+
+        }
+
+    # RESTORE DATABASES
+        d[, DBI::dbExecute(con, paste('CREATE DATABASE IF NOT EXISTS', db)), by = db]
+        
+
+    # Restore DATA
+        if(parallel) {
+            DBI::dbExecute(con, "SET GLOBAL max_connections = 300;")
+            doFuture::registerDoFuture()
+            future::plan(future::multiprocess)
+            }
+
+
+        foreach( i = 1:nrow(d) )  %dopar% {
+
+            d[i, mysqlrestore(file = db_dumps, db = db, host = host, user = user, pwd = pwd) ]
+
+            }
+
+
+    # Restore USERS 
+        if(restore_users) {
+            x = fread(paste0(backup, '/USERS/grants.txt'))
+            x[, id := .I]
+            x[, o := try(DBI::dbExecute(con, grants) %>% as.character, silent = TRUE) , by = id]
+            print(x[o != '0'])
+
+            DBI::dbExecute(con, 'FLUSH PRIVILEGES')
+            
+            }   
+
+
+    # return time taken
+
+        difftime(Sys.time(), started.at, units = 'mins')
 
 
  }
@@ -380,13 +382,13 @@ rm_old_backups <- function(path = config::get('dir')$backupdir , keep = 10) {
     x = x[i> keep]
 
     if(nrow(x) > 0) {
-    	x[, del := unlink(p, recursive = TRUE)==0, by = i]
-    	o = sum(x$del) 
-    	} else o = 0
+        x[, del := unlink(p, recursive = TRUE)==0, by = i]
+        o = sum(x$del) 
+        } else o = 0
 
-    o	
+    o   
 
-	}
+    }
 
 
 

@@ -36,10 +36,12 @@ mysqldump(
 
 \item{compress}{when TRUE archive the sql output. default to TRUE.}
 
-\item{...}{further arguments to mysqldump (e.g. --no-data --no-create-db)}
+\item{...}{further arguments to mysqldump 
+(e.g. --no-data --no-create-db)}
 }
 \value{
-the file path to the sql file
+the file path to the sql file or system call 
+           when dryrun = TRUE
 }
 \description{
 mysqldump

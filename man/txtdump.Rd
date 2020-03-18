@@ -4,7 +4,7 @@
 \alias{txtdump}
 \title{txtdump}
 \usage{
-txtdump(db, table, remote = TRUE, dir = "~", cnf = config::get())
+txtdump(db, table, remote = TRUE, dir = ".", cnf = config::get())
 }
 \arguments{
 \item{db}{db name}
@@ -19,7 +19,7 @@ txtdump(db, table, remote = TRUE, dir = "~", cnf = config::get())
 from an external file config file. default to config::get().}
 }
 \value{
-TRUE on success FALSE on failure
+path of the dumped file
 }
 \description{
 txtdump

@@ -10,7 +10,8 @@ mysqlrestore_host(
   wipe = FALSE,
   restore_users = FALSE,
   parallel = TRUE,
-  exclude
+  exclude,
+  host_is_set = FALSE
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ default to config::get().}
 
 \item{exclude}{db to exclude from restoring}
 
+\item{host_is_set}{default to FALSE}
+
 \item{...}{further options passed to mysqlrestore}
 }
 \description{
@@ -35,7 +38,7 @@ restore an entire db system or several db-s
 \examples{
 \dontrun{
 
-	require(dup)
+ require(dup)
  Sys.setenv(R_CONFIG_ACTIVE = "localhost")
  mysqlrestore_host()
 }
