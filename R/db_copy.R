@@ -44,7 +44,7 @@ db_copy <- function(db, src, dst,cnf = config::get() ) {
     # upload dumped file to database
         path = glue('{tempdir()}/{db}.sql')
         mysqlrestore( path, db, dst_dbuser, dst_dbpwd, dst_host)
-
+        file.remove(path)
 
 
     }
