@@ -33,7 +33,7 @@ db_copy <- function(db, src, dst,cnf = config::get() ) {
 
 
     # get dump from remote
-        ss = ssh_connect( glue('{src_dbuser}@{src_host}'), passwd =  src_dbpwd)
+        ss = ssh_connect( glue('{src_dbuser}@{src_host}'), passwd =  src_syspwd)
         mycall = mysqldump(db=db,user=src_dbuser, pwd=src_dbpwd, 
                            dir = glue('/home/{src_dbuser}') , 
                            dryrun = TRUE, compress = FALSE)
