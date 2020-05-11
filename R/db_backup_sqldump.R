@@ -367,11 +367,12 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE,
 #' @export
 rm_old_backups <- function(path = config::get('dir')$backupdir , keep = 10) {
     
-    assert_that(keep > 1)
+    assertthat::assert_that(keep > 1)
 
     x = data.table( p = list.dirs(path, recursive = FALSE) )
     
-    x[, dt := basename(p) %>% str_extract('\\d{1,2}-\\b[a-zA-Z]{3}\\b-\\d{4}-\\d{2}H') %>% anytime   ]
+    x[, dt := basename(p) %>% str_extract('\\d{1,2}-\\b[a-zA-Z]{3}\\b-\\d{4}-\\d{2}H')   ]
+    x[, dt := anytime::anytime(dt)]
  
     x = x[!is.na(dt)]
 
