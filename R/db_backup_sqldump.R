@@ -307,7 +307,6 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE,
 
     # INIT RESTORE DATABASES
         d[, isnewdb := DBI::dbExecute(con, paste('CREATE DATABASE', db)), by = db]
-        dbDisconnect(con)
 
     # Restore DATA
         if(parallel) {
@@ -316,6 +315,7 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE,
             future::plan(future::multiprocess)
             }
 
+        dbDisconnect(con)
 
         foreach( i = 1:nrow(d) )  %dopar% {
 
