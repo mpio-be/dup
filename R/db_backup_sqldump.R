@@ -103,7 +103,6 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
         bkdir = cnf$dir$backupdir
 
         con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
-        on.exit(dbDisconnect(con))
 
 
         # db listing
@@ -117,7 +116,7 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
             doFuture::registerDoFuture()
             future::plan(future::multiprocess)
             }
-
+        dbDisconnect(con)    
 
 
         # prepare dir locations 
@@ -143,6 +142,8 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
         # users
         # mysqldump(db = 'mysql', tables = 'global_priv', host = host, user = user, pwd = pwd, dir = paste0(maindir, '/USERS') )
         # privileges
+        con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
+
         x = dbGetQuery(con, "SELECT distinct User FROM mysql.user where user not in 
                                 ('debian-sys-maint', 'root', 'phpmyadmin');")
         setDT(x)
@@ -150,7 +151,7 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
         setnames(x, c('user', 'grants'))
         fwrite(x, paste0(maindir, '/USERS/grants.txt'))
 
-        
+        dbDisconnect(con)  
 
 
     # FEEDBACK
@@ -234,7 +235,6 @@ mysqlrestore <- function(file, db, user, pwd , host =  '127.0.0.1', dryrun = FAL
 #' @param  cnf            configuration variables are obtained from an external file config file. 
 #'                          default to config::get().
 #' @param  backup         path to backup dir. if missing the last backup is used.
-#' @param  wipe           drop all non-system db-s before restore. default to FALSE
 #' @param  restore_users  restore mysql.user table
 #' @param  parallel       default to TRUE
 #' @param  exclude        db to exclude from restoring
@@ -284,9 +284,7 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE,
         message(paste('backup path is', backup))
 
 
-        con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
-        on.exit(dbDisconnect(con))
-
+        con = DBI::dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
     
 
         # db-s
@@ -306,22 +304,10 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE,
 
     
 
-    # WIPE
-        if(wipe){
-            warning('All db-s are going to be dropped in 10 seconds!')
-            Sys.sleep(10)
 
-            z = dbGetQuery(con, "SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES` 
-                                WHERE TABLE_SCHEMA 
-                                NOT IN ('mysql', 'information_schema', 'performance_schema')")
-            setDT(z)
-            z[, DBI::dbExecute(con, paste('DROP DATABASE', db) ), by = 1:nrow(z)]
-
-        }
-
-    # RESTORE DATABASES
-        d[, DBI::dbExecute(con, paste('CREATE DATABASE IF NOT EXISTS', db)), by = db]
-        
+    # INIT RESTORE DATABASES
+        d[, isnewdb := DBI::dbExecute(con, paste('CREATE DATABASE', db)), by = db]
+        dbDisconnect(con)
 
     # Restore DATA
         if(parallel) {
@@ -340,6 +326,8 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE,
 
     # Restore USERS 
         if(restore_users) {
+            con = DBI::dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
+    
             x = fread(paste0(backup, '/USERS/grants.txt'))
             x[, id := .I]
             x[, o := try(DBI::dbExecute(con, grants) %>% as.character, silent = TRUE) , by = id]
@@ -347,6 +335,8 @@ mysqlrestore_host <- function(cnf = config::get(), backup,wipe = FALSE,
 
             DBI::dbExecute(con, 'FLUSH PRIVILEGES')
             
+            dbDisconnect(con)
+
             }   
 
 
