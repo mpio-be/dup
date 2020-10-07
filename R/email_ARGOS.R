@@ -4,7 +4,6 @@
 #' @title Argos incoming
 #' @param  cnf  configuration variables are obtained from an external file config file. 
 #'         default to config::get().
-#' @param user default mihai
 #' @param daysBefore converted to  Sys.Date() - 365 and passed to read_email_attachements(lastdate=). 
 #' @export
 #' @examples
