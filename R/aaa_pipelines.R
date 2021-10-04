@@ -13,10 +13,9 @@ ARGOS.pipeline <- function() {
     cat( green$bold('\n ----> Distribute data from incoming table to YYYY_SPECIES table.\n') )
     b = scidbupdate_ARGOS.flush_incoming()
 
-
-    push_msg(a, 'ARGOS.incoming')
-    push_msg(b, 'ARGOS.flush_incoming')
-
+    # feedback
+    m = paste(a, b)
+    push_msg(m, 'ARGOS')
 
     }
 
@@ -27,17 +26,13 @@ SNBatWESTERHOLZ2_pipeline <- function() {
 
 
     a = scidb_snbUpdater.b000()
-    push_msg(a, 'SNBatWESTERHOLZ2_pipeline: b000')
-    
     Sys.sleep(5)
-
     b = scidb_snbUpdater.transponders()
 
-
-    push_msg(b, 'SNBatWESTERHOLZ2_pipeline: transponders')
-
-
-
+    # feedback
+    m = paste(a,b)
+    push_msg(m, 'SNBatWESTERHOLZ2_pipeline')
+  
     }
 
 
@@ -62,10 +57,12 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     x = dbGetQuery(con, 'select db from DBLOG.backup where state = "freeze"')
     exclude = c('mysql', 'information_schema', 'performance_schema', x$db)
 
+    a = mysqldump_host(exclude = exclude, parallel = TRUE)
+    b = rm_old_backups(keep = 10)
 
     # feedback
-    b = rm_old_backups(keep = 10)
-    push_msg(glue::glue("{a} scidb backup; {b} old backups trashed."), "SCIDB backup")
+    m = glue::glue("{a} scidb backup; {b} old backups trashed.")
+    push_msg(m, "SCIDB backup")
 
 
     }
