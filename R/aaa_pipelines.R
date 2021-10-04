@@ -14,7 +14,7 @@ ARGOS.pipeline <- function() {
     b = scidbupdate_ARGOS.flush_incoming()
 
     # feedback
-    m = paste(a, b)
+    m = glue(a, b)
     push_msg(m, 'ARGOS')
 
     }
@@ -30,7 +30,7 @@ SNBatWESTERHOLZ2_pipeline <- function() {
     b = scidb_snbUpdater.transponders()
 
     # feedback
-    m = paste(a,b)
+    m = glue(a,b)
     push_msg(m, 'SNBatWESTERHOLZ2_pipeline')
   
     }
