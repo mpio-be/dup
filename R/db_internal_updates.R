@@ -7,7 +7,6 @@
 BT_at_WESTERHOLZ_change_ID <- function( cnf = config::get() ) {
    
     host = cnf$host$name
-    db   = cnf$db$argos
     user = cnf$host$dbadmin
     pwd  = cnf$host$dbpwd
 
@@ -42,15 +41,58 @@ BT_at_WESTERHOLZ_change_ID <- function( cnf = config::get() ) {
     glue( '{nrow(o)} ID-s updated.')
    
 
-    }
+}
+
+#' uses ID_changes table
+#' @param  cnf  configuration variables are obtained from an external file config file.
+#'         default to config::get().
+#' @return Nrows updated in DB_changes
+#' @export
+RUFF_at_SEEWIESEN_change_ID <- function(cnf = config::get()) {
+   host <- cnf$host$name
+   user <- cnf$host$dbadmin
+   pwd <- cnf$host$dbpwd
+
+   con <- dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = "RUFFatSEEWIESEN")
+   on.exit(dbDisconnect(con))
 
 
+   d <- dbGetQuery(con, "select * from ID_changes WHERE datetime_db is NULL") |> data.table()
+
+   if (nrow(d) > 0) {
+      upQueries <- d[, .(sql = c(
+         glue_data(.SD, "UPDATE ADULTS    SET ID           = '{new_ID}' WHERE ID       = '{old_ID}' "),
+         glue_data(.SD, "UPDATE CHICKS    SET ID           = '{new_ID}' WHERE ID       = '{old_ID}' "),
+         glue_data(.SD, "UPDATE SEX_and_MORPH SET ID       = '{new_ID}' WHERE ID       = '{old_ID}' "),
+         glue_data(.SD, "UPDATE PATERNITY SET ID_father    = '{new_ID}' WHERE ID_father   = '{old_ID}' "),
+         glue_data(.SD, "UPDATE PATERNITY SET ID_mother    = '{new_ID}' WHERE ID_mother   = '{old_ID}' "),
+         glue_data(.SD, "UPDATE PATERNITY SET ID_offspring = '{new_ID}' WHERE ID_offspring   = '{old_ID}' ")
+      )),
+      by = "pk"
+      ]
+
+      upQueries[, run := dbExecute(con, sql), by = 1:nrow(upQueries)]
+
+      done_updates = upQueries[run == 1]
+         
+      # update datetime_db in ID_changes
+      if (nrow(done_updates) > 0) {
+         uq = glue("UPDATE ID_changes set datetime_db = NOW() where pk in ({ paste(done_updates$pk,collapse = ", ") })")
+         dbExecute(con, uq)
+         o = upQueries[run == 1] |> nrow()
+      } else {
+          o = 0
+          warning("nothing was done although ID_changes indicates otherwise.")
+       }
+      
+   } else {
+      o = 0
+   }
+   
+   o
+
+}
 
 
 
  
-
-
-
-
-
