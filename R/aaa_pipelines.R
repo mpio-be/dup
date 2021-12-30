@@ -41,7 +41,10 @@ SNBatWESTERHOLZ2_pipeline <- function() {
 DB_internal_updates.pipeline <- function() {
     
     o = BT_at_WESTERHOLZ_change_ID()
-    push_msg(o, 'DB_internal_updates.pipeline')
+    o2 = RUFF_at_SEEWIESEN_change_ID()
+    m = glue("{o} for BTatWESTERHOLZ & {o2} ID-s updated for RUFFatSEEWIESEN")
+    push_msg(o, "DB_internal_updates.pipeline")
+    
     
     }
 
