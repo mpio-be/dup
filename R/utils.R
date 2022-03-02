@@ -86,7 +86,7 @@ speed_along <- function(x, .lat = "latitude", .lon = "longitude", .dt = "locatio
     units = "hour"
   ), by = .(.grp)]
 
-  x[, .dst := geodist::geodist(cbind(.lat, .lon), sequential = TRUE, pad = TRUE, measure = "cheap"),
+  x[, .dst := geodist::geodist(cbind(.lat, .lon), sequential = TRUE, pad = TRUE, measure = "geodesic"),
     by = .grp
   ]
 
