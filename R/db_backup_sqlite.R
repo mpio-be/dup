@@ -69,6 +69,9 @@ sqlitedump <- function(db, tables,exclude_columns, indices,
 
     }
 
+    dbExecute(conlite, "CREATE TABLE dump_date (dumpdate DATETIME)")
+    dbExecute(conlite, "INSERT INTO dump_date (dumpdate) VALUES(DateTime('now'))")
+
     if(remote) {
       ss = ssh_connect( glue('{remoteuser}@{remotehost}'), passwd =  remotepwd)
       scp_upload(ss, filename, to = dir, verbose = TRUE)
