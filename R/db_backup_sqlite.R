@@ -1,5 +1,5 @@
 
-#' sqlitedump
+#' sqlitedump 
 #' @param  db     db name
 #' @param  tables  one of more table names, character vector
 #' @param  exclude_columns  which columns to exclude
