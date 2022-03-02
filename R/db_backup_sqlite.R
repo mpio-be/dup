@@ -52,11 +52,10 @@ sqlitedump <- function(db, tables,exclude_columns, indices,
       }
 
       if (!missing(fun)) {
-        fun(tables[i])
+        fun(ti)
       }
 
       ti
-
       }
 
     dbnam = paste(dir, filename, sep = "/")
