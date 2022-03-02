@@ -20,8 +20,6 @@ default to config::get().}
 
 \item{backup}{path to backup dir. if missing the last backup is used.}
 
-\item{wipe}{drop all non-system db-s before restore. default to FALSE}
-
 \item{restore_users}{restore mysql.user table}
 
 \item{parallel}{default to TRUE}

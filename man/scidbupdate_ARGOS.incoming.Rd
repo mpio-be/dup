@@ -11,8 +11,6 @@ scidbupdate_ARGOS.incoming(cnf = config::get(), daysBefore = 365)
 default to config::get().}
 
 \item{daysBefore}{converted to  Sys.Date() - 365 and passed to read_email_attachements(lastdate=).}
-
-\item{user}{default mihai}
 }
 \description{
 Argos incoming

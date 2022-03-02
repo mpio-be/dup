@@ -1,5 +1,5 @@
 
-sqlitetxtdump
+#' sqlitedump
 #' @param  db     db name
 #' @param  tables  one of more table names, character vector
 #' @param  exclude_columns  which columns to exclude
@@ -18,14 +18,16 @@ sqlitetxtdump
 #' 
 #' 	require(dup)
 #'  Sys.setenv(R_CONFIG_ACTIVE = "localhost")
-#' sqlitetxtdump(db = 'ARGOS', 
+#' sqlitedump(db = 'ARGOS',
 #' tables = c('2019_LBDO', '2020_BADO', '2022_WRSA'), 
 #' exclude_columns = c("satellite",  "messageDate", "locationClass", "compressionIndex",  "S1", "S2", "S3", "S4", "S5", #' "S6", "S7", "S8", "filenam"), 
 #' indices = c('tagID', 'locationDate')
 #' )
 #' }
 #' 
-sqlitedump <- function(db, tables, remote = TRUE, dir = '.',filename = glue("{dir}/{db}.sqlite"), cnf = config::get() ) {
+sqlitedump <- function(db, tables, remote = TRUE, dir = '.',
+                      filename = glue("{dir}/{db}.sqlite"), 
+                      cnf = config::get() ) {
 
     host  = cnf$host$name
     user  = cnf$host$dbadmin
