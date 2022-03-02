@@ -85,8 +85,6 @@ export_to_mapping.pipeline <- function(db_tabs = c("2019_LBDO", "2020_BADO", "20
         ...
     )
 
-    # feedback
-    push_msg(m, "SCIDB backup")
-
+ 
 
     }
