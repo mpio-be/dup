@@ -2,19 +2,22 @@
 % Please edit documentation in R/SNB.R
 \name{scidb_snbUpdater.b000}
 \alias{scidb_snbUpdater.b000}
-\title{txt Box files (txt) to db b000 tables pipeline}
+\title{\preformatted{     txt Box files (txt) to db b000 tables pipeline
+}}
 \usage{
 scidb_snbUpdater.b000(cnf = config::get())
 }
 \arguments{
-\item{cnf}{configuration variables are obtained from an external file config file. 
+\item{cnf}{configuration variables are obtained from an external file config file.
 default to config::get().}
 }
 \value{
-TRUE if all txt are updated
+\preformatted{   TRUE if all txt are updated
+}
 }
 \description{
-txt Box files (txt) to db b000 tables pipeline
+\preformatted{     txt Box files (txt) to db b000 tables pipeline
+}
 }
 \examples{
 \dontrun{

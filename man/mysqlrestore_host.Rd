@@ -15,7 +15,7 @@ mysqlrestore_host(
 )
 }
 \arguments{
-\item{cnf}{configuration variables are obtained from an external file config file. 
+\item{cnf}{configuration variables are obtained from an external file config file.
 default to config::get().}
 
 \item{backup}{path to backup dir. if missing the last backup is used.}

@@ -2,7 +2,8 @@
 % Please edit documentation in R/SNB.R
 \name{read_boxtxt}
 \alias{read_boxtxt}
-\title{read SNB data}
+\title{\preformatted{    read SNB data
+}}
 \usage{
 read_boxtxt(f)
 }
@@ -10,7 +11,8 @@ read_boxtxt(f)
 \item{f}{path to the snb file}
 }
 \value{
-a  \code{data.table} .
+\preformatted{   a  \code{data.table} .
+}
 }
 \description{
 read an SNB file as data.table-s (only transponder and Light barrier data are parsed).
@@ -19,5 +21,6 @@ read an SNB file as data.table-s (only transponder and Light barrier data are pa
 x = read_boxtxt(system.file('test_files_SNB', '80', 'BOX0080.TXT', package = 'SNB2'))
 }
 \author{
-MV
+\preformatted{   MV
+}
 }

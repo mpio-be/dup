@@ -18,7 +18,7 @@ extract_email_attachements(
 
 \item{keep}{default to ".*\\.(TXT|txt)"}
 
-\item{cnf}{configuration variables are obtained from an external file config file. 
+\item{cnf}{configuration variables are obtained from an external file config file.
 default to config::get().}
 }
 \description{
@@ -26,7 +26,7 @@ extract_email_attachements to their dirs AFTER calling offlineimap
 }
 \note{
 When offlineimap() is called independently then, call extract_email_attachements(onlynew = FALSE) once so that
-         no new emails are disregarded.
+no new emails are disregarded.
 }
 \examples{
 \dontrun{

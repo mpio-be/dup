@@ -30,7 +30,7 @@ sqlitedump(
 
 \item{remote}{when TRUE the file is uploaded to a remote host defined in cnf}
 
-\item{cnf}{configuration variables (host, user, pwd, remotehost) are obtained 
+\item{cnf}{configuration variables (host, user, pwd, remotehost) are obtained
 from an external file config file. default to config::get().}
 }
 \value{

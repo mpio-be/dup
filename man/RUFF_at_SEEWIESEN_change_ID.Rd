@@ -7,7 +7,7 @@
 RUFF_at_SEEWIESEN_change_ID(cnf = config::get())
 }
 \arguments{
-\item{cnf}{configuration variables are obtained from an external file config file. 
+\item{cnf}{configuration variables are obtained from an external file config file.
 default to config::get().}
 }
 \description{

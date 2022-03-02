@@ -7,7 +7,7 @@
 scidbupdate_ARGOS.incoming(cnf = config::get(), daysBefore = 365)
 }
 \arguments{
-\item{cnf}{configuration variables are obtained from an external file config file. 
+\item{cnf}{configuration variables are obtained from an external file config file.
 default to config::get().}
 
 \item{daysBefore}{converted to  Sys.Date() - 365 and passed to read_email_attachements(lastdate=).}

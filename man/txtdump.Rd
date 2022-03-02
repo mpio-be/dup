@@ -15,7 +15,7 @@ txtdump(db, table, remote = TRUE, dir = ".", cnf = config::get())
 
 \item{dir}{directory path}
 
-\item{cnf}{configuration variables (host, user, pwd, remotehost) are obtained 
+\item{cnf}{configuration variables (host, user, pwd, remotehost) are obtained
 from an external file config file. default to config::get().}
 }
 \value{

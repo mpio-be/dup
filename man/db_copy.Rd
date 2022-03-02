@@ -13,7 +13,7 @@ db_copy(db, src, dst, cnf = config::get())
 \item{dst}{destination host}
 
 \item{cnf}{configuration variables are
-obtained from an external config file. 
+obtained from an external config file.
 default to config::get().}
 }
 \description{

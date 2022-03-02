@@ -23,7 +23,7 @@ read_email_attachements(
 
 \item{lastdate}{date of the last included file (date is embedded in the filename)}
 
-\item{cnf}{configuration variables are obtained from an external file config file. 
+\item{cnf}{configuration variables are obtained from an external file config file.
 default to config::get().}
 
 \item{...}{passed to fread}

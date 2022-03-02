@@ -11,7 +11,7 @@ mysqldump_host(
 )
 }
 \arguments{
-\item{cnf}{configuration variables are obtained from an external file config file. 
+\item{cnf}{configuration variables are obtained from an external file config file.
 default to config::get().}
 
 \item{exclude}{db-s to exclude default to c('mysql', 'information_schema', 'performance_schema')}
