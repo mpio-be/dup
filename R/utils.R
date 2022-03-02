@@ -78,7 +78,7 @@ snbstring2date_v2 <- function (x) {
   }
 
 #' @export
-speed_along <- function(x, .lat = "latit", .lon = "longit", .dt = "datetime_", .grp = "tagID", clean = TRUE) {
+speed_along <- function(x, .lat = "latitude", .lon = "longitude", .dt = "locationDate", .grp = "tagID", clean = TRUE) {
   setnames(x, c(.lat, .lon, .dt, .grp), c(".lat", ".lon", ".dt", ".grp"))
   setorder(x, .dt, .grp)
   x[, .deltaT := difftime(.dt,
