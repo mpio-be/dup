@@ -25,8 +25,10 @@
 #' )
 #' }
 #' 
-sqlitedump <- function(db, tables, remote = TRUE, dir = '.',
+sqlitedump <- function(db, tables,exclude_columns, indices,
+                      dir = '.',
                       filename = glue("{dir}/{db}.sqlite"), 
+                      remote = TRUE,
                       cnf = config::get() ) {
 
     host  = cnf$host$name

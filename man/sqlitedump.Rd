@@ -7,9 +7,11 @@
 sqlitedump(
   db,
   tables,
-  remote = TRUE,
+  exclude_columns,
+  indices,
   dir = ".",
   filename = glue("{dir}/{db}.sqlite"),
+  remote = TRUE,
   cnf = config::get()
 )
 }
@@ -18,18 +20,18 @@ sqlitedump(
 
 \item{tables}{one of more table names, character vector}
 
-\item{remote}{when TRUE the file is uploaded to a remote host defined in cnf}
+\item{exclude_columns}{which columns to exclude}
+
+\item{indices}{which columns are indices}
 
 \item{dir}{directory path. the destination file (same location on both local and remote).}
 
 \item{filename}{name of the sqlite file.}
 
+\item{remote}{when TRUE the file is uploaded to a remote host defined in cnf}
+
 \item{cnf}{configuration variables (host, user, pwd, remotehost) are obtained 
 from an external file config file. default to config::get().}
-
-\item{exclude_columns}{which columns to exclude}
-
-\item{indices}{which columns are indices}
 }
 \value{
 path of the dumped file
