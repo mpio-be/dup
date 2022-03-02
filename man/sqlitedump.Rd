@@ -12,6 +12,7 @@ sqlitedump(
   dir = ".",
   filename = glue("{dir}/{db}.sqlite"),
   remote = TRUE,
+  fun,
   cnf = config::get()
 )
 }
@@ -29,6 +30,8 @@ sqlitedump(
 \item{filename}{name of the sqlite file.}
 
 \item{remote}{when TRUE the file is uploaded to a remote host defined in cnf}
+
+\item{fun}{a function to be applied on the tables before saving to sqlite.}
 
 \item{cnf}{configuration variables (host, user, pwd, remotehost) are obtained
 from an external file config file. default to config::get().}

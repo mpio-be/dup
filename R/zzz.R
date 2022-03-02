@@ -2,6 +2,7 @@
 
 #' @import methods utils stats RMariaDB magrittr stringr assertthat glue foreach future doFuture pushoverr data.table anytime crayon ssh
 #' @importFrom config get 
+#' @importFrom geodist geodist
 
 NULL
 
@@ -20,5 +21,3 @@ NULL
 
 
 	}
-
-

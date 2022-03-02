@@ -66,3 +66,27 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 
 
     }
+
+
+#' @title   Export Argos for mapping
+#' @export
+export_to_mapping.pipeline <- function(db_tabs = c("2019_LBDO", "2020_BADO", "2022_WRSA"),... ) {
+
+    sqlitedump(
+        db = "ARGOS",
+        tables = db_tabs,
+        exclude_columns = c(
+            "satellite", "messageDate", "locationClass",
+            "compressionIndex", "filenam",
+            "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"
+        ),
+        indices = c("tagID", "locationDate"), 
+        fun = dup::speed_along,
+        ...
+    )
+
+    # feedback
+    push_msg(m, "SCIDB backup")
+
+
+    }

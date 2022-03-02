@@ -7,6 +7,7 @@
 #' @param  dir    directory path. the destination file (same location on both local and remote).
 #' @param  filename   name of the sqlite file.
 #' @param  remote when TRUE the file is uploaded to a remote host defined in cnf
+#' @param  fun    a function to be applied on the tables before saving to sqlite. 
 #' @param  cnf    configuration variables (host, user, pwd, remotehost) are obtained 
 #' 				        from an external file config file. default to config::get().
 #'
@@ -29,6 +30,7 @@ sqlitedump <- function(db, tables,exclude_columns, indices,
                       dir = '.',
                       filename = glue("{dir}/{db}.sqlite"), 
                       remote = TRUE,
+                      fun,     
                       cnf = config::get() ) {
 
     host  = cnf$host$name
@@ -48,6 +50,11 @@ sqlitedump <- function(db, tables,exclude_columns, indices,
       if (!missing(exclude_columns)) {
         ti[, (exclude_columns) := NULL]
       }
+
+      if (!missing(fun)) {
+        fun(tables[i])
+      }
+
       ti
 
       }
