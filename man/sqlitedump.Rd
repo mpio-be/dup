@@ -9,6 +9,7 @@ sqlitedump(
   tables,
   exclude_columns,
   indices,
+  datetime_cols,
   dir = ".",
   filename = glue("{dir}/{db}.sqlite"),
   remote = TRUE,
@@ -35,6 +36,8 @@ sqlitedump(
 
 \item{cnf}{configuration variables (host, user, pwd, remotehost) are obtained
 from an external file config file. default to config::get().}
+
+\item{datetime_col}{which column is datetime}
 }
 \value{
 path of the dumped file
@@ -49,7 +52,7 @@ sqlitedump
  Sys.setenv(R_CONFIG_ACTIVE = "localhost")
 sqlitedump(db = 'ARGOS',
 tables = c('2019_LBDO', '2020_BADO', '2022_WRSA'), 
-exclude_columns = c("satellite",  "messageDate", "locationClass", "compressionIndex",  "S1", "S2", "S3", "S4", "S5", #' "S6", "S7", "S8", "filenam"), 
+exclude_columns = c("satellite",  "messageDate", "locationClass", "compressionIndex",  "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "filenam", "pk") , 
 indices = c('tagID', 'locationDate')
 )
 }
