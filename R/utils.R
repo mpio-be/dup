@@ -76,25 +76,3 @@ snbstring2date_v2 <- function (x) {
         o = str_extract(x, "(^20\\d{2})(\\d{2})(\\d{2})-(\\d{6})")
     strptime(o, "%Y%m%d-%H%M%OS") %>% as.POSIXct
   }
-
-#' @export
-speed_along <- function(x, .lat = "latitude", .lon = "longitude", .dt = "locationDate", .grp = "tagID", clean = TRUE) {
-  setnames(x, c(.lat, .lon, .dt, .grp), c(".lat", ".lon", ".dt", ".grp"))
-  setorder(x, .dt, .grp)
-  x[, .deltaT := difftime(.dt,
-    shift(.dt, type = "lag"),
-    units = "hour"
-  ), by = .(.grp)]
-
-  x[, .dst := geodist::geodist(cbind(.lat, .lon), sequential = TRUE, pad = TRUE, measure = "geodesic"),
-    by = .grp
-  ]
-
-  x[, speed_kmh := (.dst / 1000) / (.deltaT %>% as.numeric())]
-
-  setnames(x, c(".lat", ".lon", ".dt", ".grp"), c(.lat, .lon, .dt, .grp))
-
-  if (clean) {
-    x[, ":="(.dst = NULL, .deltaT = NULL)]
-  }
-}
