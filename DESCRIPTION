@@ -1,5 +1,5 @@
 Package: dup
-Version: 0.0-4.0
+Version: 0.0-4.1
 Authors@R: 
     person("Mihai", "Valcu", ,"valcu@orn.mpg.de", c("aut", "cre"))
 Title: Database Unattended Pipelines 
@@ -23,7 +23,8 @@ Imports:
     anytime,
     crayon,
     assertthat,
-    ssh
+    ssh,
+    fs
 SystemRequirements:
     mpack, offlineimap, owncloud-client-cmd, libssh-dev, mysql-client
 Description: scidb.mpio.orn.mpg.de Database Unattended Pipelines 

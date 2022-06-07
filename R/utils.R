@@ -76,3 +76,13 @@ snbstring2date_v2 <- function (x) {
         o = str_extract(x, "(^20\\d{2})(\\d{2})(\\d{2})-(\\d{6})")
     strptime(o, "%Y%m%d-%H%M%OS") %>% as.POSIXct
   }
+
+
+
+#' @export 
+
+dir_listing <- function(dr) {
+  x = data.table(path = list.files(dr, recursive = TRUE, full.names = TRUE))
+  o = x[, fs::file_info(path)] |> setDT()
+  o[, .(path, size, modification_time, birth_time)]
+}
