@@ -80,9 +80,13 @@ snbstring2date_v2 <- function (x) {
 
 
 #' @export 
-
+#' @examples dir_listing('~/Desktop')
 dir_listing <- function(dr) {
   x = data.table(path = list.files(dr, recursive = TRUE, full.names = TRUE))
   o = x[, fs::file_info(path)] |> setDT()
-  o[, .(path, size, modification_time, birth_time)]
+  o = o[, .(path, size, modification_time, birth_time)]
+  out = paste0(str_remove(dr, "\\/$"), "_file_listing.csv")
+  fwrite(o, file = out)
+  out
+  
 }

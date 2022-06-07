@@ -2,8 +2,8 @@
 % Please edit documentation in R/SNB.R
 \name{scidb_snbUpdater.b000}
 \alias{scidb_snbUpdater.b000}
-\title{\preformatted{     txt Box files (txt) to db b000 tables pipeline
-}}
+\title{\if{html}{\out{<div class="sourceCode">}}\preformatted{     txt Box files (txt) to db b000 tables pipeline
+}\if{html}{\out{</div>}}}
 \usage{
 scidb_snbUpdater.b000(cnf = config::get())
 }
@@ -12,12 +12,12 @@ scidb_snbUpdater.b000(cnf = config::get())
 default to config::get().}
 }
 \value{
-\preformatted{   TRUE if all txt are updated
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{   TRUE if all txt are updated
+}\if{html}{\out{</div>}}
 }
 \description{
-\preformatted{     txt Box files (txt) to db b000 tables pipeline
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     txt Box files (txt) to db b000 tables pipeline
+}\if{html}{\out{</div>}}
 }
 \examples{
 \dontrun{
