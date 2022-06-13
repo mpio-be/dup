@@ -15,13 +15,22 @@ accnamo_read_raw <- function(fnam) {
 
 #' @export
 accnano_2db <- function(dr) {
-  canwrite <- dbq(q = " SHOW OPEN TABLES WHERE `Table` = 'ACC_NANO' ")$In_use == 0
+  
+  host <- cnf$host$name
+  user <- cnf$host$dbadmin
+  pwd <- cnf$host$dbpwd
+
+  con <- DBI::dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = "FIELD_2022_CHARADRIIatBARROW")
+  on.exit(dbDisconnect(con))
+
+
+  canwrite <- dbGetQuery(con, " SHOW OPEN TABLES WHERE `Table` = 'ACC_NANO' ")$In_use == 0
 
   if (canwrite) {
     ff <- data.table(fnam = list.files(dr, full.names = TRUE, recursive = TRUE, pattern = ".csv"))
     ff[, bnam := basename(fnam)]
 
-    dbff <- dbq(q = "SELECT distinct filenam FROM ACC_NANO")
+    dbff <- dbGetQuery(con, "SELECT distinct filenam FROM ACC_NANO") |> setDT()
 
     ff <- ff[!bnam %in% dbff$filenam]
 
