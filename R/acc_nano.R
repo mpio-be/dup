@@ -14,7 +14,7 @@ accnamo_read_raw <- function(fnam) {
 
 
 #' @export
-accnano_2db <- function(dr) {
+accnano_2db <- function(dr, cnf = config::get() ) {
   
   host <- cnf$host$name
   user <- cnf$host$dbadmin
