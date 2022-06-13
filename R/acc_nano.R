@@ -24,7 +24,8 @@ accnano_2db <- function(dr, cnf = config::get() ) {
   on.exit(dbDisconnect(con))
 
 
-  canwrite <- dbGetQuery(con, " SHOW OPEN TABLES WHERE `Table` = 'ACC_NANO' ")$In_use == 0
+  canwrite <- dbGetQuery(con, " SHOW OPEN TABLES WHERE `Table` = 'ACC_NANO' ")$In_use
+  if (length(ccanwrite) == 0 || canwrite == 0) canwrite = TRUE
 
   if (canwrite) {
     ff <- data.table(fnam = list.files(dr, full.names = TRUE, recursive = TRUE, pattern = ".csv"))
