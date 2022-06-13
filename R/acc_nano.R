@@ -15,20 +15,20 @@ accnamo_read_raw <- function(fnam) {
 
 #' @export
 accnano_2db <- function(dr) {
-  canwrite <- DBq(" SHOW OPEN TABLES WHERE `Table` = 'ACC_NANO' ")$In_use == 0
+  canwrite <- dbq(q = " SHOW OPEN TABLES WHERE `Table` = 'ACC_NANO' ")$In_use == 0
 
   if (canwrite) {
     ff <- data.table(fnam = list.files(dr, full.names = TRUE, recursive = TRUE, pattern = ".csv"))
     ff[, bnam := basename(fnam)]
 
-    dbff <- DBq("SELECT distinct filenam FROM ACC_NANO")
+    dbff <- dbq(q = "SELECT distinct filenam FROM ACC_NANO")
 
     ff <- ff[!bnam %in% dbff$filenam]
 
     o <- foreach(i = 1:nrow(ff)) %do% {
       print(i)
       oi <- accnamo_read_raw(ff[i, fnam])
-      DBupdateTable("ACC_NANO", oi)
+      dbWriteTable(con, "ACC_NANO", oi, row.names = FALSE, append = TRUE)
     }
   }
 }
