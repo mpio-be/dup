@@ -20,20 +20,6 @@ ARGOS.pipeline <- function() {
     }
 
 
-#' @title   SNB pipeline
-#' @export
-SNBatWESTERHOLZ2_pipeline <- function() {
-
-
-    a = scidb_snbUpdater.b000()
-    Sys.sleep(5)
-    b = scidb_snbUpdater.transponders()
-
-    # feedback
-    m = glue(a,b)
-    push_msg(m, 'SNBatWESTERHOLZ2_pipeline')
-  
-    }
 
 
 #' @title   DB internal updates pipeline
