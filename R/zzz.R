@@ -10,7 +10,7 @@ NULL
 
 
 
-.onLoad <- function(libname, pkgname){
+.onLoad <- function(libname, pkgname) {
 
 
 	dcf <- read.dcf(file=system.file("DESCRIPTION", package=pkgname) )

@@ -222,4 +222,53 @@ scidb_snbUpdater.b000 <- function(cnf = config::get()) {
 #' }
 #' 
 
-scidb_snbUpdater.transponders <- function(cnf = config::get() ) {
+scidb_snbUpdater.transponders <- function (cnf = config::get()) {
+    Start = Sys.time()
+    cat(" ------> Getting settings ...\n")
+    u = cnf$host$dbadmin
+    h = cnf$host$name
+    p = paste0(cnf$dir$base, cnf$dir$snb)
+    y = year(Sys.Date())
+    db = cnf$db$snb
+    pwd = cnf$host$dbpwd
+    bb = cnf$db$snb_boxes
+    tdb = cnf$db$transponders
+    con = dbConnect(RMariaDB::MariaDB(), user = u, password = pwd, 
+        host = h, dbname = db)
+    on.exit(dbDisconnect(con))
+    cat("db set to", dQuote(db), "transponders db set to", dQuote(tdb), 
+        "...OK\n")
+    cat(" ------> Getting the file list on ", db, ".b000 ... ")
+    box000f = data.table(box = int2b(bb))
+    box000f[, `:=`(sql, paste("select distinct path FROM", db, 
+        ".", box))]
+    box000f = box000f[, dbGetQuery(con, sql), by = box]
+    cat("got", nrow(box000f), " files listed in DB.\n")
+    cat(" ------> Getting the file list on ", tdb, ".transponders ... ", 
+        sep = "")
+    transpf = dbGetQuery(con, paste0("select distinct path from ", 
+        tdb, ".transponders"))
+    setDT(transpf)
+    transpf[, `:=`(done, 1)]
+    cat("got", nrow(transpf), " files listed in transponders and ")
+    newf = merge(box000f, transpf, by = "path", all.x = TRUE)
+    newf = newf[is.na(done)]
+    cat(nrow(newf), " files to append to transponders ... \n")
+    cat(" ------> Running INSERT INTO STATEMENTS for each b000 table ...")
+    newf = newf[, .(path = paste(shQuote(path), collapse = ",")), 
+        by = box]
+    newf[, `:=`(path, paste("(", path, ")"))]
+    newf[, `:=`(boxno, b2int(box))]
+    newf[, `:=`(sql, paste(paste0("INSERT INTO ", tdb, ".transponders", 
+        " (site_type, site, transponder,datetime_, path )"), 
+        "select 1 site_type,", boxno, " site, sensor_value transponder, datetime_, path \n                from", 
+        box, "where sensor = 'tra' and path in ", path))]
+    if (nrow(newf) > 0) 
+        newf[, `:=`(o, dbExecute(con, sql)), by = box]
+    cat(sum(newf$o), "rows inserted into transponders ... \n")
+    tt = difftime(Sys.time(), Start, units = "mins") %>% round %>% 
+        as.character
+    msg = paste(glue("🕘  {tt} mins"), glue("📁  {tdb}.{db} got { nrow(newf) } new files and {sum(newf$o)} rows."), 
+        sep = "\n")
+    msg
+}
