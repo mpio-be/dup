@@ -19,10 +19,3 @@ default to config::get().}
 \if{html}{\out{<div class="sourceCode">}}\preformatted{     txt Box files (txt) to db b000 tables pipeline
 }\if{html}{\out{</div>}}
 }
-\examples{
-\dontrun{
- require(dup)
- scidb_snbUpdater.b000 ()
-}
-
-}

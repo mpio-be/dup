@@ -17,9 +17,6 @@ read_boxtxt(f)
 \description{
 read an SNB file as data.table-s (only transponder and Light barrier data are parsed).
 }
-\examples{
-x = read_boxtxt(system.file('test_files_SNB', '80', 'BOX0080.TXT', package = 'SNB2'))
-}
 \author{
 \if{html}{\out{<div class="sourceCode">}}\preformatted{   MV
 }\if{html}{\out{</div>}}
