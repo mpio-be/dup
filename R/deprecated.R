@@ -37,9 +37,6 @@ SNBatWESTERHOLZ2_pipeline <- function() {
 #' @param         f path to the snb file
 #' @return        a  \code{data.table} .
 #' @author        MV
-#' @examples 
-#' x = read_boxtxt(system.file('test_files_SNB', '80', 'BOX0080.TXT', package = 'SNB2'))
-
 read_boxtxt <- function(f) {
   cnf = config::get('dir')  
   d = data.table(V = readLines(con = f, skipNul = TRUE)) 
@@ -82,11 +79,6 @@ read_boxtxt <- function(f) {
 #' @param  cnf  configuration variables are obtained from an external file config file. 
 #'         default to config::get().
 #' @return        TRUE if all txt are updated
-#' @examples
-#' \dontrun{
-#'  require(dup)
-#'  scidb_snbUpdater.b000 ()
-#' }
 #' 
 scidb_snbUpdater.b000 <- function(cnf = config::get()) {
     

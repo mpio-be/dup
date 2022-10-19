@@ -41,9 +41,9 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     on.exit(dbDisconnect(con))
 
     x = dbGetQuery(con, 'select db from DBLOG.backup where state = "freeze"')
-    exclude = c('mysql', 'information_schema', 'performance_schema', x$db)
+    Exclude = c('mysql', 'information_schema', 'performance_schema', x$db)
 
-    a = mysqldump_host(exclude = exclude, parallel = TRUE)
+    a = mysqldump_host(exclude = Exclude)
     push_msg(a, "SCIDB backup")
 
     b = rm_old_backups(keep = 10)
