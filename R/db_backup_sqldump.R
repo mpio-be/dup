@@ -82,7 +82,6 @@ mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = ge
 #' @param  cnf  configuration variables are obtained from an external file config file. 
 #'         default to config::get().
 #' @param exclude   db-s to exclude default to c('mysql', 'information_schema', 'performance_schema')
-#' @param parallel  default to TRUE
 #' @export
 
 #' @examples

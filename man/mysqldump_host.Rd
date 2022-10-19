@@ -6,8 +6,7 @@
 \usage{
 mysqldump_host(
   cnf = config::get(),
-  exclude = c("mysql", "information_schema", "performance_schema", "phpmyadmin"),
-  parallel = TRUE
+  exclude = c("mysql", "information_schema", "performance_schema", "phpmyadmin")
 )
 }
 \arguments{
@@ -15,8 +14,6 @@ mysqldump_host(
 default to config::get().}
 
 \item{exclude}{db-s to exclude default to c('mysql', 'information_schema', 'performance_schema')}
-
-\item{parallel}{default to TRUE}
 }
 \description{
 mysqldump_host
