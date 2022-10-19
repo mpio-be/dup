@@ -125,7 +125,7 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
         x[, dir.create(path), by = path]
 
     # DUMP data
-                
+        x[, i := .I]             
         x[, mysqldump(db = db, host = host, user = user, pwd = pwd, dir = path), by = i ]
 
 
