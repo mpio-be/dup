@@ -92,7 +92,7 @@ mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = ge
 #' 
 #' }
 
-mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'information_schema', 'performance_schema', 'phpmyadmin'), parallel = TRUE ) {
+mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'information_schema', 'performance_schema', 'phpmyadmin') ) {
     
     # INI
         started.at=Sys.time()
@@ -110,12 +110,6 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
         setDT(x)
         x = x[! db %in% exclude]
 
-
-        if(parallel && nrow(x) > 2) {
-            DBI::dbExecute(con, "SET GLOBAL max_connections = 300;")
-            doFuture::registerDoFuture()
-            future::plan(future::multiprocess)
-            }
         dbDisconnect(con)    
 
 
@@ -132,11 +126,9 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
         x[, dir.create(path), by = path]
 
     # DUMP data
-
-        foreach( i = 1:nrow(x) )  %dopar% {
                 
-                x[i, mysqldump(db = db, host = host, user = user, pwd = pwd, dir = path) ]
-                }
+        x[, mysqldump(db = db, host = host, user = user, pwd = pwd, dir = path), by = i ]
+
 
     # DUMP mysql.global_priv (users and privileges)
         # users
@@ -173,10 +165,10 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
         smallestFile = paste( basename(smallestFile), size_smallestFile )
         
         msg = paste(
-            glue('🕘  {tt}  mins'), 
-            glue('📁  {nfiles} files'),
-            glue('∑   {du} GB'),
-            glue(' •  {smallestFile}'),
+            glue('{tt}  mins'), 
+            glue('{nfiles} files'),
+            glue('{du} GB'),
+            glue('{smallestFile}'),
             sep = '\n')
 
 
