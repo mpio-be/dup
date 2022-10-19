@@ -44,11 +44,11 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     exclude = c('mysql', 'information_schema', 'performance_schema', x$db)
 
     a = mysqldump_host(exclude = exclude, parallel = TRUE)
-    b = rm_old_backups(keep = 10)
+    push_msg(a, "SCIDB backup")
 
-    # feedback
-    m = glue::glue("{a} scidb backup; {b} old backups trashed.")
-    push_msg(m, "SCIDB backup")
+    b = rm_old_backups(keep = 10)
+    push_msg(a, paste(length(b), "old backups removed"))
+
 
 
     }
