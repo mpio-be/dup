@@ -1,4 +1,29 @@
 
+#' expands ADULTS table by photo ID
+#' @param  cnf  configuration variables are obtained from an external file config file.
+#'         default to config::get().
+#' @export
+#' 
+RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get() ) {
+   # TODO
+   host = cnf$host$name
+   user = cnf$host$dbadmin
+   pwd = cnf$host$dbpwd
+
+   con = DBI::dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = "RUFFatSEEWIESEN")
+   on.exit(dbDisconnect(con))
+
+
+   d = DBI::dbGetQuery(
+      con,
+      "SELECT date, time, ID, location , pic_ID, camera_ID  FROM
+          RUFFatSEEWIESEN.ADULTS
+            WHERE pic_ID  IS NOT NULL"
+   ) |> setDT()
+
+
+}
+
 
 #' uses ID_changes table
 #' @param  cnf  configuration variables are obtained from an external file config file. 
