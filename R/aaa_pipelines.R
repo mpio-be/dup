@@ -26,8 +26,8 @@ ARGOS.pipeline <- function() {
 #' @export
 DB_internal_updates.pipeline <- function() {
     
-    o = BT_at_WESTERHOLZ_change_ID()
-    push_msg(o, 'DB_internal_updates.pipeline')
+    o = RUFF_at_SEEWIESEN_change_ID()
+    push_msg(title = "internal updates", x = glue("{o} ID-s changed in RUFF_at_SEEWIESEN"))
     
     }
 
@@ -47,30 +47,7 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     push_msg(a, "SCIDB backup")
 
     b = rm_old_backups(keep = 10)
-    push_msg(a, paste(length(b), "old backups removed"))
 
-
-
-    }
-
-
-#' @title   Export Argos for mapping
-#' @export
-export_to_mapping.pipeline <- function(db_tabs = c("2019_LBDO", "2020_BADO", "2022_WRSA"),... ) {
-
-    sqlitedump(
-        db = "ARGOS",
-        tables = db_tabs,
-        exclude_columns = c(
-            "satellite", "messageDate", "locationClass",
-            "compressionIndex", "filenam",
-            "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"
-        ),
-        indices = c("tagID", "locationDate"), 
-        fun = dup::speed_along,
-        ...
-    )
-
- 
+    push_msg(glue("{length(b)} old backups removed"), "🔴 BACKUP ")
 
     }
