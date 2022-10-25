@@ -6,8 +6,8 @@
 #' @export
 #' @examples
 #' Sys.setenv("R_CONFIG_ACTIVE" = "tailscale")
-#' 
-RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get() ) {
+#' x = RUFF_at_SEEWIESEN_expand_ADULTS()
+RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get(), last_date ) {
 
    host = cnf$host$name
    user = cnf$host$dbadmin
@@ -16,15 +16,16 @@ RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get() ) {
    con = DBI::dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = "RUFFatSEEWIESEN")
    on.exit(dbDisconnect(con))
 
-
-   d = DBI::dbGetQuery(
-      con,
-      "SELECT date, time, a.ID,s.sex, s.morph, location , pic_ID pid,camera_ID  FROM
-          RUFFatSEEWIESEN.ADULTS a LEFT JOIN 
+   sql = "SELECT date, time, a.ID,s.sex, s.morph, location , pic_ID pid,camera_ID  FROM
+          RUFFatSEEWIESEN.ADULTS a LEFT JOIN
           RUFFatSEEWIESEN.SEX_and_MORPH s ON
             a.ID = s.ID
-               WHERE pic_ID  IS NOT NULL"
-   ) |> setDT()
+               WHERE pic_ID  IS NOT NULL "
+   if(!missing(last_date)) {
+      sql = glue("{sql} AND date > {shQuote(last_date)} ")
+   }
+   
+   d = DBI::dbGetQuery(con,sql) |> setDT()
 
    o = d[, .(pic_ID = expand_string(pid)), .(ID, date, time, location, camera_ID,sex, morph, pid)]
 
