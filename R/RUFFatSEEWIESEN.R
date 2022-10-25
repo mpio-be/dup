@@ -1,5 +1,6 @@
 
 #' expands ADULTS table by photo ID
+#' the function checks if the photo exists on disk. 
 #' @param  cnf  configuration variables are obtained from an external file config file.
 #'         default to config::get().
 #' @export

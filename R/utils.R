@@ -1,4 +1,5 @@
   
+
   #' @export
   expand_string <- function(x) {
     o <- str_replace(x, "\\-", ":")
@@ -7,6 +8,18 @@
     if (inherits(o, "try-error")) o <- as.integer(NA)
     as.integer(o)
   }
+
+#' same as expand_string but returns a DT
+#' @export
+#' @example 
+#' ruff_expand_photo_order(15:24)
+ruff_expand_photo_order <- function(x) {
+  nam = c("back", "left side", "left wing above", "right wing above", "right side", "right wing below", "left wing below", "front&legs", "tail above", "ruff")
+  data.table(pic_ID = expand_string(x), pic_what = nam)
+  
+}
+
+
 
 
 #' @export
