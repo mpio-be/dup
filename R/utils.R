@@ -1,4 +1,5 @@
 
+  #' @export
 rw2base64 <- function(f, width = 500) {
   tf <- tempfile(fileext = ".png")
   darkt <- system(glue("darktable-cli --width {width} {f} {tf}"))
@@ -8,16 +9,14 @@ rw2base64 <- function(f, width = 500) {
   base64enc::dataURI(file = tf, mime = "image/png")
 }
 
-
-
-  #' @export
-  expand_string <- function(x) {
-    o <- str_replace(x, "\\-", ":")
-    o <- glue("c({o})")
-    o <- try(parse(text = o) |> eval(), silent = TRUE)
-    if (inherits(o, "try-error")) o <- as.integer(NA)
-    as.integer(o)
-  }
+#' @export
+expand_string <- function(x) {
+  o <- str_replace(x, "\\-", ":")
+  o <- glue("c({o})")
+  o <- try(parse(text = o) |> eval(), silent = TRUE)
+  if (inherits(o, "try-error")) o <- as.integer(NA)
+  as.integer(o)
+}
 
 #' same as expand_string but returns a DT
 #' @export
@@ -28,7 +27,6 @@ ruff_expand_photo_order <- function(x) {
   data.table(pic_ID = expand_string(x), pic_what = nam)
   
 }
-
 
 
 
