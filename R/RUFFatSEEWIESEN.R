@@ -3,9 +3,11 @@
 #' @param  cnf  configuration variables are obtained from an external file config file.
 #'         default to config::get().
 #' @export
+#' @examples
+#' Sys.setenv("R_CONFIG_ACTIVE" = "tailscale")
 #' 
 RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get() ) {
-   # TODO
+
    host = cnf$host$name
    user = cnf$host$dbadmin
    pwd = cnf$host$dbpwd
@@ -16,10 +18,22 @@ RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get() ) {
 
    d = DBI::dbGetQuery(
       con,
-      "SELECT date, time, ID, location , pic_ID, camera_ID  FROM
+      "SELECT date, time, ID, location , pic_ID,camera_ID  FROM
           RUFFatSEEWIESEN.ADULTS
             WHERE pic_ID  IS NOT NULL"
    ) |> setDT()
+
+   o = d[, .(pic_ID = expand_string(pic_ID)), .(ID, date, time, location, camera_ID)]
+   o[, pic_ID := glue_data(.SD, 'P{camera_ID}{str_pad(pic_ID, 6, side = "left", pad = "0")}.RW2')]
+
+   o[, path := glue_data(
+      .SD,
+      "/ds/raw_data_kemp/AVIARY/Ruffs/PHOTOS/{year(date)}/{location}/{format(date, '%m-%d')}/{pic_ID}"
+   )]
+
+   o[, ok := fs::file_exists(path)]
+
+
 
 
 }

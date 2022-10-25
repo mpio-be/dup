@@ -1,4 +1,4 @@
-#' @title GPS data pipeline
+
 BUTEOatEUROPE.pipeline <- function() {
 
     cat( red$bold('\n ----> Get new emails and extract attachments ......\n') )
@@ -17,7 +17,7 @@ BUTEOatEUROPE.pipeline <- function() {
     }
 
 
-#' @title   SNB pipeline
+
 SNBatWESTERHOLZ2_pipeline <- function() {
 
 
@@ -32,11 +32,6 @@ SNBatWESTERHOLZ2_pipeline <- function() {
     }
 
 
-#' @title         read SNB data
-#' @description   read an SNB file as data.table-s (only transponder and Light barrier data are parsed).
-#' @param         f path to the snb file
-#' @return        a  \code{data.table} .
-#' @author        MV
 read_boxtxt <- function(f) {
   cnf = config::get('dir')  
   d = data.table(V = readLines(con = f, skipNul = TRUE)) 
@@ -75,11 +70,6 @@ read_boxtxt <- function(f) {
 
 
 
-#' @title          txt Box files (txt) to db b000 tables pipeline
-#' @param  cnf  configuration variables are obtained from an external file config file. 
-#'         default to config::get().
-#' @return        TRUE if all txt are updated
-#' 
 scidb_snbUpdater.b000 <- function(cnf = config::get()) {
     
 
@@ -202,17 +192,7 @@ scidb_snbUpdater.b000 <- function(cnf = config::get()) {
 
 
 
-#' @title   b000 tables to transponders table pipeline
-#' @param    cnf  configuration variables are obtained from an external file config file. 
-#'             default to config::get().
-#' @return  TRUE on success
-#' @examples
-#' \dontrun{
-#'  require(dup)
-#'  
-#'  scidb_snbUpdater.transponders()
-#' }
-#' 
+
 
 scidb_snbUpdater.transponders <- function (cnf = config::get()) {
     Start = Sys.time()
@@ -268,10 +248,7 @@ scidb_snbUpdater.transponders <- function (cnf = config::get()) {
 
 
 
-#' uses ID_changes table
-#' @param  cnf  configuration variables are obtained from an external file config file.
-#'         default to config::get().
-#' @export
+
 BT_at_WESTERHOLZ_change_ID <- function(cnf = config::get()) {
     host <- cnf$host$name
     user <- cnf$host$dbadmin
@@ -314,8 +291,7 @@ BT_at_WESTERHOLZ_change_ID <- function(cnf = config::get()) {
 }
 
 
-#' @title   Export Argos for mapping
-#' @export
+
 export_to_mapping.pipeline <- function(db_tabs = c("2019_LBDO", "2020_BADO", "2022_WRSA"), ...) {
     sqlitedump(
         db = "ARGOS",

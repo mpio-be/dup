@@ -1,3 +1,14 @@
+  
+  #' @export
+  expand_string <- function(x) {
+    o <- str_replace(x, "\\-", ":")
+    o <- glue("c({o})")
+    o <- try(parse(text = o) |> eval(), silent = TRUE)
+    if (inherits(o, "try-error")) o <- as.integer(NA)
+    as.integer(o)
+  }
+
+
 #' @export
 mins_taken <- function(x) {
   assert_that( is.time(x) )
