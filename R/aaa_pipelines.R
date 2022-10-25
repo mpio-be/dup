@@ -51,3 +51,36 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     push_msg(glue("{length(b)} old backups removed"), "🔴 BACKUP ")
 
     }
+
+#' title ruff photos pipeline
+#' @export
+RUFFatSEEWIESEN_photos.pipeline <- function(db = "RUFFatSEEWIESEN_photos.sqlite") {
+
+    con = dbConnect(RSQLite::SQLite(), db)
+    on.exit(dbDisconnect(con))
+
+    start_new = "ruff_photos" %in% dbListTables(con)
+    
+    if(start_new) {
+        o = RUFF_at_SEEWIESEN_expand_ADULTS()
+        o[, img := rw2base64(path), 1:nrow(o)]
+        dbWriteTable(con, "ruff_photos", o, row.names = FALSE)
+        dbExecute(con, "CREATE INDEX ID on ruff_photos(id)")
+        dbExecute(con, "CREATE INDEX sex on ruff_photos(sex)")
+        dbExecute(con, "CREATE INDEX morph on ruff_photos(morph)")
+        dbExecute(con, "CREATE INDEX date on ruff_photos(date)")
+
+    }
+    
+    if(!start_new) {
+        lastdt = dbGetQuery(con, "select max(date) dt from ruff_photos")$dt |>
+                as.Date( origin = "1970-01-01") 
+        o = RUFF_at_SEEWIESEN_expand_ADULTS(last_date = lastdt)
+        o[, img := rw2base64(path), 1:nrow(o)]
+        dbWriteTable(con,"ruff_photos", o, row.names = FALSE, append = TRUE)
+
+    }
+
+
+
+}

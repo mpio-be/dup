@@ -1,6 +1,7 @@
 
 
-#' @import methods utils stats RMariaDB magrittr stringr glue foreach future doFuture pushoverr data.table anytime crayon ssh
+#' @import methods utils stats RMariaDB RSQLite data.table
+#' @import magrittr stringr glue foreach future doFuture pushoverr  anytime crayon
 #' @import fs ssh
 #' @importFrom base64enc dataURI
 #' @importFrom config get 
