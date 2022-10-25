@@ -1,14 +1,4 @@
 
-require(glue)
-require(shiny)
-require(base64enc)
-require(magick)
-
-
-# sudo apt install darktable
-
-f <- "~/Desktop/P2000050.RW2"
-
 rw2base64 <- function(f, width = 500) {
   tf <- tempfile(fileext = ".png")
   darkt <- system(glue("darktable-cli --width {width} {f} {tf}"))
