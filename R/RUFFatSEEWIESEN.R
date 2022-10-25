@@ -19,12 +19,15 @@ RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get() ) {
 
    d = DBI::dbGetQuery(
       con,
-      "SELECT date, time, ID, location , pic_ID,camera_ID  FROM
-          RUFFatSEEWIESEN.ADULTS
-            WHERE pic_ID  IS NOT NULL"
+      "SELECT date, time, a.ID,s.sex, s.morph, location , pic_ID pid,camera_ID  FROM
+          RUFFatSEEWIESEN.ADULTS a LEFT JOIN 
+          RUFFatSEEWIESEN.SEX_and_MORPH s ON
+            a.ID = s.ID
+               WHERE pic_ID  IS NOT NULL"
    ) |> setDT()
 
-   o = d[, .(pic_ID = expand_string(pic_ID)), .(ID, date, time, location, camera_ID)]
+   o = d[, .(pic_ID = expand_string(pid)), .(ID, date, time, location, camera_ID,sex, morph, pid)]
+
    o[, pic_ID := glue_data(.SD, 'P{camera_ID}{str_pad(pic_ID, 6, side = "left", pad = "0")}.RW2')]
 
    o[, path := glue_data(
@@ -33,9 +36,24 @@ RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get() ) {
    )]
 
    o[, ok := fs::file_exists(path)]
+   o[, i := 1:.N, .(ID, date)]
 
-
-
+   # photo part
+   pw = data.table(pic_what = c(
+      "back",
+      "left side",
+      "left wing above",
+      "right wing above",
+      "right side",
+      "right wing below",
+      "left wing below",
+      "front&legs",
+      "tail above",
+      "ruff"
+   ))[, i := .I]
+   pw = rbind(pw, pw[1:9, ])[, sex := c(rep(1, 10), rep(0, 9))|>as.character()]
+   
+   merge(o, pw, by = c("sex", "i"), sort = FALSE, all.x = TRUE)
 
 }
 
