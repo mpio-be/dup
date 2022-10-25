@@ -59,7 +59,7 @@ RUFFatSEEWIESEN_photos.pipeline <- function(db = "RUFFatSEEWIESEN_photos.sqlite"
     con = dbConnect(RSQLite::SQLite(), db)
     on.exit(dbDisconnect(con))
 
-    start_new = "ruff_photos" %in% dbListTables(con)
+    start_new = ! "ruff_photos" %in% dbListTables(con)
     
     if(start_new) {
         o = RUFF_at_SEEWIESEN_expand_ADULTS()
