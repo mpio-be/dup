@@ -2,9 +2,10 @@
 % Please edit documentation in R/RUFFatSEEWIESEN.R
 \name{RUFF_at_SEEWIESEN_expand_ADULTS}
 \alias{RUFF_at_SEEWIESEN_expand_ADULTS}
-\title{expands ADULTS table by photo ID}
+\title{expands ADULTS table by photo ID
+the function checks if the photo exists on disk.}
 \usage{
-RUFF_at_SEEWIESEN_expand_ADULTS(cnf = config::get())
+RUFF_at_SEEWIESEN_expand_ADULTS(cnf = config::get(), last_date)
 }
 \arguments{
 \item{cnf}{configuration variables are obtained from an external file config file.
@@ -12,8 +13,9 @@ default to config::get().}
 }
 \description{
 expands ADULTS table by photo ID
+the function checks if the photo exists on disk.
 }
 \examples{
 Sys.setenv("R_CONFIG_ACTIVE" = "tailscale")
-
+x = RUFF_at_SEEWIESEN_expand_ADULTS()
 }

@@ -2,7 +2,7 @@
 
 #' @import methods utils stats RMariaDB magrittr stringr glue foreach future doFuture pushoverr data.table anytime crayon ssh
 #' @import fs ssh
-#' @import base64enc dataURI
+#' @importFrom base64enc dataURI
 #' @importFrom config get 
 #' @importFrom geodist geodist
 
