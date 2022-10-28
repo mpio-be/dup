@@ -1,0 +1,6 @@
+# crontab copy
+                                                          
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+0 */1       * * *  Rscript --default-packages=dup -e 'Sys.setenv(R_CONFIG_ACTIVE = "tailscale"); db_copy("ARGOS","host", "local");'

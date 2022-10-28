@@ -1,4 +1,41 @@
 
+#' Makes a database connection based on a config file
+#' @export
+#' @return a MariaDB connection object
+mariacon <- function(db) {
+   cnf = config::get()
+   host <- cnf$host$name
+   user <- cnf$host$dbadmin
+   pwd <- cnf$host$dbpwd
+
+   con <- try(
+       DBI::dbConnect(RMariaDB::MariaDB(),
+           user = user,
+           password = pwd,
+           host = host,
+           dbname = db
+       ),
+       silent = TRUE
+   )
+
+   if(inherits(con, "try-error") ) { # try again through VPN
+   Sys.setenv("R_CONFIG_ACTIVE" = "tailscale")
+
+   host <- config::get()$host$name
+   con <-
+       DBI::dbConnect(RMariaDB::MariaDB(),
+           user = user,
+           password = pwd,
+           host = host,
+           dbname = db
+       )
+   } 
+   con
+}
+
+
+
+
 #' mysqldump
 #'
 #' @param db        db
@@ -449,13 +486,13 @@ txtdump <- function(db, table, remote = TRUE, dir = ".", cnf = config::get()) {
 #'
 db_copy <- function(db, src, dst, cnf = config::get()) {
     # settings
-    dst_host <- cnf[dst][[1]]$name
+    dst_host   <- cnf[dst][[1]]$name
     dst_dbuser <- cnf[dst][[1]]$dbadmin
-    dst_dbpwd <- cnf[dst][[1]]$dbpwd
+    dst_dbpwd  <- cnf[dst][[1]]$dbpwd
 
-    src_host <- cnf[src][[1]]$name
+    src_host   <- cnf[src][[1]]$name
     src_dbuser <- cnf[src][[1]]$dbadmin
-    src_dbpwd <- cnf[src][[1]]$dbpwd
+    src_dbpwd  <- cnf[src][[1]]$dbpwd
     src_syspwd <- cnf[src][[1]]$syspwd
 
 

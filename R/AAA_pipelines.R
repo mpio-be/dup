@@ -52,9 +52,9 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 
     }
 
-#' title ruff photos pipeline
+#' RUFFatSEEWIESEN pipelines
 #' @export
-RUFFatSEEWIESEN_photos.pipeline <- function(db = "RUFFatSEEWIESEN_photos.sqlite") {
+RUFFatSEEWIESEN_photos.pipeline <- function() {
 
     con = dbConnect(RSQLite::SQLite(), db)
     on.exit(dbDisconnect(con))

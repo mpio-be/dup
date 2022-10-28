@@ -19,8 +19,12 @@ NULL
   packageStartupMessage(paste(pkgname, 'v.', dcf[, "Version"] ))
 
   x = try(config::get(), silent = TRUE)
-  if(!inherits(x, 'list')) 
-  packageStartupMessage("Config.yml does not exist.")
+  if(!inherits(x, 'list')) {
+    packageStartupMessage("Config.yml does not exist.")
+  }
+  else {
+     packageStartupMessage("Config.yml found!")
+  }
 
 
 	}

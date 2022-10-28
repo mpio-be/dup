@@ -1,0 +1,21 @@
+# crontab copy
+
+  SHELL=/bin/sh
+  PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+  # ---- [data from remote sources] ----
+
+  # ARGOS
+  0 */1       * * *  Rscript --default-packages=dup -e 'ARGOS.pipeline();'
+
+
+  # ---- [Maintenance] ----
+
+  # backup
+  0 0        * * *    Rscript --default-packages=dup -e 'backup.pipeline()'     
+
+  # DOCUWIKI BACKUP
+  0 1        * * *    duplicity --no-encryption /media/DATA/WIKIS/html file:///ds/scidbbackup/dokuwiki_backups/duplicity/
+
+  # internal updates
+  3 22        * * *   Rscript --default-packages=dup -e 'DB_internal_updates.pipeline()'

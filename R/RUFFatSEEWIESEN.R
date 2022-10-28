@@ -1,46 +1,36 @@
 
-#' expands ADULTS table by photo ID
-#' the function checks if the photo exists on disk. 
-#' @param  cnf  configuration variables are obtained from an external file config file.
-#'         default to config::get().
+#' Prepare data for RUFFatSEEWIESEN.photos
+#' Expands ADULTS table by photo ID
 #' @export
 #' @examples
-#' Sys.setenv("R_CONFIG_ACTIVE" = "tailscale")
-#' x = RUFF_at_SEEWIESEN_expand_ADULTS()
-RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get(), last_date ) {
+#' x = RUFFatSEEWIESEN.photos_prepare()
+RUFFatSEEWIESEN.photos_prepare <- function(last_pk, basepath = config::get()$dir$ruff_photos ) {
 
-   host = cnf$host$name
-   user = cnf$host$dbadmin
-   pwd = cnf$host$dbpwd
-
-   con = DBI::dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = "RUFFatSEEWIESEN")
+   con = mariacon("RUFFatSEEWIESEN")
    on.exit(dbDisconnect(con))
 
-   sql = "SELECT date, time, a.ID,s.sex, s.morph, location , pic_ID pid,camera_ID  FROM
-          RUFFatSEEWIESEN.ADULTS a LEFT JOIN
-          RUFFatSEEWIESEN.SEX_and_MORPH s ON
-            a.ID = s.ID
-               WHERE pic_ID  IS NOT NULL "
-   if(!missing(last_date)) {
-      sql = glue("{sql} AND date > {shQuote(last_date)} ")
-   }
+   sql = "SELECT ID, date, location, pic_ID pid, camera_ID, pk ad_pk  FROM
+            RUFFatSEEWIESEN.ADULTS
+               WHERE pic_ID  IS NOT NULL AND
+                  pk > {last_pk} "
    
-   d = DBI::dbGetQuery(con,sql) |> setDT()
+   
+   d = dbGetQuery(con,sql) |> setDT()
 
-   o = d[, .(pic_ID = expand_string(pid)), .(ID, date, time, location, camera_ID,sex, morph, pid)]
+   o = d[, .(pic_ID = expand_string(pid)), .(ID, date, location, camera_ID, ad_pk)]
 
    o[, pic_ID := glue_data(.SD, 'P{camera_ID}{str_pad(pic_ID, 6, side = "left", pad = "0")}.RW2')]
 
    o[, path := glue_data(
       .SD,
-      "/ds/raw_data_kemp/AVIARY/Ruffs/PHOTOS/{year(date)}/{location}/{format(date, '%m-%d')}/{pic_ID}"
+      "{basepath}{year(date)}/{location}/{format(date, '%m-%d')}/{pic_ID}"
    )]
 
-   o[, ok := fs::file_exists(path)]
+   o[, photo_exists := fs::file_exists(path)]
    o[, i := 1:.N, .(ID, date)]
-
-   # photo part
-   pw = data.table(pic_what = c(
+   
+   # photo parts
+   pw = data.table(photo_class = c(
       "back",
       "left side",
       "left wing above",
@@ -52,11 +42,40 @@ RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get(), last_date ) {
       "tail above",
       "ruff"
    ))[, i := .I]
-   pw = rbind(pw, pw[1:9, ])[, sex := c(rep(1, 10), rep(0, 9))|>as.character()]
    
-   merge(o, pw, by = c("sex", "i"), sort = FALSE, all.x = TRUE)
+   o = merge(o, pw, by = "i", sort = FALSE)
+   
+   o = o[, .(ID, photo_class, path, photo_exists, ad_pk)]
 
 }
+
+
+#' update RUFFatSEEWIESEN.photos
+#' expands ADULTS table by photo ID
+#' @export
+#' @return number of rows updated
+#' @examples
+#' x = RUFFatSEEWIESEN.photos_update()
+RUFFatSEEWIESEN.photos_update <- function() {
+
+   con = mariacon("RUFFatSEEWIESEN")
+   on.exit(dbDisconnect(con))
+
+   last_pk_photos = dbGetQuery(con, "SELECT COALESCE(max(ad_pk), 0) pk FROM RUFFatSEEWIESEN.photos ")$pk
+   last_pk_ADULTS = dbGetQuery(con, "SELECT max(pk) pk FROM RUFFatSEEWIESEN.ADULTS ")$pk
+
+   if (last_pk_ADULTS > last_pk_photos) {
+      x = RUFFatSEEWIESEN.photos_prepare(last_pk_photos)
+      o = DBI::dbWriteTable(con, x, row.names = FALSE, append = TRUE)
+   } else {
+      o = 0
+   }
+   
+   o
+
+
+}
+
 
 
 #' uses ID_changes table
@@ -65,51 +84,46 @@ RUFF_at_SEEWIESEN_expand_ADULTS <- function( cnf = config::get(), last_date ) {
 #' @export
 RUFF_at_SEEWIESEN_change_ID <- function( cnf = config::get() ) {
    
-    host = cnf$host$name
-    user = cnf$host$dbadmin
-    pwd  = cnf$host$dbpwd
+   con <- mariacon("RUFFatSEEWIESEN")
+   on.exit(dbDisconnect(con))
 
-    con = DBI::dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = 'RUFFatSEEWIESEN')
-    on.exit(dbDisconnect(con))
-
-
-    d = DBI::dbGetQuery(
-       con,
-       "SELECT old_ID, new_ID, pk FROM ID_changes WHERE datetime_db IS NULL"
-    ) |> setDT()
+   d = DBI::dbGetQuery(
+      con,
+      "SELECT old_ID, new_ID, pk FROM ID_changes WHERE datetime_db IS NULL"
+   ) |> setDT()
 
 
-    d = d[, .(sql = c(
-       paste('UPDATE ADULTS    SET ID       =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
-       paste('UPDATE FOUNDERS    SET ID       =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
-       paste('UPDATE CHICKS    SET ID       =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
-       paste('UPDATE SEX_and_MORPH SET ID   =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
-       paste('UPDATE PATERNITY SET ID_father   =' , shQuote(new_ID) , 'WHERE ID_father   =' , shQuote(old_ID)) ,
-       paste('UPDATE PATERNITY SET ID_mother   =' , shQuote(new_ID) , 'WHERE ID_mother   =' , shQuote(old_ID)) 
-       ) 
-       
-       )
-    , by = 'pk']
+   d                                          = d[, .(sql = c(
+      paste('UPDATE ADULTS    SET ID          =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
+      paste('UPDATE FOUNDERS    SET ID        =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
+      paste('UPDATE CHICKS    SET ID          =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
+      paste('UPDATE SEX_and_MORPH SET ID      =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
+      paste('UPDATE PATERNITY SET ID_father   =' , shQuote(new_ID) , 'WHERE ID_father   =' , shQuote(old_ID)) ,
+      paste('UPDATE PATERNITY SET ID_mother   =' , shQuote(new_ID) , 'WHERE ID_mother   =' , shQuote(old_ID)) 
+      ) 
+      
+      )
+   , by = 'pk']
 
-    d[, run := DBI::dbExecute(con, sql), by = 1:nrow(d)]
+   d[, run := DBI::dbExecute(con, sql), by = 1:nrow(d)]
 
-    # when changes were applied then update ID_changes
-    pk_timestamp_update = d[run == 1, ]$pk %>%
-       unique() %>%
-       paste(., collapse = ",")
+   # when changes were applied then update ID_changes
+   pk_timestamp_update = d[run == 1, ]$pk %>%
+      unique() %>%
+      paste(., collapse = ",")
 
-    if (nchar(pk_timestamp_update) > 1) {
-       DBI::dbExecute(
-          con,
-          paste("UPDATE ID_changes set datetime_db = NOW()
-                     WHERE pk in (", pk_timestamp_update, ")")
-       )
-    }
+   if (nchar(pk_timestamp_update) > 1) {
+      DBI::dbExecute(
+         con,
+         paste("UPDATE ID_changes set datetime_db = NOW()
+                  WHERE pk in (", pk_timestamp_update, ")")
+      )
+   }
 
-    o = d[run == 1]
-    
-    nrow(o)
+   o = d[run == 1]
    
+   nrow(o)
+
 
     }
 

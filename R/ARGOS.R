@@ -18,7 +18,9 @@ scidbupdate_ARGOS.incoming <- function(cnf = config::get(), daysBefore = 365 ) {
 		pwd  = cnf$host$dbpwd
 
 		con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host, dbname = db)
-   	    on.exit(dbDisconnect(con))
+   	
+		
+		on.exit(dbDisconnect(con))
 
 		from = as.POSIXct(Sys.Date() - 365)
 
@@ -150,32 +152,3 @@ scidbupdate_ARGOS.flush_incoming <- function(cnf = config::get() ) {
 
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
