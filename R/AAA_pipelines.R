@@ -26,7 +26,7 @@ ARGOS.pipeline <- function() {
 #' @export
 DB_internal_updates.pipeline <- function() {
     
-    o = RUFF_at_SEEWIESEN_change_ID()
+    o = RUFFatSEEWIESEN.change_ID()
     push_msg(title = "internal updates", x = glue("{o} ID-s changed in RUFF_at_SEEWIESEN"))
     
     }

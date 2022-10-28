@@ -85,7 +85,7 @@ RUFFatSEEWIESEN.photos_update <- function() {
 #' @param  cnf  configuration variables are obtained from an external file config file. 
 #'         default to config::get().
 #' @export
-RUFF_at_SEEWIESEN_change_ID <- function( cnf = config::get() ) {
+RUFFatSEEWIESEN.change_ID <- function( cnf = config::get() ) {
    
    con <- mariacon("RUFFatSEEWIESEN")
    on.exit(dbDisconnect(con))
