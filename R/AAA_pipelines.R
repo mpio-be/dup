@@ -57,7 +57,7 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 RUFFatSEEWIESEN_photos.pipeline <- function() {
 
     x = RUFFatSEEWIESEN.photos_update()
-
+    push_msg(title = "RUFF photos", x = glue("{o} ID-s changed in RUFF_at_SEEWIESEN"))
  
 
 

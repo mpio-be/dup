@@ -65,9 +65,11 @@ RUFFatSEEWIESEN.photos_update <- function() {
    last_pk_ADULTS = dbGetQuery(con, "SELECT max(pk) pk FROM RUFFatSEEWIESEN.ADULTS ")$pk
 
    if (last_pk_ADULTS > last_pk_photos) {
-      glue("... preparing a new batch of {last_pk_ADULTS-last_pk_photos} photos.")
+      glue("... preparing a new batch of {last_pk_ADULTS-last_pk_photos} photos.")|>message()
       x = RUFFatSEEWIESEN.photos_prepare(last_pk_photos)
-      o = DBI::dbWriteTable(con,'photos', x, row.names = FALSE, append = TRUE)
+      u = DBI::dbWriteTable(con, "photos", x, row.names = FALSE, append = TRUE)
+      if (u) o = (last_pk_ADULTS - last_pk_photos) else o = 0
+      
    } else {
       o = 0
    }
