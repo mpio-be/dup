@@ -52,6 +52,7 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 
     }
 
+
 #' RUFFatSEEWIESEN pipelines
 #' @export
 RUFFatSEEWIESEN_photos.pipeline <- function() {

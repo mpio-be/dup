@@ -23,10 +23,10 @@ RUFFatSEEWIESEN.photos_prepare <- function(last_pk, basepath = config::get()$dir
 
    o[, path := glue_data(
       .SD,
-      "{basepath}{year(date)}/{location}/{format(date, '%m-%d')}/{pic_ID}"
+      "{year(date)}/{location}/{format(date, '%m-%d')}/{pic_ID}"
    )]
 
-   o[, photo_exists := fs::file_exists(path)]
+   o[, photo_exists := fs::file_exists( glue("{basepath}{path}")]
    o[, i := 1:.N, .(ID, date)]
    
    # photo parts
