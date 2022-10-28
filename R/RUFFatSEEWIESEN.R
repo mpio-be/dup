@@ -9,10 +9,10 @@ RUFFatSEEWIESEN.photos_prepare <- function(last_pk, basepath = config::get()$dir
    con = mariacon("RUFFatSEEWIESEN")
    on.exit(dbDisconnect(con))
 
-   sql = "SELECT ID, date, location, pic_ID pid, camera_ID, pk ad_pk  FROM
+   sql = glue("SELECT ID, date, location, pic_ID pid, camera_ID, pk ad_pk  FROM
             RUFFatSEEWIESEN.ADULTS
                WHERE pic_ID  IS NOT NULL AND
-                  pk > {last_pk} "
+                  pk > {last_pk} ")
    
    
    d = dbGetQuery(con,sql) |> setDT()
