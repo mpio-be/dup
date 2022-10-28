@@ -368,3 +368,110 @@ rm_old_backups <- function(path = config::get('dir')$backupdir , keep = 10) {
     x[!is.na(removed), removed]
 
     }
+
+
+
+#' txtdump
+#' @param  db     db name
+#' @param  table  table name
+#' @param  dir    directory path
+#' @param  remote when TRUE the file is uploaded to a remote host defined in cnf
+#' @param  cnf  configuration variables (host, user, pwd, remotehost) are obtained
+#' 				from an external file config file. default to config::get().
+#'
+#' @return path of the dumped file
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' require(dup)
+#' Sys.setenv(R_CONFIG_ACTIVE = "localhost")
+#' txtdump(db = "ARGOS", table = "2019_LBDO")
+#' }
+#'
+txtdump <- function(db, table, remote = TRUE, dir = ".", cnf = config::get()) {
+    host <- cnf$host$name
+    user <- cnf$host$dbadmin
+    pwd <- cnf$host$dbpwd
+    remoteuser <- cnf$remotehost_1$dbadmin
+    remotepwd <- cnf$remotehost_1$syspwd
+    remotehost <- cnf$remotehost_1$name
+
+    con <- dbConnect(RMariaDB::MariaDB(),
+        user = user, password = pwd,
+        host = host, db = db
+    )
+    on.exit(dbDisconnect(con))
+
+    x <- dbReadTable(con, table)
+    setDT(x)
+
+    if (!remote) {
+        path <- glue("{dir}/{table}.csv")
+        fwrite(x, path, yaml = TRUE)
+    }
+
+    if (remote) {
+        path <- glue("{tempdir()}/{table}.csv")
+        fwrite(x, path, yaml = TRUE)
+        ss <- ssh_connect(glue("{remoteuser}@{remotehost}"), passwd = remotepwd)
+        scp_upload(ss, path, to = dir, verbose = TRUE)
+        ssh_disconnect(ss)
+    }
+
+    glue("{dir}/{table}.csv")
+}
+
+
+
+
+
+#' db_copy
+#' copy from one host to another. should be run from 'dst'.
+#' @param  src source host
+#' @param  dst destination host
+#' @param  cnf  configuration variables are
+#'              obtained from an external config file.
+#'              default to config::get().
+#'
+#' @return NULL
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' require(dup)
+#' Sys.setenv(R_CONFIG_ACTIVE = "localhost")
+#' db_copy("FIELD_BTatWESTERHOLZ", "remotehost_1", "host")
+#' }
+
+
+#'
+db_copy <- function(db, src, dst, cnf = config::get()) {
+    # settings
+    dst_host <- cnf[dst][[1]]$name
+    dst_dbuser <- cnf[dst][[1]]$dbadmin
+    dst_dbpwd <- cnf[dst][[1]]$dbpwd
+
+    src_host <- cnf[src][[1]]$name
+    src_dbuser <- cnf[src][[1]]$dbadmin
+    src_dbpwd <- cnf[src][[1]]$dbpwd
+    src_syspwd <- cnf[src][[1]]$syspwd
+
+
+    # get dump from remote
+    ss <- ssh_connect(glue("{src_dbuser}@{src_host}"), passwd = src_syspwd)
+    mycall <- mysqldump(
+        db = db, user = src_dbuser, pwd = src_dbpwd,
+        dir = glue("/home/{src_dbuser}"),
+        dryrun = TRUE, compress = FALSE
+    )
+    ssh_exec_wait(ss, mycall)
+    scp_download(ss, glue("/home/{src_dbuser}/{db}.sql"), to = tempdir())
+    ssh_disconnect(ss)
+
+    # upload dumped file to database
+    path <- glue("{tempdir()}/{db}.sql")
+    mysqlrestore(path, db, dst_dbuser, dst_dbpwd, dst_host)
+    file.remove(path)
+}

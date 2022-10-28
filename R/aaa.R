@@ -20,7 +20,7 @@ NULL
 
   x = try(config::get(), silent = TRUE)
   if(!inherits(x, 'list')) 
-  packageStartupMessage("No config.yml file found")
+  packageStartupMessage("Config.yml does not exist.")
 
 
 	}

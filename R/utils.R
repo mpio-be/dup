@@ -85,29 +85,6 @@ basename2int <- function(ff) {
    as.integer
   }
 
-
-
-#' @export
-int2b <- function(x) {
-    paste0("b", str_pad(x, 3, "left", pad = "0"))
-    }
-
-#' @export
-b2int <- function(x) {
-  str_remove(x, 'b') %>%
-  as.integer
-  }
-
-#' @export
-snbstring2date_v2 <- function (x) {
-    o = str_extract(x, "(^20\\d{2})(\\d{2})(\\d{2})-(\\d{6})\\.(\\d{3})")
-    if (any(is.na(o))) 
-        o = str_extract(x, "(^20\\d{2})(\\d{2})(\\d{2})-(\\d{6})")
-    strptime(o, "%Y%m%d-%H%M%OS") %>% as.POSIXct
-  }
-
-
-
 #' @export 
 dir_listing <- function(dr) {
   x = data.table(path = list.files(dr, recursive = TRUE, full.names = TRUE))
