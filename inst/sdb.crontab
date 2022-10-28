@@ -9,7 +9,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 0 */1       * * *  Rscript --default-packages=dup -e 'ARGOS.pipeline();'
 
 # RUFFatSEEWIESEN
-0 18 * * * Rscript --default-packages=dup -e 'RUFFatSEEWIESEN_photos.pipeline'
+0 18 * * * Rscript --default-packages=dup -e 'RUFFatSEEWIESEN_photos.pipeline()'
 
 
 # ---- [Maintenance] ----
