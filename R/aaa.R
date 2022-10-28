@@ -3,7 +3,6 @@
 #' @import methods utils stats RMariaDB RSQLite data.table
 #' @import magrittr stringr glue foreach future doFuture pushoverr  anytime crayon
 #' @import fs ssh
-#' @importFrom base64enc dataURI
 #' @importFrom config get 
 #' @importFrom geodist geodist
 
