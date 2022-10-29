@@ -79,7 +79,7 @@ RUFFatSEEWIESEN.photos_update <- function() {
 
 }
 
-#' Convert photos (RW2) to WEBP
+#' Convert photos (RW2) to WEBP.
 #' @export
 #' @examples
 #' x = RUFFatSEEWIESEN.photos_convert()
