@@ -16,6 +16,8 @@ rw2webp <- function(f, nam, width = 2000, crop = TRUE, cropstring = "80x80%+0+0"
   if(crop)
     o = image_crop(o, geometry = cropstring)
 
+  dir_create(dirname(nam))
+
   image_write(o, path = nam, format = "webp")
   
   file.exists(nam)

@@ -85,17 +85,31 @@ RUFFatSEEWIESEN.photos_update <- function() {
 #' x = RUFFatSEEWIESEN.photos_convert()
 RUFFatSEEWIESEN.photos_convert <- function() {
 
+   srcdir  = config::get("dir")$ruff_photos
+   destdir = config::get("dir")$ruff_photos_app
+
    con = mariacon("RUFFatSEEWIESEN")
    on.exit(dbDisconnect(con))
 
-   x = dbGetQuery(
+   x = DBI::dbGetQuery(
       con,
       "SELECT ID, path FROM photos
          WHERE photo_exists = 1"
    ) |> setDT()
+   x[, src_path := paste0(srcdir, path)]
+   x[, dest_path := paste0(destdir, path)]
 
+   x[, todo := !file_exists(dest_path)]
 
-   
+   x = x[(todo)]   
+
+   doFuture::registerDoFuture()
+   future::plan(future::multisession, workers = 30)
+
+   o = foreach(i = 1:30) %dopar% {
+      rw2webp(x[i,src_path], x[i, dest_path])
+   }
+
 
 
 }

@@ -270,9 +270,6 @@ mysqlrestore <- function(file, db, user, pwd , host =  '127.0.0.1', dryrun = FAL
 #' @param  ...            further options passed to mysqlrestore
 #' @export
 #' 
-#' @importFrom foreach foreach %dopar% 
-#' @importFrom future  plan 
-#' @importFrom doFuture registerDoFuture  
 #' 
 #' @examples
 #' \dontrun{

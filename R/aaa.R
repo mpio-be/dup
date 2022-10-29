@@ -1,12 +1,13 @@
 
 
 #' @import methods utils stats RMariaDB RSQLite data.table
-#' @import magrittr stringr glue foreach future doFuture pushoverr  anytime crayon
+#' @import magrittr stringr glue pushoverr  anytime crayon
+#' @import foreach future doFuture 
 #' @import fs ssh
 #' @import magick
 #' @importFrom config get 
 #' @importFrom geodist geodist
-
+#'
 NULL
 
 
