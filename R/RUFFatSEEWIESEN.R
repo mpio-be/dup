@@ -97,7 +97,7 @@ RUFFatSEEWIESEN.photos_convert <- function() {
          WHERE photo_exists = 1"
    ) |> setDT()
    x[, src_path := paste0(srcdir, path)]
-   x[, dest_path := paste0(destdir, path)]
+   x[, dest_path := paste0(destdir, path)|>str_replace("RW2$", "webp")]
 
    x[, todo := !file_exists(dest_path)]
 

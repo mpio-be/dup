@@ -2,10 +2,8 @@
 #' Convert RW2 photos to WebP
 #' @param width output width in px default to 2000
 #' @param nam output file name
-#' @param cropstring magic geometry string, default to "80x80%+0+0"
-#' @param crop default to TRUE
 #' @export
-rw2webp <- function(f, nam, width = 2000, crop = TRUE, cropstring = "80x80%+0+0") {
+rw2webp <- function(f, nam, width = 2000) {
 
   if(missing(nam)) nam = basename(f)|>str_replace("RW2", "webp")
 
@@ -13,8 +11,6 @@ rw2webp <- function(f, nam, width = 2000, crop = TRUE, cropstring = "80x80%+0+0"
   system(glue("darktable-cli --width {width} {f} {tf}"))
 
   o = image_read(tf)
-  if(crop)
-    o = image_crop(o, geometry = cropstring)
 
   dir_create(dirname(nam))
 
