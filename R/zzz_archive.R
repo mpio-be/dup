@@ -1,3 +1,4 @@
+# Retired functions which are not exported anymore
 
 BUTEOatEUROPE.pipeline <- function() {
 
@@ -14,12 +15,8 @@ BUTEOatEUROPE.pipeline <- function() {
     push_msg(b, 'BUTEOatEUROPE.mti_sensors')
 
 
-    }
-
-
-
+}
 SNBatWESTERHOLZ2_pipeline <- function() {
-
 
     a = scidb_snbUpdater.b000()
     Sys.sleep(5)
@@ -28,10 +25,8 @@ SNBatWESTERHOLZ2_pipeline <- function() {
     # feedback
     m = glue(a,b)
     push_msg(m, 'SNBatWESTERHOLZ2_pipeline')
-  
-    }
 
-
+}
 read_boxtxt <- function(f) {
   cnf = config::get('dir')  
   d = data.table(V = readLines(con = f, skipNul = TRUE)) 
@@ -65,11 +60,7 @@ read_boxtxt <- function(f) {
 
   o
 
-  }
-
-
-
-
+}
 scidb_snbUpdater.b000 <- function(cnf = config::get()) {
     
 
@@ -188,12 +179,7 @@ scidb_snbUpdater.b000 <- function(cnf = config::get()) {
 
     msg
 
- }
-
-
-
-
-
+}
 scidb_snbUpdater.transponders <- function (cnf = config::get()) {
     Start = Sys.time()
     cat(" ------> Getting settings ...\n")
@@ -244,11 +230,6 @@ scidb_snbUpdater.transponders <- function (cnf = config::get()) {
         sep = "\n")
     msg
 }
-
-
-
-
-
 BT_at_WESTERHOLZ_change_ID <- function(cnf = config::get()) {
     host <- cnf$host$name
     user <- cnf$host$dbadmin
@@ -289,9 +270,6 @@ BT_at_WESTERHOLZ_change_ID <- function(cnf = config::get()) {
 
     glue("{nrow(o)} ID-s updated.")
 }
-
-
-
 export_to_mapping.pipeline <- function(db_tabs = c("2019_LBDO", "2020_BADO", "2022_WRSA"), ...) {
     sqlitedump(
         db = "ARGOS",
@@ -306,17 +284,6 @@ export_to_mapping.pipeline <- function(db_tabs = c("2019_LBDO", "2020_BADO", "20
         ...
     )
 }
-
-
-# ==========================================================================
-# mti_gps
-# ==========================================================================
-#' @title   mti_gps.BUTEOatEUROPE
-#' @param  cnf  configuration variables are obtained from an external file config file. 
-#'         default to config::get().
-#' @export
-#' @examples
-#' scidbupdate_mti_gps.BUTEOatEUROPE()
 scidbupdate_mti_gps.BUTEOatEUROPE <- function(cnf = config::get()) {
     
     Start=Sys.time()    
@@ -366,19 +333,7 @@ scidbupdate_mti_gps.BUTEOatEUROPE <- function(cnf = config::get()) {
     )
 
     msg
-
-
-
-
- }
-
-
-#' @title mti_sensors.BUTEOatEUROPE
-#' @param  cnf  configuration variables are obtained from an external file config file. 
-#'         default to config::get().
-#' @export
-#' @examples
-#' scidbupdate_mti_sensors.BUTEOatEUROPE()
+}
 scidbupdate_mti_sensors.BUTEOatEUROPE <- function(cnf = config::get()) {
     
     Start=Sys.time() 
@@ -420,22 +375,14 @@ scidbupdate_mti_sensors.BUTEOatEUROPE <- function(cnf = config::get()) {
     )
 
     msg
-
-
- }
-
-#' @export
+}
 int2b <- function(x) {
     paste0("b", str_pad(x, 3, "left", pad = "0"))
 }
-
-#' @export
 b2int <- function(x) {
     str_remove(x, "b") %>%
         as.integer()
 }
-
-#' @export
 snbstring2date_v2 <- function(x) {
     o <- str_extract(x, "(^20\\d{2})(\\d{2})(\\d{2})-(\\d{6})\\.(\\d{3})")
     if (any(is.na(o))) {

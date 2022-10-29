@@ -79,6 +79,31 @@ RUFFatSEEWIESEN.photos_update <- function() {
 
 }
 
+#' Convert photos (RW2) to WEBP
+#' @export
+#' @examples
+#' x = RUFFatSEEWIESEN.photos_convert()
+RUFFatSEEWIESEN.photos_convert <- function() {
+
+   con = mariacon("RUFFatSEEWIESEN")
+   on.exit(dbDisconnect(con))
+
+   x = dbGetQuery(
+      con,
+      "SELECT ID, path FROM photos
+         WHERE photo_exists = 1"
+   ) |> setDT()
+
+
+   
+
+
+}
+
+
+
+
+
 
 
 #' uses ID_changes table
