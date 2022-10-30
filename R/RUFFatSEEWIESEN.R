@@ -104,16 +104,20 @@ RUFFatSEEWIESEN.photos_convert <- function(ncores = 30) {
    x = x[(todo)]
    x[, i := .I]
 
-   doFuture::registerDoFuture()
-   future::plan(future::multicore, workers = ncores)
+   if(nrow(x) > 0) {
+      doFuture::registerDoFuture()
+      future::plan(future::multicore, workers = ncores)
 
-   o = foreach(i = 1:nrow(x), .combine=c) %dopar% {
-      x[i, rw2webp(src_path, dest_path)]
-      x[i, file_exists(dest_path)]
-   }
+      o = foreach(i = 1:nrow(x), .combine=c) %dopar% {
+         x[i, rw2webp(src_path, dest_path)]
+         x[i, file_exists(dest_path)]
+      }
 
-   sum(o)
+      O = sum(o)
 
+   } else O = 0
+
+   O
 }
 
 

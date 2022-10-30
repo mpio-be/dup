@@ -2,13 +2,16 @@
 % Please edit documentation in R/RUFFatSEEWIESEN.R
 \name{RUFFatSEEWIESEN.photos_convert}
 \alias{RUFFatSEEWIESEN.photos_convert}
-\title{Convert photos (RW2) to WEBP.}
+\title{Convert, resize, and remove adult plumage photos.}
 \usage{
-RUFFatSEEWIESEN.photos_convert()
+RUFFatSEEWIESEN.photos_convert(ncores = 30)
+}
+\value{
+number of converted files
 }
 \description{
-Convert photos (RW2) to WEBP.
+Convert, resize, and remove adult plumage photos.
 }
-\examples{
-x = RUFFatSEEWIESEN.photos_convert()
+\seealso{
+rw2webp
 }
