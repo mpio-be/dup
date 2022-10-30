@@ -1,24 +1,33 @@
 
 #' Convert RW2 photos to WebP
 #' @param width output width in px default to 2000
-#' @param nam output file name
+#' @param src output file name
+#' @param dest output file name
+#' @param resizefact resize factor (default to 2, half the size of the original image)
+#' @param cropamount crop amount 
 #' @export
-rw2webp <- function(f, nam, width = 2000) {
-
-  if(missing(nam)) nam = basename(f)|>str_replace("RW2", "webp")
-
-  tf <- tempfile(fileext = ".tif")
-  system(glue("darktable-cli --width {width} {f} {tf}"))
-
-  o = image_read(tf)
-
-  dir_create(dirname(nam))
-
-  image_write(o, path = nam, format = "webp")
+rw2webp <- function(src, dest, resizefact = 2, cropamount = 5) {
   
-  file.exists(nam)
+  tif = str_replace(src, "RW2$", "tiff")
+  jpg = str_replace(src, "RW2$", "jpeg")
+  on.exit({
+    file.remove(tif)
+    file.remove(jpg)
+  })
 
-}
+
+  glue("dcraw -a -h -T {src}") |> system()
+
+  im = load.image(tif)
+  im = resize(im, round(width(im) / resizefact), round(height(im) / resizefact))
+  im = crop.borders(im, round(width(im) / 5), round(height(im) / 5))
+  imager::save.image(im, file = jpg, quality =  1)
+  im = jpeg::readJPEG(jpg)
+
+  write_webp(im, dest)
+
+
+ }
 
 
 #' @export

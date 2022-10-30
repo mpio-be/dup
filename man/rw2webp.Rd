@@ -4,16 +4,18 @@
 \alias{rw2webp}
 \title{Convert RW2 photos to WebP}
 \usage{
-rw2webp(f, nam, width = 2000, crop = TRUE, cropstring = "80x80\%+0+0")
+rw2webp(src, dest, resizefact = 2, cropamount = 5)
 }
 \arguments{
-\item{nam}{output file name}
+\item{src}{output file name}
+
+\item{dest}{output file name}
+
+\item{resizefact}{resize factor (default to 2, half the size of the original image)}
+
+\item{cropamount}{crop amount}
 
 \item{width}{output width in px default to 2000}
-
-\item{crop}{default to TRUE}
-
-\item{cropstring}{magic geometry string, default to "80x80\%+0+0"}
 }
 \description{
 Convert RW2 photos to WebP

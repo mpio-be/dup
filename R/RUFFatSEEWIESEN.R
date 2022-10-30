@@ -79,10 +79,9 @@ RUFFatSEEWIESEN.photos_update <- function() {
 
 }
 
-#' Convert photos (RW2) to WEBP.
+#' Convert, resize, and remove adult plumage photos.
 #' @export
-#' @examples
-#' x = RUFFatSEEWIESEN.photos_convert()
+#' @seealso rw2webp
 RUFFatSEEWIESEN.photos_convert <- function() {
 
    srcdir  = config::get("dir")$ruff_photos

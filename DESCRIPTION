@@ -25,9 +25,11 @@ Imports:
     ssh,
     fs,
     geodist,
-    magick
+    webp,
+    jpeg,
+    imager
 SystemRequirements:
-    mpack, offlineimap, owncloud-client-cmd, libssh-dev, mysql-client, darktable-cli, tailscale
+    mpack, offlineimap, owncloud-client-cmd, libssh-dev, mysql-client, tailscale, dcraw, webp
 Description: ``scidb.mpio.orn.mpg.de`` Database Unattended Pipelines. Settings are given in an external `config.yml` file. 
 License: GPL(>= 2)
 URL: https://github.com/mpio-be/dup

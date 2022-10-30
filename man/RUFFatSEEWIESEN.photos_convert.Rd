@@ -2,12 +2,12 @@
 % Please edit documentation in R/RUFFatSEEWIESEN.R
 \name{RUFFatSEEWIESEN.photos_convert}
 \alias{RUFFatSEEWIESEN.photos_convert}
-\title{Convert photos (RW2) to WEBP}
+\title{Convert photos (RW2) to WEBP.}
 \usage{
 RUFFatSEEWIESEN.photos_convert()
 }
 \description{
-Convert photos (RW2) to WEBP
+Convert photos (RW2) to WEBP.
 }
 \examples{
 x = RUFFatSEEWIESEN.photos_convert()

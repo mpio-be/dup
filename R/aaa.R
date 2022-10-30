@@ -4,7 +4,9 @@
 #' @import magrittr stringr glue pushoverr  anytime crayon
 #' @import foreach future doFuture 
 #' @import fs ssh
-#' @import magick
+#' @import webp
+#' @importFrom  imager width  height resize load.image save.image crop.borders
+#' @importFrom jpeg readJPEG
 #' @importFrom config get 
 #' @importFrom geodist geodist
 #'
