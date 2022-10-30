@@ -81,8 +81,9 @@ RUFFatSEEWIESEN.photos_update <- function() {
 
 #' Convert, resize, and remove adult plumage photos.
 #' @export
+#' @return number of converted files
 #' @seealso rw2webp
-RUFFatSEEWIESEN.photos_convert <- function() {
+RUFFatSEEWIESEN.photos_convert <- function(ncores = 30) {
 
    srcdir  = config::get("dir")$ruff_photos
    destdir = config::get("dir")$ruff_photos_app
@@ -93,7 +94,7 @@ RUFFatSEEWIESEN.photos_convert <- function() {
    x = DBI::dbGetQuery(
       con,
       "SELECT ID, path FROM photos
-         WHERE photo_exists = 1 limit 10"
+         WHERE photo_exists = 1"
    ) |> setDT()
    x[, src_path := paste0(srcdir, path)]
    x[, dest_path := paste0(destdir, path)|>str_replace("RW2$", "webp")]
@@ -103,11 +104,15 @@ RUFFatSEEWIESEN.photos_convert <- function() {
    x = x[(todo)]
    x[, i := .I]
 
-   x[, o := rw2webp(src_path, dest_path), by = i]
-   
-   sum(x$o)
+   doFuture::registerDoFuture()
+   future::plan(future::multicore, workers = ncores)
 
+   o = foreach(i = 1:nrow(x), .combine=c) %dopar% {
+      x[i, rw2webp(src_path, dest_path)]
+      x[i, file_exists(dest_path)]
+   }
 
+   sum(o)
 
 }
 
