@@ -24,6 +24,7 @@ rw2webp <- function(src, dest, resizefact = 2, cropamount = 5) {
   imager::save.image(im, file = jpg, quality =  1)
   im = jpeg::readJPEG(jpg)
 
+  dirname(dest) |> dir_create()
   write_webp(im, dest)
 
 

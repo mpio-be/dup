@@ -93,7 +93,7 @@ RUFFatSEEWIESEN.photos_convert <- function() {
    x = DBI::dbGetQuery(
       con,
       "SELECT ID, path FROM photos
-         WHERE photo_exists = 1"
+         WHERE photo_exists = 1 limit 10"
    ) |> setDT()
    x[, src_path := paste0(srcdir, path)]
    x[, dest_path := paste0(destdir, path)|>str_replace("RW2$", "webp")]
