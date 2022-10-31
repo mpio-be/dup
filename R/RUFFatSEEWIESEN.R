@@ -108,7 +108,7 @@ RUFFatSEEWIESEN.photos_convert <- function(ncores = 30) {
       doFuture::registerDoFuture()
       future::plan(future::multicore, workers = ncores)
 
-      o = foreach(i = 1:nrow(x), .combine=c, .errorhandling = "pass") %dopar% {
+      o = foreach(i = 1:nrow(x), .combine=c, .errorhandling = "remove") %dopar% {
          x[i, rw2webp(src_path, dest_path)]
          x[i, file_exists(dest_path)]
       }
