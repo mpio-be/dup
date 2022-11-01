@@ -5,7 +5,7 @@
 #' @import foreach future doFuture 
 #' @import fs ssh
 #' @import webp
-#' @importFrom  imager width  height resize load.image save.image crop.borders
+#' @importFrom  imager width  height resize  imresize load.image save.image crop.borders
 #' @importFrom jpeg readJPEG
 #' @importFrom config get 
 #' @importFrom geodist geodist
