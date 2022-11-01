@@ -121,11 +121,6 @@ RUFFatSEEWIESEN.photos_convert <- function(ncores = 30, ...) {
 }
 
 
-
-
-
-
-
 #' uses ID_changes table
 #' @param  cnf  configuration variables are obtained from an external file config file. 
 #'         default to config::get().
