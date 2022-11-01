@@ -3,10 +3,10 @@
 #' @param width output width in px default to 2000
 #' @param src output file name
 #' @param dest output file name
-#' @param resizefact resize factor (default to 2, half the size of the original image)
-#' @param cropamount crop amount 
+#' @param resizefact resize factor (default to 1, 2 = half the size of the original image)
+#' @param cropamount crop amount (default to 5)
 #' @export
-rw2webp <- function(src, dest, resizefact = 2, cropamount = 5) {
+rw2webp <- function(src, dest, resizefact = 1, cropamount = 5) {
   
   tif = str_replace(src, "RW2$", "tiff")
   jpg = str_replace(src, "RW2$", "jpeg")

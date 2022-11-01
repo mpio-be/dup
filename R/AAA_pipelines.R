@@ -55,11 +55,11 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 
 #' RUFFatSEEWIESEN pipelines
 #' @export
-RUFFatSEEWIESEN_photos.pipeline <- function() {
+RUFFatSEEWIESEN_photos.pipeline <- function(...) {
 
     t1 = RUFFatSEEWIESEN.photos_update()
 
-    t2 = RUFFatSEEWIESEN.photos_convert()
+    t2 = RUFFatSEEWIESEN.photos_convert(...)
     
     push_msg(
         glue("{t1} photos updated. {t2} photos converted."), "📸 RUFF photos"
