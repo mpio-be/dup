@@ -2,9 +2,9 @@
 #' @export
 check_replication <- function() {
   
-  con = dbcon(primary, db = "DBLOG")
+  con = dbcon("primary", db = "DBLOG")
 
-  cons = dbcon(replica, db = "DBLOG")
+  cons = dbcon("replica", db = "DBLOG")
 
 
   DBI::dbExecute(con, "DROP TABLE IF EXISTS DBLOG.replication_test")
