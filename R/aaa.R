@@ -1,6 +1,7 @@
 
 
 #' @import methods utils stats RMariaDB RSQLite data.table
+#' @import dbo
 #' @import magrittr stringr glue pushoverr  anytime crayon
 #' @import foreach future doFuture 
 #' @import fs ssh
