@@ -20,11 +20,10 @@ check_replication <- function(primary, replica) {
   
 
   # report
-  ok = identical(x, y)
+  o = difftime(y$ts, x$ts, units = "secs")
+  return(o)
 
-  if (!ok) {
-    o = difftime(y$ts, x$ts, units = "secs")
-    return(o)
+  if (! identical(x, y) ) {
     dup::push_msg(glue::glue("Replication is lagging by {o} secs"), "⚠️ WARNING ⚠️")
   }
 
