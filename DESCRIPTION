@@ -4,7 +4,8 @@ Authors@R:
     person("Mihai", "Valcu", ,"valcu@orn.mpg.de", c("aut", "cre"))
 Title: Database Unattended Pipelines 
 Depends:
-    R (>= 4.0.0)
+    R (>= 4.0.0),
+    dbo
 Imports:
     methods,
     utils,
