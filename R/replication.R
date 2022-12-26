@@ -1,16 +1,16 @@
 
-
+#' @export
 check_replication <- function(primary, replica) {
   
-  con = dbo::dbcon(primary, db = "DBLOG")
+  con = dbcon(primary, db = "DBLOG")
 
-  cons = dbo::dbcon(replica, db = "DBLOG")
+  cons = dbcon(replica, db = "DBLOG")
 
 
-  dbExecute(con, "DROP TABLE IF EXISTS DBLOG.replication_test")
-  dbWriteTable(con, "replication_test", data.frame(ts = Sys.time()) )
+  DBI::dbExecute(con, "DROP TABLE IF EXISTS DBLOG.replication_test")
+  DBI::dbWriteTable(con, "replication_test", data.frame(ts = Sys.time()))
   
-   Sys.sleep(lag)
+   Sys.sleep(1)
 
   x = dbq(con, "SELECT * FROM DBLOG.replication_test")
   y = try(dbq(cons, "SELECT * FROM DBLOG.replication_test"), silent = TRUE)
@@ -22,13 +22,12 @@ check_replication <- function(primary, replica) {
   # report
   ok = identical(x, y)
 
-  if(ok)
-    o = glue("🟢 Replication to {slave} {label} successful at {y$ts}")
-    
-  if(!ok)
-    o = glue("🔴 Replication to {slave} {label} broken. Last attempt {x$ts}") 
+  if (!ok) {
+    o = difftime(y$ts, x$ts, units = "secs")
+    return(o)
+    dup::push_msg(glue::glue("Replication is lagging by {o} secs"), "⚠️ WARNING ⚠️")
+  }
 
-  o  
-
+  
 
 }
