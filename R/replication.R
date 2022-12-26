@@ -1,6 +1,6 @@
 
 #' @export
-check_replication <- function(primary, replica) {
+check_replication <- function() {
   
   con = dbcon(primary, db = "DBLOG")
 
