@@ -4,7 +4,7 @@
 \alias{RUFFatSEEWIESEN.photos_convert}
 \title{Convert, resize, and remove adult plumage photos.}
 \usage{
-RUFFatSEEWIESEN.photos_convert(ncores = 30)
+RUFFatSEEWIESEN.photos_convert(ncores = 30, ...)
 }
 \value{
 number of converted files

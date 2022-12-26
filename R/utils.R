@@ -3,13 +3,15 @@
 #' @param width output width in px default to 2000
 #' @param src output file name
 #' @param dest output file name
-#' @param resizefact resize factor (default to 2, half the size of the original image)
-#' @param cropamount crop amount 
+#' @param resizefact resize factor (default to 1, 2 = half the size of the original image)
+#' @param cropamount crop amount (default to 5)
+#' @param writethumb write thumbnail (default to TRUE)
 #' @export
-rw2webp <- function(src, dest, resizefact = 2, cropamount = 5) {
+rw2webp <- function(src, dest, resizefact = 1, cropamount = 5, writethumb = TRUE) {
   
   tif = str_replace(src, "RW2$", "tiff")
   jpg = str_replace(src, "RW2$", "jpeg")
+  
   on.exit({
     file.remove(tif)
     file.remove(jpg)
@@ -21,11 +23,22 @@ rw2webp <- function(src, dest, resizefact = 2, cropamount = 5) {
   im = load.image(tif)
   im = resize(im, round(width(im) / resizefact), round(height(im) / resizefact))
   im = crop.borders(im, round(width(im) / 5), round(height(im) / 5))
-  imager::save.image(im, file = jpg, quality =  1)
-  im = jpeg::readJPEG(jpg)
+  save.image(im, file = jpg, quality =  1)
 
+  # save final output to disk
   dirname(dest) |> dir_create()
-  write_webp(im, dest)
+  
+  jpeg::readJPEG(jpg)|>
+  write_webp(dest)
+
+  if (writethumb) {
+    tmb_dest = str_replace(dest, "\\.webp", "_thmb.webp")
+    save.image(imresize(im, 1 / 5), file = jpg)
+    jpeg::readJPEG(jpg) |>
+    write_webp(tmb_dest)
+
+  }
+
 
 
  }

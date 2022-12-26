@@ -83,7 +83,7 @@ RUFFatSEEWIESEN.photos_update <- function() {
 #' @export
 #' @return number of converted files
 #' @seealso rw2webp
-RUFFatSEEWIESEN.photos_convert <- function(ncores = 30) {
+RUFFatSEEWIESEN.photos_convert <- function(ncores = 30, ...) {
 
    srcdir  = config::get("dir")$ruff_photos
    destdir = config::get("dir")$ruff_photos_app
@@ -108,8 +108,8 @@ RUFFatSEEWIESEN.photos_convert <- function(ncores = 30) {
       doFuture::registerDoFuture()
       future::plan(future::multicore, workers = ncores)
 
-      o = foreach(i = 1:nrow(x), .combine=c) %dopar% {
-         x[i, rw2webp(src_path, dest_path)]
+      o = foreach(i = 1:nrow(x), .combine=c, .errorhandling = "remove") %dopar% {
+         x[i, rw2webp(src_path, dest_path, ...)]
          x[i, file_exists(dest_path)]
       }
 
@@ -119,11 +119,6 @@ RUFFatSEEWIESEN.photos_convert <- function(ncores = 30) {
 
    O
 }
-
-
-
-
-
 
 
 #' uses ID_changes table

@@ -4,7 +4,7 @@
 \alias{RUFFatSEEWIESEN_photos.pipeline}
 \title{RUFFatSEEWIESEN pipelines}
 \usage{
-RUFFatSEEWIESEN_photos.pipeline()
+RUFFatSEEWIESEN_photos.pipeline(...)
 }
 \description{
 RUFFatSEEWIESEN pipelines
