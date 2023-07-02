@@ -65,23 +65,11 @@ mariacon <- function(db) {
 mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = getwd(), 
     dryrun = FALSE, compress=TRUE, ...) {
 
-    if(missing(filenam) & !missing(tables) ) {
-    ntables = strsplit(tables, ' ')[[1]] %>% length 
-    if(ntables == 1 ) 
-        fname = paste(db, tables, sep = '.')
-    if(ntables > 1 ) 
-        fname = paste(db, paste0(ntables, 'tables'), sep = '_')
+
+    if (compress) {
+        filenam = paste0(fname, ".gz")
     }
-
-    if(missing(filenam) & missing(tables) ) {
-    fname = db
-    }
-
-
-    if(!compress)
-    filenam = paste0(fname, '.sql') else
-    filenam = paste0(fname, '.sql.gz')
-        
+            
 
     filepath = paste(dir, filenam, sep = .Platform$file.sep)
 
