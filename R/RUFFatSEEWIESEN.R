@@ -168,10 +168,4 @@ RUFFatSEEWIESEN.change_ID <- function( cnf = config::get() ) {
    nrow(o)
 
 
-    }
-
-
-
-
-
- 
+   }

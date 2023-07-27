@@ -111,5 +111,20 @@ dir_size <- function(dr) {
   ff = list.files(dr, all.files = TRUE, recursive = TRUE, full.names = TRUE)
   o = do.call(rbind, lapply(ff, fs::file_info))
   sum(o$size)
+}
+
+#' Try outcome
+#' try_outcome
+#' @param ... one or several try() values
+#' @param message to pass to push_msg
+#' @export
+try_outcome <- function(..., message ) {
+
+  x = list(...)
+  gotError = sapply(x, inherits, what = "try-error") |> any()
+  if (gotError) push_msg(message, "dup") else x
+
+
+
 
 }

@@ -2,18 +2,19 @@
 % Please edit documentation in R/DRUID.R
 \name{DRUID.downloadNew}
 \alias{DRUID.downloadNew}
-\title{Download the latest DRUID data
+\title{Download the latest DRUID data and updates DB
 Fetch DRUID data}
 \usage{
 DRUID.downloadNew(what)
 }
 \arguments{
-\item{what}{gps, odba or env}
+\item{what}{GPS, ODBA or ENV}
 }
 \description{
-Download the latest DRUID data
+Download the latest DRUID data and updates DB
 Fetch DRUID data
 }
 \examples{
-x = DRUID.downloadNew()
+x = DRUID.downloadNew(what = "GPS")
+x = DRUID.downloadNew(what = "ENV")
 }

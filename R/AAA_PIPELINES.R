@@ -4,18 +4,13 @@
 #' @export
 ARGOS.pipeline <- function() {
     
-    cat( red$bold('\n ----> Get new emails and extract attachments ......\n') )
-    extract_email_attachements(maildir="ARGOS")
+    task1 = extract_email_attachements(maildir="ARGOS") |> try(silent = TRUE)
     
-    cat( blue$bold('\n ----> Read email attachments and update incoming table.....\n') )
-    a = scidbupdate_ARGOS.incoming()
+    task2 = scidbupdate_ARGOS.incoming() |> try(silent = TRUE)
 
-    cat( green$bold('\n ----> Distribute data from incoming table to YYYY_SPECIES table.\n') )
-    b = scidbupdate_ARGOS.flush_incoming()
+    task3 = scidbupdate_ARGOS.flush_incoming() |> try(silent = TRUE)
 
-    # feedback
-    m = glue(a, b)
-    push_msg(m, 'ARGOS')
+    try_outcome(task1, task2, task3, message = "ARGOS.pipeline is failing!")
 
     }
 
@@ -26,8 +21,8 @@ ARGOS.pipeline <- function() {
 #' @export
 DB_internal_updates.pipeline <- function() {
     
-    o = RUFFatSEEWIESEN.change_ID()
-    push_msg(title = "internal updates", x = glue("{o} ID-s changed in RUFF_at_SEEWIESEN"))
+    task = RUFFatSEEWIESEN.change_ID()
+    try_outcome(task, message = "DB_internal_updates.pipeline is failing!")
     
     }
 
@@ -43,12 +38,11 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     x = dbGetQuery(con, 'select db from DBLOG.backup where state = "freeze"')
     Exclude = c('mysql', 'information_schema', 'performance_schema', x$db)
 
-    a = mysqldump_host(exclude = Exclude)
-    push_msg(a, "SCIDB backup")
+    task1 = mysqldump_host(exclude = Exclude)
 
-    b = rm_old_backups(keep = 10)
+    task2 = rm_old_backups(keep = 10)
 
-    push_msg(glue("{length(b)} old backups removed"), "🔴 BACKUP ")
+    try_outcome(task1, task2, message = "backup.pipeline is failing!")
 
     }
 
@@ -57,13 +51,11 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 #' @export
 RUFFatSEEWIESEN_photos.pipeline <- function(...) {
 
-    t1 = RUFFatSEEWIESEN.photos_update()
+    task1 = RUFFatSEEWIESEN.photos_update()
 
-    t2 = RUFFatSEEWIESEN.photos_convert(...)
+    task2 = RUFFatSEEWIESEN.photos_convert(...)
     
-    push_msg(
-        glue("{t1} photos updated. {t2} photos converted."), "📸 RUFF photos"
-    )
+    try_outcome(task1, task2, message = "RUFFatSEEWIESEN_photos.pipeline is failing!")
     
 
 
@@ -75,9 +67,11 @@ RUFFatSEEWIESEN_photos.pipeline <- function(...) {
 #' DRUID pipeline
 #' @export
 DRUID.pipeline <- function() {
-    c(
-        gps  = DRUID.downloadNew(what = "GPS"),
-        odba = DRUID.downloadNew(what = "ODBA"),
-        env  = DRUID.downloadNew(what = "ENV")
-    )
+
+    task1  = DRUID.downloadNew(what = "GPS")
+    task2 = DRUID.downloadNew(what = "ODBA")
+    task3  = DRUID.downloadNew(what = "ENV")
+    
+    try_outcome(task1, task2, task3, message = "DRUID.pipeline is failing!")
+
 }

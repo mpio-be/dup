@@ -1,6 +1,4 @@
 
-
-
 #' @title Argos incoming
 #' @param  cnf  configuration variables are obtained from an external file config file. 
 #'         default to config::get().
@@ -10,7 +8,6 @@
 #' scidbupdate_ARGOS.incoming()
 scidbupdate_ARGOS.incoming <- function(cnf = config::get(), daysBefore = 365 ) {
 
-		Start=Sys.time()
 
 		host = cnf$host$name
 		db   = cnf$db$argos
@@ -65,20 +62,11 @@ scidbupdate_ARGOS.incoming <- function(cnf = config::get(), daysBefore = 365 ) {
 			} else n_rows = 0
 	
 
-	    tt = difftime(Sys.time(), Start, units = 'mins') %>% round %>% as.character
-	        
-	    msg = paste(
-	    glue('🕘  {tt} mins'), 
-	    glue('🔄  ARGOS.incoming got {n_rows} rows.'), 
-	    sep = '\n'
-	    )
+			n_rows
 
-	    msg
 
 
 }
-
-
 
 
 #' @title Argos: move from incoming to YYYY_SSSS
@@ -88,7 +76,6 @@ scidbupdate_ARGOS.incoming <- function(cnf = config::get(), daysBefore = 365 ) {
 #' @examples
 #' scidbupdate_ARGOS.flush_incoming()
 scidbupdate_ARGOS.flush_incoming <- function(cnf = config::get() ) {
-	Start=Sys.time()
 
 	host = cnf$host$name
 	user = cnf$host$dbadmin
@@ -131,24 +118,12 @@ scidbupdate_ARGOS.flush_incoming <- function(cnf = config::get() ) {
 		
 		if(nrow(z) > 0) {
 			z[, run := dbExecute(con, q) , by = tableName]
-			out = paste(z$tableName, collapse = ',')
-		} else out = NA
+			out = nrow(z)
+		} else out = 0
 
-		} else out = NA
+		} else out = 0
 
-	out	
-
-
-	    tt = difftime(Sys.time(), Start, units = 'mins') %>% round %>% as.character
-	        
-	    msg = paste(
-	    glue('🕘  {tt} mins'), 
-	    glue('🔴  ARGOS.incoming flushed to {out}'), 
-	    sep = '\n'
-	    )
-
-	    msg
-
+		out	
 
 
 	}
