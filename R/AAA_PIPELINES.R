@@ -1,6 +1,6 @@
 
 
-#' @title Argos pipeline
+#' Argos pipeline
 #' @export
 ARGOS.pipeline <- function() {
     
@@ -22,7 +22,7 @@ ARGOS.pipeline <- function() {
 
 
 
-#' @title   DB internal updates pipeline
+#' DB internal updates pipeline
 #' @export
 DB_internal_updates.pipeline <- function() {
     
@@ -32,7 +32,7 @@ DB_internal_updates.pipeline <- function() {
     }
 
 
-#' @title   backup pipeline
+#' backup pipeline
 #' @export
 backup.pipeline <- function(cnf = config::get('host') ) {
 
@@ -70,4 +70,14 @@ RUFFatSEEWIESEN_photos.pipeline <- function(...) {
 
 
 
+}
+
+#' DRUID pipeline
+#' @export
+DRUID.pipeline <- function() {
+    c(
+        gps  = DRUID.downloadNew(what = "GPS"),
+        odba = DRUID.downloadNew(what = "ODBA"),
+        env  = DRUID.downloadNew(what = "ENV")
+    )
 }

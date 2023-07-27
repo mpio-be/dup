@@ -1,7 +1,7 @@
 
 
 #' @import methods utils stats RMariaDB RSQLite data.table
-#' @import dbo
+#' @import dbo apis
 #' @import magrittr stringr glue pushoverr  anytime crayon
 #' @import foreach future doFuture 
 #' @import fs ssh
@@ -10,6 +10,7 @@
 #' @importFrom jpeg readJPEG
 #' @importFrom config get 
 #' @importFrom geodist geodist
+#' @importFrom lubridate with_tz ymd_hms
 #'
 NULL
 

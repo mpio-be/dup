@@ -1,5 +1,5 @@
 Package: dup
-Version: 0.2
+Version: 0.3
 Authors@R: 
     person("Mihai", "Valcu", ,"valcu@orn.mpg.de", c("aut", "cre"))
 Title: Database Unattended Pipelines 
@@ -13,6 +13,7 @@ Imports:
     RMariaDB,
     RSQLite,
     dbo,
+    apis,
     magrittr,
     stringr,
     glue,
@@ -29,9 +30,11 @@ Imports:
     geodist,
     webp,
     jpeg,
-    imager
+    imager,
+    lubridate
 Remotes: 
     mpio-be/dbo    
+    mpio-be/apisdbo    
 SystemRequirements:
     mpack, offlineimap, owncloud-client-cmd, libssh-dev, mysql-client, tailscale, dcraw, webp, imagemagick
 Description: ``scidb.mpio.orn.mpg.de`` Database Unattended Pipelines. Settings are given in an external `config.yml` file and by dbo::my.cnf(). 
