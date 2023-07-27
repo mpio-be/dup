@@ -21,7 +21,7 @@ ARGOS.pipeline <- function() {
 #' @export
 DB_internal_updates.pipeline <- function() {
     
-    task = RUFFatSEEWIESEN.change_ID()
+    task = RUFFatSEEWIESEN.change_ID() |> try(silent = TRUE)
     try_outcome(task, message = "DB_internal_updates.pipeline is failing!")
     
     }
@@ -38,9 +38,9 @@ backup.pipeline <- function(cnf = config::get('host') ) {
     x = dbGetQuery(con, 'select db from DBLOG.backup where state = "freeze"')
     Exclude = c('mysql', 'information_schema', 'performance_schema', x$db)
 
-    task1 = mysqldump_host(exclude = Exclude)
+    task1 = mysqldump_host(exclude = Exclude) |> try(silent = TRUE)
 
-    task2 = rm_old_backups(keep = 10)
+    task2 = rm_old_backups(keep = 10) |> try(silent = TRUE)
 
     try_outcome(task1, task2, message = "backup.pipeline is failing!")
 
@@ -51,9 +51,9 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 #' @export
 RUFFatSEEWIESEN_photos.pipeline <- function(...) {
 
-    task1 = RUFFatSEEWIESEN.photos_update()
+    task1 = RUFFatSEEWIESEN.photos_update() |> try(silent = TRUE)
 
-    task2 = RUFFatSEEWIESEN.photos_convert(...)
+    task2 = RUFFatSEEWIESEN.photos_convert(...) |> try(silent = TRUE)
     
     try_outcome(task1, task2, message = "RUFFatSEEWIESEN_photos.pipeline is failing!")
     
@@ -68,9 +68,9 @@ RUFFatSEEWIESEN_photos.pipeline <- function(...) {
 #' @export
 DRUID.pipeline <- function() {
 
-    task1  = DRUID.downloadNew(what = "GPS")
-    task2 = DRUID.downloadNew(what = "ODBA")
-    task3  = DRUID.downloadNew(what = "ENV")
+    task1  = DRUID.downloadNew(what = "GPS") |> try(silent = TRUE)
+    task2 = DRUID.downloadNew(what = "ODBA") |> try(silent = TRUE)
+    task3  = DRUID.downloadNew(what = "ENV") |> try(silent = TRUE)
     
     try_outcome(task1, task2, task3, message = "DRUID.pipeline is failing!")
 
