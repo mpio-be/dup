@@ -33,8 +33,6 @@ DRUID.downloadNew <- function(what) {
 
   }
 
-  print(o[!sapply(o, inherits, what = "error")])
-
   O = rbindlist(o[!sapply(o, inherits, what = "error")])
   
 
