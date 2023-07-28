@@ -1,16 +1,19 @@
 # crontab copy
+#[minute hour day month day_of_week]
 
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-# ---- [external db updates] ----
+# ---- [DB updates] ----
 
-# ARGOS
+# ARGOS (avery hour)
 0 */1       * * *  Rscript --default-packages=dup -e 'ARGOS.pipeline();'
 
 # RUFFatSEEWIESEN
 0 18 * * * Rscript --default-packages=dup -e 'RUFFatSEEWIESEN_photos.pipeline()'
 
+#DRUID (aver hour, 15 min past)
+15 * * * * Rscript --default-packages=dup -e  'DRUID.pipeline()'
 
 # ---- [Maintenance] ----
 
