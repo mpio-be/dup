@@ -136,11 +136,11 @@ RUFFatSEEWIESEN.change_ID <- function( cnf = config::get() ) {
    ) |> setDT()
 
 
-   d                                          = d[, .(sql = c(
-      paste('UPDATE ADULTS    SET ID          =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
-      paste('UPDATE FOUNDERS    SET ID        =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
-      paste('UPDATE CHICKS    SET ID          =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
-      paste('UPDATE SEX_and_MORPH SET ID      =' , shQuote(new_ID) , 'WHERE ID       =' , shQuote(old_ID)) ,
+   d  = d[, .(sql = c(
+      paste('UPDATE ADULTS    SET ID          =' , shQuote(new_ID) , 'WHERE ID          =' , shQuote(old_ID)) ,
+      paste('UPDATE FOUNDERS    SET ID        =' , shQuote(new_ID) , 'WHERE ID          =' , shQuote(old_ID)) ,
+      paste('UPDATE CHICKS    SET ID          =' , shQuote(new_ID) , 'WHERE ID          =' , shQuote(old_ID)) ,
+      paste('UPDATE SEX_and_MORPH SET ID      =' , shQuote(new_ID) , 'WHERE ID          =' , shQuote(old_ID)) ,
       paste('UPDATE PATERNITY SET ID_father   =' , shQuote(new_ID) , 'WHERE ID_father   =' , shQuote(old_ID)) ,
       paste('UPDATE PATERNITY SET ID_mother   =' , shQuote(new_ID) , 'WHERE ID_mother   =' , shQuote(old_ID)) 
       ) 

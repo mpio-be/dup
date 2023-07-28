@@ -1,4 +1,4 @@
-
+#! on error: all pipelines should return FALSE and send a pushover
 
 #' Argos pipeline
 #' @export
@@ -69,7 +69,7 @@ RUFFatSEEWIESEN_photos.pipeline <- function(...) {
 DRUID.pipeline <- function() {
 
     task1  = DRUID.downloadNew(what = "GPS") |> try(silent = TRUE)
-    task2 = DRUID.downloadNew(what = "ODBA") |> try(silent = TRUE)
+    task2  = DRUID.downloadNew(what = "ODBA") |> try(silent = TRUE)
     task3  = DRUID.downloadNew(what = "ENV") |> try(silent = TRUE)
     
     try_outcome(task1, task2, task3, message = "DRUID.pipeline is failing!")

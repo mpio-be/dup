@@ -80,7 +80,7 @@ argosfilenam2date <- function(x, sepDate = "") {
     o
 
 }
- #' sqlin
+#' sqlin
 #' @description prepare string for select ... where in (1,2,3) 
 #' @param       s     char vector
 #' @export
@@ -122,8 +122,9 @@ try_outcome <- function(..., message ) {
 
   x = list(...)
   gotError = sapply(x, inherits, what = "try-error") |> any()
-  if (gotError) push_msg(message, "dup") else x
-
+  if (gotError) push_msg(message, "dup")
+  
+  !gotError
 
 
 
