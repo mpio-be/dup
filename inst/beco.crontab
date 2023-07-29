@@ -5,3 +5,5 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 
 0 * * * *  Rscript --default-packages=dup -e 'Sys.setenv(R_CONFIG_ACTIVE = "tailscale"); db_copy("ARGOS","host", "local");'
+
+30 * * * *  Rscript --default-packages=dup -e 'Sys.setenv(R_CONFIG_ACTIVE = "tailscale"); db_copy("DRUID","host", "local");'
