@@ -31,12 +31,12 @@ DB_internal_updates.pipeline <- function() {
 #' @export
 backup.pipeline <- function(cnf = config::get('host') ) {
 
-    # ini
-    con = dbConnect(RMariaDB::MariaDB(), user = cnf$dbadmin, password = cnf$dbpwd, host = cnf$name)
+    con <- dbcon(server = "scidb")
+    stopifnot(con@host == "scidb.mpio.orn.mpg.de")
     on.exit(dbDisconnect(con))
 
-    x = dbGetQuery(con, 'select db from DBLOG.backup where state = "freeze"')
-    Exclude = c('mysql', 'information_schema', 'performance_schema', x$db)
+    x <- dbq(con, 'SELECT db from DBLOG.backup WHERE state = "freeze"')
+    Exclude <- c("mysql", "information_schema", "performance_schema", x$db)
 
     task1 = mysqldump_host(exclude = Exclude) |> try(silent = TRUE)
 

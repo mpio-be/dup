@@ -56,9 +56,9 @@ mariacon <- function(db) {
 #'
 #' @examples
 #' \dontrun{
-#' fp = mysqldump('tests',  user = 'testuser', dir = tempdir() , dryrun = TRUE)
-#' mysqldump('tests', 't1 t2', 'testuser' , dir = tempdir() )
-#' mysqldump('tests', 't1', 'testuser' , dir = tempdir(), compress = FALSE )
+#' fp = mysqldump('tests',  user = 'testuser', pwd = '', dir = tempdir(), filenam = "tempbk.sql" , dryrun = TRUE)
+#' mysqldump('tests', 't1 t2', 'testuser', pwd = '', dir = tempdir(), filenam = "tempbk.sql" , dryrun = TRUE)
+#' mysqldump('tests', 't1', 'testuser', pwd = '', dir = tempdir(), filenam = "tempbk.sql", compress = FALSE , dryrun = TRUE)
 #' }
 #'
 #'
@@ -67,7 +67,7 @@ mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = ge
 
 
     if (compress) {
-        filenam = paste0(fname, ".gz")
+        filenam = paste0(filenam, ".gz")
     }
             
 
@@ -118,23 +118,21 @@ mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = ge
 
 mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'information_schema', 'performance_schema', 'phpmyadmin') ) {
     
-    # INI
-        started.at=Sys.time()
 
         host  = cnf$host$name
         user  = cnf$host$dbadmin
         pwd   = cnf$host$dbpwd
         bkdir = cnf$dir$backupdir
 
-        con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
+
+        con <- dbcon(server = "scidb")
+        stopifnot(con@host == host)
+        on.exit(dbDisconnect(con))
 
 
         # db listing
-        x = dbGetQuery(con, 'SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES`')
-        setDT(x)
-        x = x[! db %in% exclude]
+        x = dbq(con, "SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES`")[! db %in% exclude]
 
-        dbDisconnect(con)    
 
 
         # prepare dir locations 
