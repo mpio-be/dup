@@ -43,7 +43,7 @@ mariacon <- function(db) {
 #' @param user      user
 #' @param pwd       pwd
 #' @param host      default to '127.0.0.1'
-#' @param filenam   filenam. If missing then constructed from Sys.time()
+#' @param filenam   filenam. 
 #' @param dir       saving location on disk.
 #' @param dryrun    when TRUE return call only. default to FALSE.
 #' @param compress  when TRUE archive the sql output. default to TRUE.
@@ -62,7 +62,7 @@ mariacon <- function(db) {
 #' }
 #'
 #'
-mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam, dir = getwd(), 
+mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam = "dbdump.sql", dir = getwd(), 
     dryrun = FALSE, compress=TRUE, ...) {
 
 
@@ -125,14 +125,8 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
         bkdir = cnf$dir$backupdir
 
 
-        con <- dbcon(server = "scidb")
-        stopifnot(con@host == host)
-        on.exit(dbDisconnect(con))
-
-
         # db listing
-        x = dbq(con, "SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES`")[! db %in% exclude]
-
+        x = dbq(q= "SELECT DISTINCT TABLE_SCHEMA db FROM information_schema.`TABLES`")[! db %in% exclude]
 
 
         # prepare dir locations 
@@ -153,48 +147,17 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
 
 
     # DUMP mysql.global_priv (users and privileges)
-        # users
-        # mysqldump(db = 'mysql', tables = 'global_priv', host = host, user = user, pwd = pwd, dir = paste0(maindir, '/USERS') )
-        # privileges
-        con = dbConnect(RMariaDB::MariaDB(), user = user, password = pwd, host = host)
-
-        x = dbGetQuery(con, "SELECT distinct User FROM mysql.user where user not in 
-                                ('debian-sys-maint', 'root', 'phpmyadmin');")
-        setDT(x)
-        x = x[, dbGetQuery(con, glue("SHOW GRANTS FOR '{User}'@'%'") ), by = User]
-        setnames(x, c('user', 'grants'))
-        fwrite(x, paste0(maindir, '/USERS/grants.txt'))
-
-        dbDisconnect(con)  
-
-
-    # FEEDBACK
-
-        tt = difftime(Sys.time(), started.at, units = 'mins') %>% round %>% as.character
+        x = dbq(q = "SELECT distinct User FROM mysql.user where user not in 
+                            ('debian-sys-maint', 'root', 'phpmyadmin');")
+        x[, sql := glue_data(.SD, "SHOW GRANTS FOR '{User}'@'%'"), by = User]
         
-        du = system(paste('du --max-depth=0 -B 1M', maindir), intern = TRUE) %>% 
-                str_split('\\t', simplify = TRUE) %>%
-                extract(1) %>% 
-                as.numeric 
-        du = round(du/1000,  3)
+        o = x[, dbq(q = sql) |> try(silent = TRUE), by = User]
 
 
-        nfiles = system(paste('find',  maindir , '-type f | wc -l') , intern = TRUE)
-
-        smallestFile = system( glue("find {maindir}/DATA -type f| grep sql.gz | awk 'NR==1'"), intern = TRUE)
-        size_smallestFile = file.size(smallestFile)*1e-6
-        size_smallestFile = round(size_smallestFile, 1) %>% paste(., 'MB')    
-        smallestFile = paste( basename(smallestFile), size_smallestFile )
-        
-        msg = paste(
-            glue('{tt}  mins'), 
-            glue('{nfiles} files'),
-            glue('{du} GB'),
-            glue('{smallestFile}'),
-            sep = '\n')
+        setnames(o, c('user', 'grants'))
+        fwrite(o, paste0(maindir, '/USERS/grants.txt'))
 
 
-        msg
 
     }
 
@@ -378,14 +341,20 @@ rm_old_backups <- function(path = config::get('dir')$backupdir , keep = 10) {
     x[, i := .I]
 
     x = x[, dirSize := dir_size(p), by = i]
+    
+    x[dirSize == 0, fs::dir_delete(p), by = i]
+
     x = x[dirSize > 0]
 
     setorder(x, -dt)
     x[, i := .I]
     x[, remove := i > keep]
-    x[(remove), removed := fs::dir_delete(p)]
 
-    x[!is.na(removed), removed]
+    x = x[(remove)]    
+
+    o = x[, removed := fs::dir_delete(p) , by = i]
+
+    nrow(o)
 
     }
 
