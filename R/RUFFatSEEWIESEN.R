@@ -27,26 +27,30 @@ RUFFatSEEWIESEN.photos_prepare <- function(last_pk, basepath = config::get()$dir
    )]
 
    o[, photo_exists := fs::file_exists(glue_data(.SD, "{basepath}{path}"))]
-   o[, i := 1:.N, .(ID, date)]
    
-   # photo parts
-   pw = data.table(photo_class = c(
-      "back",
-      "left side",
-      "left wing above",
-      "right wing above",
-      "right side",
-      "right wing below",
-      "left wing below",
-      "front&legs",
-      "tail above",
-      "ruff"
-   ))[, i := .I]
-   
-   o = merge(o, pw, by = "i", sort = FALSE)
-   
-   o = o[, .(ID, photo_class, path, photo_exists, ad_pk)]
+   if (nrow(o) > 0) {
+      o[, i := 1:.N, .(ID, date)]
 
+      # photo parts
+      pw = data.table(photo_class = c(
+         "back",
+         "left side",
+         "left wing above",
+         "right wing above",
+         "right side",
+         "right wing below",
+         "left wing below",
+         "front&legs",
+         "tail above",
+         "ruff"
+      ))[, i := .I]
+
+      o = merge(o, pw, by = "i", sort = FALSE)
+
+      o = o[, .(ID, photo_class, path, photo_exists, ad_pk)]
+   }
+
+   o
 }
 
 
