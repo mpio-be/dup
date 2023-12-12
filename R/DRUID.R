@@ -19,20 +19,24 @@ from_timestamp <- function(x) {
 DRUID.downloadNew <- function(what) {
 
   crd = config::get(config = "druid_api")
-  logK <- ecotopia_login(crd$generic$un, crd$generic$pwd, crd$kw1, crd$kw2)
-  logA <- ecotopia_login(crd$pesa2022$un, crd$pesa2022$pwd, crd$kw1, crd$kw2)
-  logL <- ecotopia_login(crd$dsp2022$un, crd$dsp2022$pwd, crd$kw1, crd$kw2)
+  logK = ecotopia_login(crd$generic$un, crd$generic$pwd, crd$kw1, crd$kw2)
+  logA = ecotopia_login(crd$pesa2022$un, crd$pesa2022$pwd, crd$kw1, crd$kw2)
+  logL = ecotopia_login(crd$dsp2022$un, crd$dsp2022$pwd, crd$kw1, crd$kw2)
  
-  d = dbq(q = glue("SELECT x.id, d.program_id,x.last_timestamp FROM
-                    (SELECT id,  max(timestamp) last_timestamp FROM DRUID.{what} GROUP BY id ) x
-                      JOIN DRUID.device_list d on x.id = d.id"), server = "scidb")
+  # last time stamps 
+  ltt = dbq(q = glue("SELECT id,  max(timestamp) last_timestamp FROM DRUID.{what} GROUP BY id "), server = "scidb")
+  ddl = dbq(q = "SELECT * FROM DRUID.device_list", server = "scidb")
+
+
+  d = merge(ddl, ltt, by = "id", all.x = TRUE)
+  d[is.na(last_timestamp), last_timestamp := from_timestamp("2000-01-01T00:00:00Z")]
     
   d[program_id == "Kempenaers", lstr := logK]
   d[program_id == "aaulsebrook", lstr := logA]
   d[program_id == "luke.eberhart", lstr := logL]
 
  
-  o <- foreach(i = 1:nrow(d), .errorhandling = "pass") %do% {
+  o = foreach(i = 1:nrow(d), .errorhandling = "pass") %do% {
     if (interactive())  print(i)
     
     
