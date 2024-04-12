@@ -431,7 +431,7 @@ txtdump <- function(db, table, remote = TRUE, dir = ".", cnf = config::get()) {
 #' \dontrun{
 #' require(dup)
 #' Sys.setenv(R_CONFIG_ACTIVE = "localhost")
-#' db_copy("FIELD_BTatWESTERHOLZ", "remotehost_1", "host")
+#' db_copy(db = "FIELD_2024_NOLAatDUMMERSEE", src = "remotehost_1", dst ="host")
 #' }
 
 
@@ -451,7 +451,10 @@ db_copy <- function(db, src, dst, cnf = config::get()) {
     # get dump from remote
     ss <- ssh_connect(glue("{src_dbuser}@{src_host}"), passwd = src_syspwd)
     mycall <- mysqldump(
-        db = db, user = src_dbuser, pwd = src_dbpwd,
+        db = db, 
+        user = src_dbuser, 
+        pwd = src_dbpwd,
+        host = src_host,
         dir = glue("/home/{src_dbuser}"),
         dryrun = TRUE, compress = FALSE
     )
