@@ -12,7 +12,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # RUFFatSEEWIESEN
 0 18 * * * Rscript --default-packages=dup -e 'RUFFatSEEWIESEN_photos.pipeline()'
 
-#DRUID (aver hour, 15 min past)
+#DRUID (every hour, 15 min past)
 15 * * * * Rscript --default-packages=dup -e  'DRUID.pipeline()'
 
 # ---- [Maintenance] ----

@@ -3,7 +3,7 @@
 \name{db_copy}
 \alias{db_copy}
 \title{db_copy
-copy from one host to another. should be run from 'dst'.}
+database copy from src to dst. It has to be run on dst.}
 \usage{
 db_copy(db, src, dst, cnf = config::get())
 }
@@ -18,13 +18,13 @@ default to config::get().}
 }
 \description{
 db_copy
-copy from one host to another. should be run from 'dst'.
+database copy from src to dst. It has to be run on dst.
 }
 \examples{
 \dontrun{
 require(dup)
 Sys.setenv(R_CONFIG_ACTIVE = "localhost")
-db_copy("FIELD_BTatWESTERHOLZ", "remotehost_1", "host")
+db_copy(db = "FIELD_2024_NOLAatDUMMERSEE", src = "remotehost_1", dst ="host")
 }
 
 }

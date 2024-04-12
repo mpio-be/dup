@@ -10,7 +10,7 @@ mysqldump(
   user,
   pwd,
   host = "127.0.0.1",
-  filenam,
+  filenam = "dbdump.sql",
   dir = getwd(),
   dryrun = FALSE,
   compress = TRUE,
@@ -28,7 +28,7 @@ mysqldump(
 
 \item{host}{default to '127.0.0.1'}
 
-\item{filenam}{filenam. If missing then constructed from Sys.time()}
+\item{filenam}{filenam.}
 
 \item{dir}{saving location on disk.}
 
@@ -48,9 +48,9 @@ mysqldump
 }
 \examples{
 \dontrun{
-fp = mysqldump('tests',  user = 'testuser', dir = tempdir() , dryrun = TRUE)
-mysqldump('tests', 't1 t2', 'testuser' , dir = tempdir() )
-mysqldump('tests', 't1', 'testuser' , dir = tempdir(), compress = FALSE )
+fp = mysqldump('tests',  user = 'testuser', pwd = '', dir = tempdir(), filenam = "tempbk.sql" , dryrun = TRUE)
+mysqldump('tests', 't1 t2', 'testuser', pwd = '', dir = tempdir(), filenam = "tempbk.sql" , dryrun = TRUE)
+mysqldump('tests', 't1', 'testuser', pwd = '', dir = tempdir(), filenam = "tempbk.sql", compress = FALSE , dryrun = TRUE)
 }
 
 
