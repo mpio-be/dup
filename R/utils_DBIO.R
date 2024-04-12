@@ -454,7 +454,7 @@ db_copy <- function(db, src, dst, cnf = config::get()) {
         dryrun   = FALSE,
         compress = FALSE
     )
-    on.exit(file.remove(path))
+    on.exit(file.remove(dump_path))
     
     # upload to local database
     mysqlrestore(dump_path, db, dst_dbuser, dst_dbpwd, dst_host)
