@@ -24,7 +24,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 0 0        * * *    Rscript --default-packages=dup -e 'backup.pipeline()'     
 
 # backup from field servers (every day at 2:00)
-0 2 * * *  Rscript --default-packages=dup -e 'db_copy("FIELD_2024_NOLAatDUMMERSEE", "remotehost_1", "host")'     
+# 0 2 * * *  Rscript --default-packages=dup -e 'db_copy("FIELD_2024_NOLAatDUMMERSEE", "remotehost_1", "host")'     
 
 
 
