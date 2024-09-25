@@ -6,8 +6,11 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # ---- [DB updates] ----
 
-# ARGOS (avery hour)
-0 */1       * * *  Rscript --default-packages=dup -e 'ARGOS.pipeline();'
+# ARGOS (every 3 hours)
+0 */3       * * *  Rscript --default-packages=dup -e 'ARGOS.pipeline();'
+
+# ARGOS2 (every hour)
+0 */1       * * *  Rscript --default-packages=dup -e 'ARGOS2.pipeline();'
 
 # RUFFatSEEWIESEN
 0 18 * * * Rscript --default-packages=dup -e 'RUFFatSEEWIESEN_photos.pipeline()'
