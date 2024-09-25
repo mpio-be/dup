@@ -1,12 +1,7 @@
 
-#' ARGOS2
-#' @param X data.table creaded by ARGOS2.downloadNew
-#' @name ARGOS2
-NULL
-#> NULL
 
 
-#' @rdname ARGOS2
+#' ARGOS2 pipeline (download)
 #' @export
 ARGOS2.downloadNew <- function( ) {
   
@@ -67,7 +62,7 @@ ARGOS2.downloadNew <- function( ) {
     X[, locationDate := ymd_hms(locationDate) |> as.character()]
     X[, bestMsgDate  := ymd_hms(bestMsgDate)  |> as.character()]
 
-    X[, last_bestMsgDate := NULL]
+    X[, let(last_bestMsgDate = NULL, nbDaysFromNow = NULL)]
 
   
   } else X = data.table()
@@ -76,7 +71,7 @@ ARGOS2.downloadNew <- function( ) {
 
 }
 
-#' @rdname ARGOS2
+#' ARGOS2 pipeline (upload)
 #' @export
 ARGOS2.update_incoming <- function(x) {
 

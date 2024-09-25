@@ -1,13 +1,6 @@
-#' Database Unattended Pipelines 
-#' @note On error all pipelines should return FALSE and send a pushover
-#' @name dup
-NULL
-#> NULL
-
 
 #' Argos pipeline
 #' @export
-#' @name dup
 ARGOS.pipeline <- function() {
     
     task1 = extract_email_attachements(maildir="ARGOS") |> try(silent = TRUE)
@@ -18,25 +11,19 @@ ARGOS.pipeline <- function() {
 
     try_outcome(task1, task2, task3, message = "ARGOS.pipeline is failing!")
 
-    }
-
-
-
+}
 
 #' DB internal updates pipeline
 #' @export
-#' @name dup
 DB_internal_updates.pipeline <- function() {
     
     task = RUFFatSEEWIESEN.change_ID() |> try(silent = TRUE)
     try_outcome(task, message = "DB_internal_updates.pipeline is failing!")
     
-    }
+}
 
-
-#' backup pipeline
+#' Backup pipeline
 #' @export
-#' @name dup
 backup.pipeline <- function(cnf = config::get('host') ) {
 
     con <- dbcon(server = "scidb")
@@ -52,12 +39,11 @@ backup.pipeline <- function(cnf = config::get('host') ) {
 
     try_outcome(task1, task2, message = "backup.pipeline is failing!")
 
-    }
+}
 
 
 #' RUFFatSEEWIESEN pipelines
 #' @export
-#' @name dup
 RUFFatSEEWIESEN_photos.pipeline <- function(...) {
 
     task1 = RUFFatSEEWIESEN.photos_update() |> try(silent = TRUE)
@@ -68,13 +54,12 @@ RUFFatSEEWIESEN_photos.pipeline <- function(...) {
 
 }
 
-#' DRUID pipeline
+#' Argos2 pipeline
 #' @export
-#' @name dup
 Argos2.pipeline <- function() {
 
     task1  = ARGOS2.downloadNew() |> try(silent = TRUE)
     task2  = ARGOS2.update_incoming(task1) |> try(silent = TRUE)
- 
+
     try_outcome(task1, task2, message = "ARGOS2.pipeline is failing!")
 }
