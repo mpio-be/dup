@@ -2,8 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{try_outcome}
 \alias{try_outcome}
-\title{Try outcome
-try_outcome}
+\title{Try outcome}
 \usage{
 try_outcome(..., message)
 }
@@ -14,5 +13,4 @@ try_outcome(..., message)
 }
 \description{
 Try outcome
-try_outcome
 }

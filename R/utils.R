@@ -114,7 +114,6 @@ dir_size <- function(dr) {
 }
 
 #' Try outcome
-#' try_outcome
 #' @param ... one or several try() values
 #' @param message to pass to push_msg
 #' @export
