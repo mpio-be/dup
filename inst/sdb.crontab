@@ -12,7 +12,6 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # ARGOS2 (every hour)
 0 */1       * * *  Rscript --default-packages=dup -e 'ARGOS2.pipeline();'
 
-
 # RUFFatSEEWIESEN
 0 18 * * * Rscript --default-packages=dup -e 'RUFFatSEEWIESEN_photos.pipeline()'
 
