@@ -13,6 +13,17 @@ ARGOS.pipeline <- function() {
 
 }
 
+#' Argos2 pipeline
+#' @export
+ARGOS2.pipeline <- function() {
+
+    task1  = ARGOS2.downloadNew() |> try(silent = TRUE)
+    task2  = ARGOS2.update_incoming(task1) |> try(silent = TRUE)
+
+    try_outcome(task1, task2, message = "ARGOS2.pipeline is failing!")
+}
+
+
 #' DB internal updates pipeline
 #' @export
 DB_internal_updates.pipeline <- function() {
@@ -52,14 +63,4 @@ RUFFatSEEWIESEN_photos.pipeline <- function(...) {
     
     try_outcome(task1, task2, message = "RUFFatSEEWIESEN_photos.pipeline is failing!")
 
-}
-
-#' Argos2 pipeline
-#' @export
-Argos2.pipeline <- function() {
-
-    task1  = ARGOS2.downloadNew() |> try(silent = TRUE)
-    task2  = ARGOS2.update_incoming(task1) |> try(silent = TRUE)
-
-    try_outcome(task1, task2, message = "ARGOS2.pipeline is failing!")
 }

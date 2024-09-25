@@ -2,8 +2,8 @@
 
 export(ARGOS.pipeline)
 export(ARGOS2.downloadNew)
+export(ARGOS2.pipeline)
 export(ARGOS2.update_incoming)
-export(Argos2.pipeline)
 export(DB_internal_updates.pipeline)
 export(DRUID.downloadNew)
 export(RUFFatSEEWIESEN.change_ID)
