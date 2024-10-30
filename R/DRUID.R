@@ -16,24 +16,20 @@ from_timestamp <- function(x) {
 #' x = DRUID.downloadNew(what = "GPS")
 #' x = DRUID.downloadNew(what = "ENV")
 
-DRUID.downloadNew <- function(what) {
+DRUID.downloadNew <- function(what, SERVER = "scidb") {
 
   crd = config::get(config = "druid_api")
-  logK = ecotopia_login(crd$generic$un, crd$generic$pwd, crd$kw1, crd$kw2)
-  logA = ecotopia_login(crd$pesa2022$un, crd$pesa2022$pwd, crd$kw1, crd$kw2)
-  logL = ecotopia_login(crd$dsp2022$un, crd$dsp2022$pwd, crd$kw1, crd$kw2)
- 
+  logK = ecotopia_login(crd$generic$un,  crd$generic$pwd,  crd$kw1, crd$kw2)
+
   # last time stamps 
-  ltt = dbq(q = glue("SELECT id,  max(timestamp) last_timestamp FROM DRUID.{what} GROUP BY id "), server = "scidb")
-  ddl = dbq(q = "SELECT * FROM DRUID.device_list", server = "scidb")
+  ltt = dbq(q = glue("SELECT id,  max(timestamp) last_timestamp FROM DRUID.{what} GROUP BY id "), server = SERVER)
+  ddl = dbq(q = "SELECT * FROM DRUID.device_list", server = SERVER)
 
 
   d = merge(ddl, ltt, by = "id", all.x = TRUE)
   d[is.na(last_timestamp), last_timestamp := from_timestamp("2000-01-01T00:00:00Z")]
     
   d[program_id == "Kempenaers", lstr := logK]
-  d[program_id == "aaulsebrook", lstr := logA]
-  d[program_id == "luke.eberhart", lstr := logL]
 
  
   o = foreach(i = 1:nrow(d), .errorhandling = "pass") %do% {
@@ -43,7 +39,7 @@ DRUID.downloadNew <- function(what) {
     dtm = d[i, last_timestamp]
 
     oi = ecotopia_data(d[i, lstr], d[i, id],
-      datetime = to_timestamp(dtm - 3600), # fetch one hour earlier to prevent data loss
+      datetime = to_timestamp(dtm - 3600*2), # fetch two hours earlier to prevent data loss
       what = tolower(what),
       verbose = FALSE
     )
@@ -64,7 +60,7 @@ DRUID.downloadNew <- function(what) {
   O[, updated_at := from_timestamp(updated_at) ]
   O[,  timestamp :=  from_timestamp(timestamp) ]
   
-  con = dbcon(db = "DRUID", server = "scidb")
+  con = dbcon(db = "DRUID", server = SERVER)
   ok = DBI::dbWriteTable(con, what, O, append = TRUE, row.names = FALSE)
   DBI::dbDisconnect(con)
   if (ok) n = nrow(O)

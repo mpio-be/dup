@@ -1,4 +1,14 @@
 
+#' Druid pipeline
+#' @export
+DRUID.pipeline <- function () {
+    task1 = try(DRUID.downloadNew(what = "GPS"), silent = TRUE)
+    task2 = try(DRUID.downloadNew(what = "ODBA"), silent = TRUE)
+    task3 = try(DRUID.downloadNew(what = "ENV"), silent = TRUE)
+    try_outcome(task1, task2, task3, message = "DRUID.pipeline is failing!")
+}
+
+
 #' Argos pipeline
 #' @export
 ARGOS.pipeline <- function() {
