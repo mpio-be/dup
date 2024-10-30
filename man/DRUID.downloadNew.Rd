@@ -5,7 +5,7 @@
 \title{Download the latest DRUID data and updates DB
 Fetch DRUID data}
 \usage{
-DRUID.downloadNew(what)
+DRUID.downloadNew(what, SERVER = "scidb")
 }
 \arguments{
 \item{what}{GPS, ODBA or ENV}
