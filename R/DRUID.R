@@ -16,10 +16,10 @@ from_timestamp <- function(x) {
 #' x = DRUID.downloadNew(what = "GPS")
 #' x = DRUID.downloadNew(what = "ENV")
 
-DRUID.downloadNew <- function(what, SERVER = "scidb") {
+DRUID.downloadNew <- function(what, SERVER = "scidb", interactive = interactive()) {
 
   crd = config::get(config = "druid_api")
-  logK = ecotopia_login(crd$generic$un,  crd$generic$pwd,  crd$kw1, crd$kw2)
+  logString = ecotopia_login(crd$generic$un,  crd$generic$pwd,  crd$kw1, crd$kw2)
 
   # last time stamps 
   ltt = dbq(q = glue("SELECT id,  max(timestamp) last_timestamp FROM DRUID.{what} GROUP BY id "), server = SERVER)
@@ -29,19 +29,18 @@ DRUID.downloadNew <- function(what, SERVER = "scidb") {
   d = merge(ddl, ltt, by = "id", all.x = TRUE)
   d[is.na(last_timestamp), last_timestamp := from_timestamp("2000-01-01T00:00:00Z")]
     
-  d[program_id == "Kempenaers", lstr := logK]
 
  
   o = foreach(i = 1:nrow(d), .errorhandling = "pass") %do% {
-    if (interactive())  print(i)
+    if (interactive)  print(i)
     
     
     dtm = d[i, last_timestamp]
 
-    oi = ecotopia_data(d[i, lstr], d[i, id],
+    oi = ecotopia_data(logString, d[i, id],
       datetime = to_timestamp(dtm - 3600*2), # fetch two hours earlier to prevent data loss
       what = tolower(what),
-      verbose = FALSE
+      verbose = interactive
     )
     
     oi[from_timestamp(timestamp) > dtm]
