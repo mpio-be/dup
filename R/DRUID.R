@@ -33,8 +33,7 @@ DRUID.downloadNew <- function(what, SERVER = "scidb" ) {
  
   o = foreach(i = 1:nrow(d), .errorhandling = "stop") %do% {
     
-    print(d[i, .(i, id, last_timestamp)])
-        
+            
     dtm = d[i, last_timestamp]
 
     oi = ecotopia_data(logString, d[i, id],
@@ -43,8 +42,10 @@ DRUID.downloadNew <- function(what, SERVER = "scidb" ) {
       verbose = interactive
     )
     
-    oi[from_timestamp(timestamp) > dtm]
+    oi = oi[from_timestamp(timestamp) > dtm]
 
+    print(d[i, .(i, id, last_timestamp, n = nrow(oi))])
+    oi
   }
 
   # O = rbindlist(o[!sapply(o, inherits, what = "error")])
