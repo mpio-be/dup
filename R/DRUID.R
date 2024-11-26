@@ -31,7 +31,7 @@ DRUID.downloadNew <- function(what, SERVER = "scidb", interactive = FALSE) {
     
 
  
-  o = foreach(i = 1:nrow(d), .errorhandling = "pass") %do% {
+  o = foreach(i = 1:nrow(d), .errorhandling = "stop") %do% {
     if (interactive)  print(i)
     
     
@@ -47,7 +47,8 @@ DRUID.downloadNew <- function(what, SERVER = "scidb", interactive = FALSE) {
 
   }
 
-  O = rbindlist(o[!sapply(o, inherits, what = "error")])
+  # O = rbindlist(o[!sapply(o, inherits, what = "error")])
+  O = rbindlist(o)
   
 
   if(nrow(O) > 0) {
