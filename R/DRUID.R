@@ -36,15 +36,22 @@ DRUID.downloadNew <- function(what, SERVER = "scidb" ) {
             
     dtm = d[i, last_timestamp]
 
-    oi = ecotopia_data(logString, d[i, id],
-      datetime = to_timestamp(dtm - 3600*2), # fetch two hours earlier to prevent data loss
-      what = tolower(what),
-      verbose = interactive
+    oi = try(
+      ecotopia_data(logString, d[i, id],
+        datetime = to_timestamp(dtm - 3600 * 2), # fetch two hours earlier to prevent data loss
+        what = tolower(what),
+        verbose = TRUE
+      ),
+      silent = TRUE
     )
+
+    if(inherits(oi, 'try-error')) oi = data.table()
     
+    if(nrow(oi) > 0)
     oi = oi[from_timestamp(timestamp) > dtm]
 
-    print(d[i, .(i, id, last_timestamp, n = nrow(oi))])
+    # this can be piped to a log file if necessary
+    print(d[i, .(i, id, last_timestamp, n = nrow(oi), success = !inherits(oi, 'try-error'))])
     oi
   }
 
