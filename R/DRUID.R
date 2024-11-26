@@ -16,7 +16,7 @@ from_timestamp <- function(x) {
 #' x = DRUID.downloadNew(what = "GPS")
 #' x = DRUID.downloadNew(what = "ENV")
 
-DRUID.downloadNew <- function(what, SERVER = "scidb", interactive = interactive()) {
+DRUID.downloadNew <- function(what, SERVER = "scidb", interactive = FALSE) {
 
   crd = config::get(config = "druid_api")
   logString = ecotopia_login(crd$generic$un,  crd$generic$pwd,  crd$kw1, crd$kw2)
