@@ -2,9 +2,9 @@
 #' Druid pipeline
 #' @export
 DRUID.pipeline <- function () {
-    task1 = try(DRUID.downloadNew(what = "GPS"), silent = TRUE)
-    task2 = try(DRUID.downloadNew(what = "ODBA"), silent = TRUE)
-    task3 = try(DRUID.downloadNew(what = "ENV"), silent = TRUE)
+    task1 = try(DRUID.downloadNew(what = "GPS", logfile =  "log_druid_GPS.csv"), silent = TRUE)
+    task2 = try(DRUID.downloadNew(what = "ODBA", logfile =  "log_druid_ODBA.csv"), silent = TRUE)
+    task3 = try(DRUID.downloadNew(what = "ENV", , logfile =  "log_druid_ENV.csv"), silent = TRUE)
     try_outcome(task1, task2, task3, message = "DRUID.pipeline is failing!")
 }
 

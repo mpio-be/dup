@@ -16,8 +16,13 @@ from_timestamp <- function(x) {
 #' x = DRUID.downloadNew(what = "GPS")
 #' x = DRUID.downloadNew(what = "ENV")
 
-DRUID.downloadNew <- function(what, SERVER = "scidb" ) {
+DRUID.downloadNew <- function(what, SERVER = "scidb", logfile) {
 
+  if(!missing(logfile)) {
+    file.remove(logfile)
+  }    
+  
+  
   crd = config::get(config = "druid_api")
   logString = ecotopia_login(crd$generic$un,  crd$generic$pwd,  crd$kw1, crd$kw2)
 
@@ -44,19 +49,42 @@ DRUID.downloadNew <- function(what, SERVER = "scidb" ) {
       ),
       silent = TRUE
     )
-
-    if(inherits(oi, 'try-error')) oi = data.table()
     
-    if(nrow(oi) > 0)
-    oi = oi[from_timestamp(timestamp) > dtm]
+    it_worked =!inherits(oi, 'try-error')
+    
+    if(inherits(oi, 'try-error')) {
+      
+      oi = data.table(timestamp = as.POSIXct(NULL))
+    }
+    
+    if(nrow(oi) > 0 & it_worked) {
 
-    # this can be piped to a log file if necessary
-    print(d[i, .(i, id, last_timestamp, n = nrow(oi), success = !inherits(oi, 'try-error'))])
+      oi = oi[from_timestamp(timestamp) > dtm]
+      }
+      
+    if(!missing(logfile)) {
+      
+      newlt =  if(nrow(oi)==0) NA else max(from_timestamp(oi$timestamp))
+      
+      x = 
+      d[i, .(
+        i, 
+        id, 
+        last_db_timestamp = last_timestamp, 
+        new_last_timestamp = newlt,
+        n = nrow(oi), 
+        success = it_worked)
+        ]
+      
+      fwrite(x, logfile, append = TRUE)
+
+    }
+
     oi
   }
 
   # O = rbindlist(o[!sapply(o, inherits, what = "error")])
-  O = rbindlist(o)
+  O = rbindlist(o, fill = TRUE)
   
 
   if(nrow(O) > 0) {
