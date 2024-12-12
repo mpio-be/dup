@@ -1,7 +1,9 @@
 to_timestamp <- function(x) {
   format(x, format = "%Y-%m-%dT%H:%M:%SZ")
-  }
+}
 
+# from_timestamp("2024-12-07T06:01:00Z")
+# identical("2024-12-07T06:01:00Z", from_timestamp("2024-12-07T06:01:00Z") |> to_timestamp())
 from_timestamp <- function(x) {
   with_tz(ymd_hms(x), "UTC")
   }
@@ -59,53 +61,43 @@ DRUID.downloadNew <- function(what, SERVER = "scidb", logfile) {
     
     if(nrow(oi) > 0 & it_worked) {
 
-      oi = oi[from_timestamp(timestamp) > dtm]
+      oi[, timestamp := from_timestamp(timestamp)]
+      oi[, updated_at := from_timestamp(updated_at)]
+      oi = oi[timestamp > dtm]
+      setnames(oi, "device_id", "id")
+
+      if(what == "GPS")
+        oi[latitude == 200, ":="(latitude = NA, longitude = NA, altitude = NA, hdop = NA, vdop = NA)]
+    
+
+      # DB UPDATE
+      con = dbcon(db = "DRUID", server = SERVER)
+      ok = DBI::dbWriteTable(con, what, oi, append = TRUE, row.names = FALSE)
+      DBI::dbDisconnect(con)
+
+
       }
       
-    if(!missing(logfile)) {
-      
-      newlt =  if(nrow(oi)==0) NA else max(from_timestamp(oi$timestamp))
-      
-      x = 
-      d[i, .(
-        i, 
-        id, 
-        last_db_timestamp = last_timestamp, 
-        new_last_timestamp = newlt,
-        n = nrow(oi), 
-        success = it_worked)
-        ]
-      
+    if (!missing(logfile)) {
+      newlt = if (nrow(oi) == 0) NA else max(from_timestamp(oi$timestamp))
+
+      x =
+        d[i, .(
+          i,
+          id,
+          last_db_timestamp = last_timestamp,
+          new_last_timestamp = newlt,
+          n = nrow(oi),
+          success = it_worked
+        )]
+
       fwrite(x, logfile, append = TRUE)
-
     }
+    
 
-    oi
+
   }
 
-  # O = rbindlist(o[!sapply(o, inherits, what = "error")])
-  O = rbindlist(o, fill = TRUE)
-  
-  O[, timestamp := as.POSIXct(timestamp, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")]
-  O[, updated_at := as.POSIXct(updated_at, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")]
 
-  if(nrow(O) > 0) {
-  
-  if(what == "GPS" && nrow(O) > 0)
-    O[latitude == 200, ":="(latitude = NA, longitude = NA, altitude = NA, hdop = NA, vdop = NA)]
- 
-    setnames(O, "device_id", "id")
-    O[, updated_at := from_timestamp(updated_at) ]
-    O[,  timestamp :=  from_timestamp(timestamp) ]
-    
-    con = dbcon(db = "DRUID", server = SERVER)
-    ok = DBI::dbWriteTable(con, what, O, append = TRUE, row.names = FALSE)
-    DBI::dbDisconnect(con)
-    if (ok) n = nrow(O)
-    
-
-  } else n = 0
-
-  n
 
 }
