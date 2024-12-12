@@ -86,6 +86,8 @@ DRUID.downloadNew <- function(what, SERVER = "scidb", logfile) {
   # O = rbindlist(o[!sapply(o, inherits, what = "error")])
   O = rbindlist(o, fill = TRUE)
   
+  O[, timestamp := as.POSIXct(timestamp, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")]
+  O[, updated_at := as.POSIXct(updated_at, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")]
 
   if(nrow(O) > 0) {
   
