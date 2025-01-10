@@ -32,8 +32,8 @@ ARGOS2.pipeline <- function() {
     locations  = ARGOS2.prepare_locations(NEW) |> try(silent = TRUE)
     sensors    = ARGOS2.prepare_sensors(NEW) |> try(silent = TRUE)
    
-    update_locations  = ARGOS2.update("locations") |> try(silent = TRUE)
-    update_sensors    = ARGOS2.update("sensors") |> try(silent = TRUE)
+    update_locations  = ARGOS2.update(locations, "locations") |> try(silent = TRUE)
+    update_sensors    = ARGOS2.update(sensors, "sensors") |> try(silent = TRUE)
 
     try_outcome(NEW, locations, sensors,update_locations,update_sensors, message = "ARGOS2.pipeline is failing!")
 

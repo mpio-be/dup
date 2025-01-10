@@ -91,6 +91,6 @@ ARGOS2.update <- function(x, what = c("locations", "sensors")) {
     con = dbcon(db = "ARGOS2", server = "scidb")
     ok = DBI::dbWriteTable(con, what, x, append = TRUE, row.names = FALSE)
     DBI::dbDisconnect(con)
-
+    ok
 
 }
