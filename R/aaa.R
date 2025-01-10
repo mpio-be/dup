@@ -2,7 +2,7 @@
 
 #' @import methods utils stats RMariaDB RSQLite data.table 
 #' @import dbo apis
-#' @import magrittr stringr glue pushoverr  anytime crayon
+#' @import magrittr stringr glue pushoverr  anytime crayon forcats
 #' @import foreach future doFuture 
 #' @import fs ssh
 #' @import webp

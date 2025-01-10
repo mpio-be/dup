@@ -1,45 +1,51 @@
 
 
 
-#' ARGOS2 pipeline (download)
+#' ARGOS2 pipeline
 #' @export
-ARGOS2.downloadNew <- function( ) {
-  
+ARGOS2.downloadNew <- function() {
   crd = config::get(config = "argos_api")
   login = argos_login(un = crd$un, pwd = crd$pwd, wsdl_server = crd$wsdl_server)
-  
+
   ids = argos_devlist(login)
   ids[, platformId := as.integer(platformId)]
 
-  # locationDate, days ago, by platformId
-  # will base the subset on bestMsgDate. locationDate can be NA. bestMsgDate is close in time (+-15min) to locationDate.
   ldt = dbq(
-    q = "SELECT  platformId, MAX(bestMsgDate) last_bestMsgDate
-          FROM ARGOS2.incoming
+    q = "SELECT  platformId,
+          MAX(locationDate) AS last_locationDate
+          FROM ARGOS2.locations
             GROUP BY platformId",
     db = "ARGOS2",
     server = "scidb"
   )
-  ldt[, last_bestMsgDate := force_tz(last_bestMsgDate, tz = "UTC")]
-  
+  ldt[, last_locationDate := force_tz(last_locationDate, tz = "UTC")]
+
   ldt = merge(ids, ldt, by = "platformId", all.x = TRUE)
-  ldt[, nbDaysFromNow := difftime(Sys.time(), last_bestMsgDate, units = "days") |> ceiling() |> as.numeric() ]
-  ldt[, nbDaysFromNow := nbDaysFromNow + 1]
-  ldt[is.na(nbDaysFromNow) , nbDaysFromNow := 20]
-  ldt[nbDaysFromNow > 20, nbDaysFromNow := 20]
-  setorder(ldt, nbDaysFromNow)
+
+  setorder(ldt, -last_locationDate)
+
+  ldt[is.na(last_locationDate), last_locationDate := force_tz(Sys.Date() - 10, tz = "UTC") |> as.POSIXct()]
+
 
   # Get data
-  o = foreach(i = 1:nrow(ldt)) %do% {
+  o = foreach(i = 1:nrow(ldt), .errorhandling = "pass") %do% {
     print(i)
-    argos_data(login, platformId = ldt[i, platformId], nbDaysFromNow = ldt[i, nbDaysFromNow])
+    argos_data(login, platformId = ldt[i, platformId], startDate = ldt[i, last_locationDate] |> to_timestamp())
   }
-  
-  X = rbindlist(o, fill = TRUE, use.names = TRUE)
-  
-  if (nrow(X) > 0) {
 
-    X = X[, .(
+  o = o[!sapply(o, inherits, what = "error")]
+
+  o = rbindlist(o, fill = TRUE, use.names = TRUE)
+  
+  setnames(o, make.unique(names(o)))
+
+  o
+  }
+
+#' @export
+ARGOS2.prepare_locations <- function(X) {
+  
+    X[, .(
       programNumber, platformId, platformType, platformModel,
       locationDate, bestMsgDate, latitude, longitude, locationClass, errorRadius, semiMajor, semiMinor, orientation,
       satellite, duration, bestLevel,
@@ -48,35 +54,42 @@ ARGOS2.downloadNew <- function( ) {
       nopc, nbMessage, frequency,
       altitude
     )]
-    X[, bestMsgDate := ymd_hms(bestMsgDate)]
-
-    X = merge(X, ldt, by = "platformId", all.x = TRUE, sort = FALSE)
-
-
-    X[, keep := TRUE]
-    X[bestMsgDate <= last_bestMsgDate, keep := FALSE]
-
-    X = X[(keep)][, keep := NULL]
-
-
-    X[, locationDate := ymd_hms(locationDate) |> as.character()]
-    X[, bestMsgDate  := ymd_hms(bestMsgDate)  |> as.character()]
-
-    X[, let(last_bestMsgDate = NULL, nbDaysFromNow = NULL)]
-
-  
-  } else X = data.table()
-
-  X
 
 }
 
-#' ARGOS2 pipeline (upload)
+#' ARGOS2 pipeline 
 #' @export
-ARGOS2.update_incoming <- function(x) {
+ARGOS2.prepare_sensors <- function(X) {
+
+  x = X[!formatName %in% c("ZE", "SPECIAL INFO FRAME #2"), .(
+    platformId,timestamp = bestMsgDate,
+    name,   value, 
+    name.1, value.1,
+    name.2, value.2,
+    name.3, value.3,
+    name.4, value.4,
+    name.5, value.5,
+    name.6, value.6,
+    name.7, value.7
+  )]
+  
+  # long format
+  x = melt(x, id.vars = c("platformId",  "timestamp"), 
+      measure = patterns("^name", "^value"), 
+      variable.name = "sensor_id", 
+      value.name = c("sensor_info", "sensor_value"))
+  
+  x[!is.na(sensor_value)]
+
+
+}
+
+#' ARGOS2 pipeline 
+#' @export
+ARGOS2.update <- function(x, what = c("locations", "sensors")) {
 
     con = dbcon(db = "ARGOS2", server = "scidb")
-    ok = DBI::dbWriteTable(con, "incoming", x, append = TRUE, row.names = FALSE)
+    ok = DBI::dbWriteTable(con, what, x, append = TRUE, row.names = FALSE)
     DBI::dbDisconnect(con)
 
 

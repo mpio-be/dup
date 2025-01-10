@@ -17,6 +17,7 @@ Imports:
     apis,
     magrittr,
     stringr,
+    forcats,
     glue,
     foreach,
     future,

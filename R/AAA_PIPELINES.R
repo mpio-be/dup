@@ -27,10 +27,17 @@ ARGOS.pipeline <- function() {
 #' @export
 ARGOS2.pipeline <- function() {
 
-    task1  = ARGOS2.downloadNew() |> try(silent = TRUE)
-    task2  = ARGOS2.update_incoming(task1) |> try(silent = TRUE)
+    NEW  = ARGOS2.downloadNew() |> try(silent = TRUE)
+    
+    locations  = ARGOS2.prepare_locations(NEW) |> try(silent = TRUE)
+    sensors    = ARGOS2.prepare_sensors(NEW) |> try(silent = TRUE)
+   
+    update_locations  = ARGOS2.update("locations") |> try(silent = TRUE)
+    update_sensors    = ARGOS2.update("sensors") |> try(silent = TRUE)
 
-    try_outcome(task1, task2, message = "ARGOS2.pipeline is failing!")
+    try_outcome(NEW, locations, sensors,update_locations,update_sensors, message = "ARGOS2.pipeline is failing!")
+
+
 }
 
 

@@ -1,13 +1,3 @@
-to_timestamp <- function(x) {
-  format(x, format = "%Y-%m-%dT%H:%M:%SZ")
-}
-
-# from_timestamp("2024-12-07T06:01:00Z")
-# identical("2024-12-07T06:01:00Z", from_timestamp("2024-12-07T06:01:00Z") |> to_timestamp())
-from_timestamp <- function(x) {
-  with_tz(ymd_hms(x), "UTC")
-  }
-
 
 
 #' Download the latest DRUID data and updates DB
@@ -36,7 +26,7 @@ DRUID.downloadNew <- function(what, SERVER = "scidb", logfile) {
   d = merge(ddl, ltt, by = "id", all.x = TRUE)
   d[is.na(last_timestamp), last_timestamp := from_timestamp("2000-01-01T00:00:00Z")]
     
-
+  setorder(d, -last_timestamp)
  
   o = foreach(i = 1:nrow(d), .errorhandling = "stop") %do% {
     
