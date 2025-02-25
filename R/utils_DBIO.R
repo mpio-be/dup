@@ -34,8 +34,6 @@ mariacon <- function(db) {
 }
 
 
-
-
 #' mysqldump
 #'
 #' @param db        db
@@ -74,7 +72,7 @@ mysqldump <- function(db,tables,user, pwd, host = '127.0.0.1', filenam = "dbdump
     filepath = paste(dir, filenam, sep = .Platform$file.sep)
 
 
-    syscall = paste0('mysqldump  --host=', host,
+    syscall = paste0('mariadb-dump --host=', host,
                 ' --user=' ,     user,
                 ' --password=' , pwd,
                 ' --databases ',  db,
