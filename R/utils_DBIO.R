@@ -169,7 +169,7 @@ mysqldump_host <- function(cnf = config::get(), exclude = c('mysql', 'informatio
 #' @param db      database name
 #' @param user    user, default to 'root'
 #' @param host    default to  '127.0.0.1'
-#' @param dryrun only print the mysql cli call and exit
+#' @param dryrun only print the mariadb cli call and exit
 #' @export
 #'
 
@@ -178,21 +178,21 @@ mysqlrestore <- function(file, db, user, pwd , host =  '127.0.0.1', dryrun = FAL
 
 
     if( !missing(db) &  !dryrun) {
-        makedbcall = glue('echo "CREATE DATABASE IF NOT EXISTS {db}" | mysql -h{host} -u{user} -p{pwd}')
+        makedbcall = glue('echo "CREATE DATABASE IF NOT EXISTS {db}" | mariadb -h{host} -u{user} -p{pwd}')
         system(makedbcall)
         }
     
-    makedbcall = glue('echo "SET GLOBAL max_allowed_packet=1073741824" | mysql -h{host} -u{user} -p{pwd}')
+    makedbcall = glue('echo "SET GLOBAL max_allowed_packet=1073741824" | mariadb -h{host} -u{user} -p{pwd}')
     system(makedbcall)      
 
-    mysqlCall =     glue('mysql  --max-allowed-packet=1073741824 --net_buffer_length=1000000 -h{host} -u{user} -p{pwd} {db}')
+    mariadbCall =     glue('mariadb  --max-allowed-packet=1073741824 --net_buffer_length=1000000 -h{host} -u{user} -p{pwd} {db}')
 
 
     if(tools::file_ext(file) == 'sql')
-        syscall = paste(mysqlCall, '<', file )
+        syscall = paste(mariadbCall, '<', file )
 
     if(tools::file_ext(file) == 'gz')
-        syscall = paste('gunzip -c', shQuote(file), "|", mysqlCall)
+        syscall = paste('gunzip -c', shQuote(file), "|", mariadbCall)
 
     if(dryrun)
         cat('\n----------\n', syscall, '\n----------\n')
