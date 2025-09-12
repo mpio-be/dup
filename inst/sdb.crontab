@@ -1,10 +1,9 @@
 # crontab copy
-#[minute hour day month day_of_week]
 
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-# ---- [DB updates] ----
+# ---- [external db updates] ----
 
 # ARGOS (every 3 hours)
 0 */3       * * *  Rscript --default-packages=dup -e 'ARGOS.pipeline();'
@@ -12,27 +11,31 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # ARGOS2 (every hour)
 0 */1       * * *  Rscript --default-packages=dup -e 'ARGOS2.pipeline();'
 
+
 # RUFFatSEEWIESEN
-0 18 * * * Rscript --default-packages=dup -e 'RUFFatSEEWIESEN_photos.pipeline()'
+# 0 18 * * *  Rscript --default-packages=dup -e 'RUFFatSEEWIESEN_photos.pipeline()'
+
 
 #DRUID (every 3 hours)
-# 0 */3 * * * Rscript --default-packages=dup -e  'DRUID.pipeline()'
-0 */3 * * * Rscript --default-packages=dup -e  'DRUID.downloadNew(what = "GPS", logfile =  "log_druid_GPS.csv");DRUID.downloadNew(what = "ODBA", logfile =  "log_druid_ODBA.csv");DRUID.downloadNew(what = "ENV", , logfile =  "log_druid_ENV.csv")'
+0 */3 * * * Rscript --default-packages=dup -e  'DRUID.downloadNew(what = "GPS", logfile =  "log_druid_GPS.csv");DRUID.downloadNew(what = "ODBA", logfile =  "log_druid_ODBA.csv");DRUID.downloadNew(what = "ENV", >
 
 # ---- [Maintenance] ----
 
 # replication
-0 */3 * * *  Rscript --default-packages=dup -e 'check_replication("scidb", "scidb_maoraves")'     
+0 */3 * * *  Rscript --default-packages=dup -e 'check_replication("scidb", "scidb_maoraves")'
 
 # backup
-0 0        * * *    Rscript --default-packages=dup -e 'backup.pipeline()'     
+# 0 0        * * *    Rscript --default-packages=dup -e 'backup.pipeline()'     
+
 
 # backup from field servers
 
-# every day at 2:00AM NZ
-0 14 * * *  Rscript --default-packages=dup -e 'db_copy("FIELD_2024_BADOatNZ", "remotehost_1", "host")'     
+# DUMMER
 
-0 2 * * *  Rscript --default-packages=dup -e 'db_copy("FIELD_2025_NOLAatDUMMERSEE", "remotehost_1", "host")'     
+# 0 2 * * *  Rscript --default-packages=dup -e 'db_copy("FIELD_2025_NOLAatDUMMERSEE", "remotehost_1", "host")'     
+
+#NZ
+0 */1  * * *  Rscript --default-packages=dup -e 'db_copy("FIELD_2024_BADOatNZ", "remotehost_1", "host")'
 
 
 # DOCUWIKI BACKUP
