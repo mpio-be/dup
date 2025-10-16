@@ -24,7 +24,12 @@ ARGOS2.downloadNew <- function() {
 
   setorder(ldt, -last_locationDate)
 
-  ldt[is.na(last_locationDate), last_locationDate := force_tz(Sys.Date() - 10, tz = "UTC") |> as.POSIXct()]
+  ten_days_ago = force_tz(Sys.Date() - 10, tz = "UTC") |> as.POSIXct()
+
+  ldt[is.na(last_locationDate), last_locationDate := ten_days_ago]
+  
+  # to download after longer interruptions
+  ldt[last_locationDate < ten_days_ago, last_locationDate := ten_days_ago]
 
 
   # Get data
